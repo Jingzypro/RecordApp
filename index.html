@@ -1245,8 +1245,30 @@ function hitsRule(t,ds){
     return b.getDate()===Math.min(a.getDate(),last);}
   return false;}
 
+/* 跨天事件在某天的时间段：起始日 → 从开始时间到当日末；中间日 → 全天；结束日 → 从零点到结束时间 */
+function spanSeg(t,ds){
+  if(!t.end_date||t.end_date<=t.due_date)return null;
+  if(ds<t.due_date||ds>t.end_date)return null;
+  var first=(ds===t.due_date), last=(ds===t.end_date);
+  if(first&&t.due_time) return {s:t.due_time,e:null,head:true};
+  if(last&&t.end_time)  return {s:null,e:t.end_time,tail:true};
+  return {s:null,e:null,mid:true};}
+
 function todosOn(ds){
   var real=D.todos.filter(function(t){return t.due_date===ds});
+  // 跨天事件：出现在起始日之后的每一天
+  var span=D.todos.filter(function(t){
+      return t.end_date && t.due_date && t.end_date>t.due_date &&
+             ds>t.due_date && ds<=t.end_date;})
+    .map(function(t){
+      var seg=spanSeg(t,ds)||{};
+      return Object.assign({},t,{
+        id:t.id+"~"+ds, sid:t.id, spanOf:t.due_date, vdate:ds,
+        due_date:ds,
+        due_time: seg.tail?null:(seg.mid?null:t.due_time),
+        end_time: seg.tail?t.end_time:null,
+        contFrom:true, contTo:(ds<t.end_date)});});
+  real=real.concat(span);
   var virt=D.todos.filter(function(t){
       return t.repeat && t.due_date && t.due_date!==ds && hitsRule(t,ds)
              && jlist(t.skip_dates).indexOf(ds)<0;})
@@ -1462,7 +1484,8 @@ function gWeek(){
        '<button class="cadd" data-new="'+ds+'">+</button></div><div class="citems">'+list.map(ciHTML).join("")+
        '</div></div>';}
   return h+'</div></div>';}
-function ciHTML(t){return '<div class="ci'+(t.done?" dn":"")+'" data-tg="'+t.id+'" data-drag="'+t.id+'">'+
+function ciHTML(t){var span=(t.contFrom?"↥ ":"")+(t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom)?"":"");
+  return '<div class="ci'+(t.done?" dn":"")+'" data-tg="'+t.id+'" data-drag="'+t.id+'">'+
   '<span class="mk sm '+colorOf(t)+(t.done?" on":"")+'"></span>'+
   '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" style="margin:0;font-size:11px;flex:1;min-width:0">'+
   (t.due_time?esc(t.due_time)+" ":"")+esc(t.text)+'</span></div>';}
@@ -1489,7 +1512,13 @@ function layout(list){
   return ev;}
 
 function dayCol(ds){
-  var list=todosOn(ds), ev=layout(list), h="";
+  var list=todosOn(ds).map(function(t){
+    // 起始日跨到次日：显示到当日末尾；结束日：从零点开始
+    if(t.contFrom&&t.end_time&&!t.due_time)return Object.assign({},t,{due_time:"00:00"});
+    if(!t.contFrom&&t.end_date&&t.end_date>t.due_date&&t.due_time)
+      return Object.assign({},t,{end_time:"24:00"});
+    return t;});
+  var ev=layout(list), h="";
   ev.forEach(function(x){
     var w=100/x.cols, left=x.col*w;
     h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+'" data-tg="'+x.t.id+'" data-drag="'+x.t.id+'"'+
@@ -1497,14 +1526,15 @@ function dayCol(ds){
        'left:calc('+left+'% + 3px);width:calc('+w+'% - 6px)">'+
        '<b style="display:flex;align-items:center;gap:6px"><span class="mk sm'+(x.t.done?" on":"")+'"></span>'+
        '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span></b>'+
-       '<span>'+esc(x.t.due_time)+'–'+m2t(x.e)+
+       '<span>'+(x.t.contFrom?"↥ ":"")+esc(x.t.due_time)+'–'+m2t(x.e)+
+         (x.t.contTo||(x.t.end_date&&x.t.end_date>x.t.due_date&&!x.t.contFrom)?" ↧":"")+
          (x.t.travel?'  ·  +'+esc(x.t.travel)+'m':"")+'</span>'+
        (x.t.location?'<span style="opacity:.75">◎ '+esc(x.t.location)+'</span>':"")+
        '</div>';});
   return h;}
 
 function allDayChips(ds){
-  return todosOn(ds).filter(function(t){return !t.due_time}).map(function(t){
+  return todosOn(ds).filter(function(t){return !t.due_time&&!t.end_time}).map(function(t){
     return '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" data-tg="'+t.id+'" data-drag="'+t.id+'"'+
       ' style="margin:0;display:inline-flex;align-items:center;gap:6px">'+
       '<span class="mk sm'+(t.done?" on":"")+'"></span>'+esc(t.text)+'</span>';}).join("");}
@@ -2483,9 +2513,15 @@ function newTodoSheet(ds,st,et){
   var COLORS={c0:"#EF4444",c1:"#F59E0B",c2:"#10B981",c3:"#3B82F6",c4:"#8B5CF6",c5:"#EC4899"};
   var REP=[["","Never"],["daily","Daily"],["weekday","Weekdays"],["weekly","Weekly"],["monthly","Monthly"]];
   var TRV=[["","None"],["5","5 min"],["15","15 min"],["30","30 min"],["60","1 hour"]];
-  var pick="", rep="", trv="";
-  var mode = ds ? "event" : "todo";          // event=有日期时间 / todo=纯待办
-  var allday = !st;
+  var CK=Object.keys(COLORS);
+  var pick = CK[Math.floor(Math.random()*CK.length)];   // 颜色默认随机
+  var rep="", trv="";
+  var mode = ds ? "event" : "todo";
+  var allday = false;                                    // 全天默认关闭
+  // 未指定时间 → 预填「下一个整刻 ~ 一小时后」
+  if(!st){var n0=new Date(), h0=n0.getHours(), m0=Math.ceil(n0.getMinutes()/15)*15;
+    if(m0>=60){h0=(h0+1)%24;m0=0;}
+    st=pad(h0)+":"+pad(m0); et=pad((h0+1)%24)+":"+pad(m0);}
 
   openSheet('<div class="fsheet">'+
     '<div class="ahd"><button class="acir" id="nx">✕</button>'+
@@ -2508,7 +2544,7 @@ function newTodoSheet(ds,st,et){
         '<input class="achip" id="nd" type="date" value="'+(ds||todayStr())+'">'+
         '<input class="achip" id="nm" type="time" value="'+(st||"")+'"'+(allday?" disabled":"")+'></span></div>'+
       '<div class="arow"><span class="ak">Ends</span><span class="av">'+
-        '<input class="achip" id="nd2" type="date" value="'+(ds||todayStr())+'" disabled>'+
+        '<input class="achip" id="nd2" type="date" value="'+(ds||todayStr())+'">'+
         '<input class="achip" id="nm2" type="time" value="'+(et||"")+'"'+(allday?" disabled":"")+'></span></div>'+
       '<div class="arow"><span class="ak">Travel time</span></div>'+
       '<div class="aopts" id="ntrv">'+TRV.map(function(r,i2){
@@ -2524,9 +2560,10 @@ function newTodoSheet(ds,st,et){
     '<div class="agrp">'+
       '<div class="arow"><span class="ak">Color</span></div>'+
       '<div class="fsw" id="nsw" style="padding:0 16px 15px;margin-top:-2px">'+
-      '<button class="none on" data-cl=""></button>'+
-      Object.keys(COLORS).map(function(k){
-        return '<button data-cl="'+k+'" style="background:'+COLORS[k]+';color:'+COLORS[k]+'"></button>';}).join("")+
+      '<button class="none" data-cl=""></button>'+
+      CK.map(function(k){
+        return '<button data-cl="'+k+'"'+(k===pick?' class="on"':'')+
+          ' style="background:'+COLORS[k]+';color:'+COLORS[k]+'"></button>';}).join("")+
       '</div></div>'+
 
     '<div class="agrp"><div class="arow" style="align-items:flex-start">'+
@@ -2562,7 +2599,11 @@ function newTodoSheet(ds,st,et){
     var v=$("nm").value; if(!v)return;
     if(!$("nm2").value||t2m($("nm2").value)<=t2m(v))
       $("nm2").value=m2t(Math.min(1439,t2m(v)+60));};
-  $("nd").onchange=function(){$("nd2").value=$("nd").value;};
+  $("nd").onchange=function(){
+    var a=$("nd").value, b=$("nd2").value;
+    if(!b||b<a)$("nd2").value=a;};
+  $("nd2").onchange=function(){
+    if($("nd2").value<$("nd").value)$("nd2").value=$("nd").value;};   // 结束不得早于开始
 
   function pills(id,setter){
     var box=$(id); if(!box)return;
@@ -2583,6 +2624,7 @@ function newTodoSheet(ds,st,et){
       due_date:dv,
       due_time: (ev&&!allday&&$("nm").value)||null,
       end_time: (ev&&!allday&&$("nm2").value)||null,
+      end_date: (ev&&$("nd2").value&&$("nd2").value!==dv&&$("nd2").value>dv)?$("nd2").value:null,
       color:pick||null, repeat:(dv&&rep)||null,
       location: (ev&&$("nloc").value.trim())||null,
       notes: $("nnote").value.trim()||null,
