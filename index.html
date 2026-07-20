@@ -50,7 +50,7 @@
     -webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-variant-numeric:tabular-nums;letter-spacing:-.006em}
   ::selection{background:var(--soft);color:var(--accent2)}
-  body{min-height:100dvh;padding:0 14px 66px}
+  body{min-height:100dvh;padding:0 14px 78px}
   .wrap{max-width:760px;margin:0 auto}
   button,input,textarea,select{font-family:var(--font);color:inherit}
   h1{font-size:25px;margin:0;letter-spacing:-.028em;font-weight:800;display:flex;align-items:baseline;min-width:0}
@@ -59,7 +59,7 @@
 
   /* top bar */
   .top{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:10px;
-    margin:0 -14px 14px;padding:max(16px,env(safe-area-inset-top)) 14px 11px;
+    margin:0 -14px 6px;padding:max(16px,env(safe-area-inset-top)) 14px 8px;
     background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(180%) blur(20px);
     border-bottom:1px solid transparent}
   .top.stuck{border-bottom-color:var(--line)}
@@ -235,7 +235,7 @@
 
   /* 周视图：整屏固定，不产生页面滚动 */
   .wkfit{display:flex;flex-direction:column;min-height:0;
-    height:calc(100dvh - var(--topH,84px) - 66px)}
+    height:calc(100dvh - var(--topH,84px) - 104px)}
   .wkfit .focus{flex:none}
   .wkfit .grid{flex:1;min-height:0;height:auto}
   body.lockv{overflow:hidden;overscroll-behavior:none}
@@ -666,7 +666,7 @@
   /* tabbar */
   .tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:color-mix(in srgb,var(--bg) 82%,transparent);
     backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line);
-    padding:9px 4px 5px;z-index:30;
+    padding:9px 4px 17px;z-index:30;
     }
   .tabs button{flex:1;border:none;background:transparent;cursor:pointer;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--faint);font-size:10.5px;font-weight:600}
   .tabs button.on{color:var(--ink);font-weight:700}
@@ -1470,7 +1470,7 @@ function vPlan(){
 function gWeek(){
   var s=startOfWeek(cursor),k=weekKey(cursor),ib=inbox(),ts=todayStr();
   var e=addDays(s,6);
-  var h='<div class="wkfit"><div class="row" style="justify-content:space-between;margin-bottom:10px">'+
+  var h='<div class="wkfit"><div class="row" style="justify-content:space-between;margin-bottom:8px">'+
     '<button class="pill" data-nav="-1">‹ Prev</button>'+
     '<button class="pill" id="toWeekNow">'+(s.getMonth()+1)+'.'+s.getDate()+' ~ '+(e.getMonth()+1)+'.'+e.getDate()+'</button>'+
     '<button class="pill" data-nav="1">Next ›</button></div>';
