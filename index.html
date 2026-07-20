@@ -150,8 +150,23 @@
   .cell.more::after{opacity:1}
   /* 位置变化时真实滑行（FLIP），不是原地淡入 */
   .ci.flip{will-change:transform}
-  .ci{display:flex;gap:7px;align-items:center;font-size:12.5px;line-height:1.35;padding:2px 0;cursor:pointer}
-  .ci.dn{color:var(--faint);text-decoration:line-through}
+  .ci{display:flex;gap:6px;align-items:center;font-size:12px;line-height:1.35;padding:1.5px 0;cursor:pointer}
+  .ci.dn{color:var(--faint)}
+
+  /* 待办：未完成用浅色胶囊包住；前面是空心/实心圆环 */
+  .ci.todo .cip{flex:1;min-width:0;display:flex;align-items:center;gap:6px;
+    padding:3px 8px;border-radius:8px;
+    background:color-mix(in srgb,var(--ink) 8%,transparent);
+    color:var(--ink);font-weight:600}
+  .ci.todo .cipt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ci.todo.dn .cip{background:transparent;color:var(--faint);font-weight:500}
+  .ci.todo.dn .cipt{text-decoration:line-through}
+
+  /* 日程：前面一道彩色竖线 + 时间 + 标题 */
+  .ci.evt .cibar{flex:none;width:2.5px;height:13px;border-radius:2px;background:currentColor}
+  .ci.evt .citm{flex:none;color:var(--sub);font-variant-numeric:tabular-nums;font-size:11.5px}
+  .ci.evt .citx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ci.evt.dn .citx,.ci.evt.dn .citm{color:var(--faint);text-decoration:line-through}
   .ci .tm{color:var(--sub);font-variant-numeric:tabular-nums;flex:none}
   /* 可拖元素：浏览器不得从这里发起滚动，手势完全交给脚本 */
   /* 允许系统原生竖向滚动；拖拽在长按后才接管 */
@@ -200,6 +215,10 @@
   .ev{display:block;font-size:10.5px;line-height:1.28;padding:3px 4px;border-radius:5px;margin:0 1px 2px;
     overflow:hidden;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   .ev .evt{display:block;font-size:9.5px;opacity:.75;font-weight:600}
+  /* 月视图：待办紧凑一行，左侧竖线；日程按时长伸展 */
+  .ev.todo{-webkit-line-clamp:1;border-left:2.5px solid currentColor;
+    background:transparent;padding-left:5px;border-radius:0 4px 4px 0}
+  .ev.ev-t{display:flex;flex-direction:column;justify-content:flex-start;-webkit-line-clamp:none}
   .ev.dn{opacity:.45;text-decoration:line-through}
   .evmore{font-size:9.5px;color:var(--faint);padding-left:4px;font-weight:600}
   .c0{background:rgba(239,68,68,.17);color:#EF4444}
@@ -298,6 +317,27 @@
   .mk.sm{width:13px;height:13px;border-width:1.6px}
   /* 圆环本身只有 13px，扩出一圈隐形热区，手指才点得准 */
   /* 日历里的生日/倒计时投影：只读，用方块区分于可勾选的圆环 */
+  /* 生日 / 倒计时页顶部的轮播卡 */
+  .hcar{position:relative;border-radius:18px;overflow:hidden;margin-bottom:14px;
+    background:var(--card);border:1px solid var(--line);box-shadow:var(--sh)}
+  .hcar .track{display:flex;transition:transform .5s cubic-bezier(.25,.8,.25,1)}
+  .hcar .slide{flex:0 0 100%;padding:20px 20px 16px;min-height:132px;
+    display:flex;flex-direction:column;justify-content:center}
+  .hcar .lbl{font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:8px}
+  .hcar .who{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+  .hcar .sub{font-size:12.5px;color:var(--sub);margin-top:5px}
+  .hcar .big{display:flex;align-items:baseline;gap:6px;margin-top:10px}
+  .hcar .big b{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .hcar .big span{font-size:10.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--faint)}
+  .hcar.bd{background:color-mix(in srgb,var(--amber) 8%,var(--card));
+    border-color:color-mix(in srgb,var(--amber) 24%,var(--line))}
+  .hcar.bd .big b{color:var(--amber)}
+  .hcar .dots{position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;gap:5px}
+  .hcar .dots i{width:5px;height:5px;border-radius:50%;background:var(--line);transition:all .3s}
+  .hcar .dots i.on{background:var(--sub);width:14px;border-radius:3px}
+  .hcar .empt{padding:26px 20px;text-align:center;color:var(--faint);font-size:13px}
   .rotag{flex:none;font-size:8.5px;font-weight:800;letter-spacing:.04em;
     padding:1.5px 5px;border-radius:5px;line-height:1.35;white-space:nowrap}
   .rotag.bd{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
@@ -306,6 +346,8 @@
   .rodot.bd{background:var(--amber)}
   .rodot.cd{background:var(--accent)}
   .ci.ro,.ev.ro{opacity:.9}
+  /* 时间已过：日视图整块稍淡即可，周视图不做任何标记 */
+  .evb.gone{opacity:.5}
   .mk.hit{position:relative;cursor:pointer;touch-action:manipulation}
   .mk.hit::before{content:"";position:absolute;inset:-11px;border-radius:50%}
   .mk.sm.on::after{inset:2px}
@@ -676,6 +718,19 @@
   .evb{position:absolute;border-radius:7px;padding:3px 6px;overflow:hidden;cursor:pointer;
     font-size:11.5px;line-height:1.28;border-left:3px solid currentColor}
   .evb b{display:block;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* 上下边缘的缩放手柄（不可见，但有足够的触摸区） */
+  .evb .rz{position:absolute;left:0;right:0;height:14px;cursor:ns-resize;z-index:2}
+  .evb .rz.t{top:-4px}
+  .evb .rz.b{bottom:-4px}
+  .evb.editing{opacity:.35}
+  /* 拖拽时的预览块 */
+  .evb.ghostb{left:3px;right:3px;width:auto;pointer-events:none;z-index:9;
+    background:color-mix(in srgb,var(--accent) 22%,var(--card));
+    border:1.5px dashed var(--accent);color:var(--accent);
+    display:flex;align-items:center;justify-content:center}
+  .qtime{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:2px 0 12px;
+    font-variant-numeric:tabular-nums;color:var(--accent)}
+  .evb.ghostb b{font-size:11px;font-variant-numeric:tabular-nums}
   .evb span{opacity:.85;font-size:10.5px;font-variant-numeric:tabular-nums}
   .evb.dn{opacity:.5;text-decoration:line-through}
   .nowline{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:3;pointer-events:none}
@@ -710,6 +765,10 @@
     color:var(--sub);background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px}
   .total span:last-child{font-size:19px;font-weight:750;color:var(--ink);letter-spacing:-.02em}
 
+  /* 通讯录式首字母分组标题 */
+  .alsec{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--sub);
+    padding:14px 4px 5px;position:sticky;top:var(--topH,84px);z-index:5;
+    background:var(--bg)}
   .sec{font-size:10.5px;font-weight:700;color:var(--faint);letter-spacing:.11em;text-transform:uppercase;margin:22px 3px 9px}
   .empty{text-align:center;padding:40px 16px;color:var(--faint);font-size:13.5px;letter-spacing:-.005em}
   .empty .e{font-size:32px;display:block;margin-bottom:8px}
@@ -762,7 +821,7 @@
 <nav class="tabs" id="tabs">
   <button data-t="today"><i data-ti="sun"></i>Today</button>
   <button data-t="plan"><i data-ti="calendar"></i>Plan</button>
-  <button data-t="habit"><i data-ti="flame"></i>Rituals</button>
+  <button data-t="cal"><i data-ti="calendar2"></i>Calendar</button>
 </nav>
 <div class="qswrap" id="qswrap">
   <div class="qshd"><button class="pill" id="qsX">‹</button><h3>ToDo</h3><span style="width:44px"></span></div>
@@ -1373,6 +1432,7 @@ function render(){
   else{ttl.style.cssText="";
     var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones"}[tab]||"Record";
     ttl.innerHTML=esc(lbl)+(tab==="today"?wxChip():"");}
+  if(typeof setTab==="function")setTab();     // 视图切换时底栏高亮跟着变
   var v=$("view");
   v.innerHTML = tab==="today"?vToday() : tab==="plan"?vPlan() : tab==="money"?vMoney() :
     tab==="diary"?vDiary() : tab==="habit"?vHabit() : tab==="subs"?vSubs() :
@@ -1572,12 +1632,19 @@ function gWeek(){
   h+='<div class="grid"><div class="cell" data-drop=""><div class="ch"><div class="cd">ToDo <small>'+ib.length+'</small></div>'+
      '<button class="cadd" data-new="">+</button></div><div class="citems">'+
      doneLast(ib).map(ciHTML).join("")+'</div></div>';
-  for(var i=0;i<7;i++){var d=addDays(s,i),ds=fmt(d),list=doneLast(todosOn(ds));
+  for(var i=0;i<7;i++){var d=addDays(s,i),ds=fmt(d),list=splitDay(todosOn(ds));
     h+='<div class="cell'+(ds===ts?" today":"")+'" data-drop="'+ds+'"><div class="ch"><div class="cd" data-goday="'+ds+'" style="cursor:pointer">'+WDE[d.getDay()]+' <small>'+d.getDate()+'</small></div>'+
        '<button class="cadd" data-new="'+ds+'">+</button></div><div class="citems">'+list.map(ciHTML).join("")+
        '</div></div>';}
   return h+'</div></div>';}
 /* 已完成的沉到底部，未完成留在上面（保持各自原有顺序） */
+/* 待办（无时间）在上、日程（有时间）在下，各自未完成优先 */
+function splitDay(list){
+  var td=[],ev=[];
+  list.forEach(function(t){(t.due_time?ev:td).push(t)});
+  ev.sort(function(a,b){return a.due_time<b.due_time?-1:1});
+  return doneLast(td).concat(doneLast(ev));}
+
 function doneLast(list){
   var a=[],b=[];
   list.forEach(function(t){(t.done?b:a).push(t)});
@@ -1615,11 +1682,19 @@ function ciHTML(t){
   if(t.ro)return '<div class="ci ro" data-mgo="'+(t.kind==="bday"?"bday":"cdown")+'">'+
     '<span class="rotag '+(t.kind==="bday"?"bd":"cd")+'">'+(t.kind==="bday"?"Birthday":"Countdown")+'</span>'+
     '<span class="ev" style="margin:0;font-size:11px;flex:1;min-width:0">'+esc(t.text)+'</span></div>';
-  return '<div class="ci'+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-tg="'+t.id+'">'+
-  '<span class="mk sm '+colorOf(t)+(t.done?" on":"")+'"></span>'+
-  '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" style="margin:0;font-size:11px;flex:1;min-width:0">'+
-  (t.contFrom?"↥ ":"")+(t.due_time?esc(t.due_time)+" ":"")+esc(t.text)+
-  ((t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom))?" ↧":"")+'</span></div>';}
+  var cont=(t.contFrom?"↥ ":"")+
+    ((t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom))?"":"");
+  var tail=(t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom))?" ↧":"";
+
+  if(!t.due_time){                                  // 待办：胶囊 + 圆环标记
+    return '<div class="ci todo'+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-tg="'+t.id+'">'+
+      '<span class="cip"><span class="mk sm '+colorOf(t)+(t.done?" on":"")+'"></span>'+
+      '<span class="cipt">'+cont+esc(t.text)+tail+'</span></span></div>';}
+
+  return '<div class="ci evt'+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-tg="'+t.id+'">'+
+    '<span class="cibar '+colorOf(t)+'"></span>'+
+    '<span class="citm">'+esc(t.due_time)+'</span>'+
+    '<span class="citx">'+cont+esc(t.text)+tail+'</span></div>';}
 /* ---- 日视图：时间轴 ---- */
 var HH=60; // 每小时像素
 function t2m(s){if(!s)return null;var a=String(s).split(":");return (+a[0])*60+(+a[1]||0);}
@@ -1642,15 +1717,150 @@ function layout(list){
     var n=cols.length; g.forEach(function(x){x.cols=n;});});
   return ev;}
 
+/* 某天的某个分钟数是否已经过去 */
+/* ── 日视图时间轴手势 ──
+   空白处长按下拉 → 拉出一段新日程
+   按住已有日程上下拖 → 整体改时间（时长不变）
+   拖上/下边缘      → 只改开始或结束时间
+   全部吸附到 15 分钟 */
+var SNAP=15;
+function snap(m){return Math.max(0,Math.min(1440,Math.round(m/SNAP)*SNAP));}
+function m2hm(m){return pad(Math.floor(m/60))+":"+pad(m%60);}
+
+/* 拖出时段后的快速新建：时间已经定好，只问一个标题 */
+function quickEvent(ds,st,et){
+  openSheet('<h2>New event</h2>'+
+    '<div class="qtime">'+esc(st)+' – '+esc(et)+'</div>'+
+    '<input class="inp" id="qet" placeholder="What is it?" autocomplete="off">'+
+    '<div class="row" style="margin-top:14px"><button class="btn" id="qev" style="flex:1">Add</button>'+
+    '<button class="btn g" id="qex">Cancel</button></div>');
+  var q=$("qet");
+  setTimeout(function(){q.focus()},80);
+  $("qex").onclick=closeSheet;
+  function save(){
+    var v=q.value.trim(); if(!v){q.focus();return;}
+    var CK2=["c0","c1","c2","c3","c4","c5"];
+    push("todos",{id:uid(),text:v,done:false,sort:Date.now(),
+      due_date:ds,due_time:st,end_time:et,
+      color:CK2[Math.floor(Math.random()*CK2.length)],
+      updated_at:new Date().toISOString()});
+    closeSheet();render();}
+  q.onkeydown=function(e){if(e.key==="Enter")save()};
+  $("qev").onclick=save;}
+
+function bindDayGrid(){
+  document.querySelectorAll(".tlcol").forEach(function(col){
+    if(col.__bd)return; col.__bd=1;
+    var ds=col.dataset.dcol;
+
+    col.addEventListener("pointerdown",function(ev){
+      if(ev.button&&ev.button!==0)return;
+      var blk=ev.target.closest?ev.target.closest(".evb"):null;
+      var handle=ev.target.classList&&ev.target.classList.contains("rz")
+                 ? (ev.target.classList.contains("t")?"top":"bot") : null;
+      var rect=col.getBoundingClientRect();
+      var y2m=function(y){return snap((y-rect.top)/HH*60);};
+      var startM=y2m(ev.clientY), mode=null, rec=null, s0=0, e0=0, timer=null;
+      var gh=null, moved=false;
+
+      // 没直接按在块上，但这个时刻已有日程 → 仍然选中它（块窄时容易按偏）
+      if(!blk){
+        var hit=todosOn(ds).filter(function(t){
+          if(!t.due_time||t.ro)return false;
+          var a=t2m(t.due_time), b=t.end_time?t2m(t.end_time):a+60;
+          return startM>=a&&startM<b;})[0];
+        if(hit)blk=col.querySelector('[data-ev="'+hit.id+'"]');}
+
+      function ghost(a,b){
+        if(!gh){gh=document.createElement("div");gh.className="evb ghostb";col.appendChild(gh);}
+        gh.style.top=(a/60*HH)+"px";
+        gh.style.height=Math.max(16,(b-a)/60*HH-2)+"px";
+        gh.innerHTML='<b>'+m2hm(a)+' – '+m2hm(b)+'</b>';}
+
+      function clean(){
+        clearTimeout(timer);
+        if(gh&&gh.parentNode)gh.parentNode.removeChild(gh);
+        gh=null;
+        col.removeEventListener("pointermove",mv);
+        col.removeEventListener("pointerup",up);
+        col.removeEventListener("pointercancel",clean);
+        if(blk)blk.classList.remove("editing");
+        document.body.style.overflow="";}
+
+      function begin(m){
+        mode=m; window.__noTap=1;
+        document.body.style.overflow="hidden";
+        if(blk)blk.classList.add("editing");
+        try{col.setPointerCapture(ev.pointerId)}catch(e){}}
+
+      if(blk){
+        var rid=blk.dataset.ev;
+        rec=D.todos.filter(function(t){return t.id===rid})[0];   // 重复任务的虚拟实例查不到，自动跳过
+        if(rec&&rec.due_time){
+          s0=t2m(rec.due_time); e0=rec.end_time?t2m(rec.end_time):s0+60;
+          if(handle){ begin(handle); }                  // 边缘：立刻进入缩放
+          else timer=setTimeout(function(){begin("move")},260);  // 块内：长按后移动
+        }
+      }else{
+        timer=setTimeout(function(){begin("create");ghost(startM,startM+SNAP);},260);
+      }
+
+      function mv(e){
+        var m=y2m(e.clientY), d=m-startM;
+        if(Math.abs(e.clientY-ev.clientY)>4)moved=true;
+        if(!mode){ if(moved)clearTimeout(timer); return; }
+        e.preventDefault();
+        if(mode==="create"){ ghost(Math.min(startM,m),Math.max(startM+SNAP,m)); return; }
+        if(!rec)return;
+        if(mode==="move"){
+          var len=e0-s0, ns=Math.max(0,Math.min(1440-len,s0+d));
+          ghost(ns,ns+len);
+        }else if(mode==="top"){
+          var ns2=Math.min(e0-SNAP,s0+d); ghost(Math.max(0,ns2),e0);
+        }else{
+          var ne=Math.max(s0+SNAP,e0+d); ghost(s0,Math.min(1440,ne));
+        }}
+
+      function up(e){
+        if(!mode){clean();return;}
+        var m=y2m(e.clientY), d=m-startM;
+        if(mode==="create"){
+          var a=Math.min(startM,m), b=Math.max(startM+SNAP,m);
+          clean(); quickEvent(ds,m2hm(a),m2hm(b)); return;}
+        if(rec){
+          var ns,ne;
+          if(mode==="move"){ var len=e0-s0; ns=Math.max(0,Math.min(1440-len,s0+d)); ne=ns+len; }
+          else if(mode==="top"){ ns=Math.max(0,Math.min(e0-SNAP,s0+d)); ne=e0; }
+          else { ns=s0; ne=Math.min(1440,Math.max(s0+SNAP,e0+d)); }
+          push("todos",Object.assign({},rec,{
+            due_time:m2hm(ns), end_time:m2hm(ne),
+            updated_at:new Date().toISOString()}));
+        }
+        clean(); render();}
+
+      col.addEventListener("pointermove",mv);
+      col.addEventListener("pointerup",up);
+      col.addEventListener("pointercancel",clean);
+    });
+  });}
+
+function isPast(ds,mins){
+  var ts=todayStr();
+  if(ds<ts)return true;
+  if(ds>ts)return false;
+  var n=new Date();
+  return (n.getHours()*60+n.getMinutes())>=mins;}
+
 function dayCol(ds){
   var list=todosOn(ds), ev=layout(list), h="";
   ev.forEach(function(x){
     var w=100/x.cols, left=x.col*w;
-    h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+'" data-drag="'+x.t.id+'"'+
+    var gone=isPast(ds,x.e);                     // 时间已过
+    h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+(gone?" gone":"")+'" data-ev="'+x.t.id+'" data-eds="'+ds+'"'+
        ' style="top:'+(x.s/60*HH)+'px;height:'+Math.max(20,(x.e-x.s)/60*HH-2)+'px;'+
        'left:calc('+left+'% + 3px);width:calc('+w+'% - 6px)">'+
-       '<b style="display:flex;align-items:center;gap:6px"><span class="mk sm hit'+(x.t.done?" on":"")+'" data-tg="'+x.t.id+'"></span>'+
-       '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span></b>'+
+       '<i class="rz t"></i><i class="rz b"></i>'+
+       '<b><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span></b>'+
        '<span>'+esc(x.t.due_time)+'–'+m2t(x.e)+
          (x.t.travel?'  ·  +'+esc(x.t.travel)+'m':"")+'</span>'+
        (x.t.location?'<span style="opacity:.75">◎ '+esc(x.t.location)+'</span>':"")+
@@ -1658,7 +1868,7 @@ function dayCol(ds){
   return h;}
 
 function allDayChips(ds){
-  return todosOn(ds).filter(function(t){return !t.due_time}).map(function(t){
+  return doneLast(todosOn(ds).filter(function(t){return !t.due_time})).map(function(t){
     if(t.ro)return '<span class="ev ro" data-mgo="'+(t.kind==="bday"?"bday":"cdown")+'"'+
       ' style="margin:0;display:inline-flex;align-items:center;gap:6px">'+
       '<span class="rotag '+(t.kind==="bday"?"bd":"cd")+'">'+(t.kind==="bday"?"Birthday":"Countdown")+'</span>'+esc(t.text)+'</span>';
@@ -1734,8 +1944,17 @@ function colorOf(t){
   var s=t.text||"",h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;
   return PAL[Math.abs(h)%6];}
 function evHTML(t){
-  return '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" data-drag="'+t.id+'">'+esc(t.text)+
-    (t.due_time?'<span class="evt">'+esc(t.due_time)+'</span>':"")+'</span>';}
+  if(t.ro)return '<span class="ev ro '+(t.kind==="bday"?"amber":"green")+'">'+esc(t.text)+'</span>';
+  if(!t.due_time)                       // 待办：紧凑一行，左侧一道竖线区分
+    return '<span class="ev todo '+colorOf(t)+(t.done?" dn":"")+'" data-drag="'+t.id+'">'+
+      esc(t.text)+'</span>';
+  // 日程：高度随时长变化（1 小时为基准，最少 1 行、最多 4 行的量）
+  var s0=t2m(t.due_time), e0=t.end_time?t2m(t.end_time):s0+60;
+  var hrs=Math.max(.25,(e0-s0)/60);
+  var px=Math.round(Math.min(4,Math.max(1,hrs))*13);
+  return '<span class="ev ev-t '+colorOf(t)+(t.done?" dn":"")+'" data-drag="'+t.id+'"'+
+    ' style="min-height:'+px+'px">'+esc(t.text)+
+    '<span class="evt">'+esc(t.due_time)+'</span></span>';}
 
 function monthSection(y,m){
   var first=new Date(y,m,1),start=startOfWeek(first),ts=todayStr();
@@ -1749,10 +1968,15 @@ function monthSection(y,m){
       var d=addDays(start,w*7+i),ds=fmt(d);
       if(d.getMonth()!==m){h+='<div class="dcell pad"></div>';continue;}
       var list=todosOn(ds);
+      // 待办（无时间）排在上面，日程（有时间）排下面并按时长给高度
+      var td=[],evs=[];
+      list.forEach(function(t){(t.due_time?evs:td).push(t)});
+      evs.sort(function(a,b){return a.due_time<b.due_time?-1:1});
+      var shown=td.concat(evs), cut=shown.slice(0,7);
       h+='<div class="dcell'+(ds===ts?" today":"")+'" data-dv="'+ds+'" data-drop="'+ds+'">'+
          '<div class="dnum">'+d.getDate()+'</div>'+
-         list.slice(0,7).map(evHTML).join("")+
-         (list.length>7?'<div class="evmore">+'+(list.length-7)+'</div>':"")+'</div>';}
+         cut.map(evHTML).join("")+
+         (shown.length>7?'<div class="evmore">+'+(shown.length-7)+'</div>':"")+'</div>';}
     h+='</div>';}
   return h+'</div>';}
 
@@ -1769,7 +1993,8 @@ function initMonthScroll(){
   var key=cursor.getFullYear()+"-"+pad(cursor.getMonth()+1);
   var tgt=box.querySelector('[data-ym="'+key+'"]');
   var tdCell=box.querySelector('.dcell.today');
-  if(window.__centerToday&&tdCell){
+  // 默认就把当天居中（不必等你点 Today）
+  if(tdCell){
     var row=tdCell.parentElement;
     var y=row.offsetTop+row.offsetHeight/2-window.innerHeight/2;
     window.scrollTo(0,Math.max(0,y));
@@ -2134,8 +2359,37 @@ function vSubs(){
 
 function vBday(){
   var bs=D.birthdays.map(function(b){return{b:b,d:daysUntil(b.date.slice(5))}}).sort(function(a,b){return a.d-b.d});
-  var h='<button class="btn g" id="addBd" style="width:100%;margin-bottom:10px">+ Add Birthday</button>';
-  h+='<div class="card">'+(bs.length?bs.map(function(x){
+  // 顶部轮播：本月要过生日的人
+  var mm=String(new Date().getMonth()+1).padStart(2,"0");
+  var thisMonth=bs.filter(function(x){return (x.b.date||"").slice(5,7)===mm});
+  var pool=thisMonth.length?thisMonth:bs.slice(0,5);
+  var slides=pool.slice(0,8).map(function(x){
+    var d=parse(x.b.date), md=MONS[d.getMonth()]+" "+d.getDate();
+    return '<div class="slide"><div class="lbl">'+(thisMonth.length?"This month":"Coming up")+'</div>'+
+      '<div class="who">'+esc(x.b.name)+'</div>'+
+      '<div class="sub">'+md+(x.b.place?" · ◎ "+esc(x.b.place):"")+'</div>'+
+      '<div class="big"><b>'+(x.d===0?"🎂":x.d)+'</b><span>'+
+        (x.d===0?"today":(x.d===1?"day left":"days left"))+'</span></div></div>';});
+  var h=carHTML("bd",slides);
+  // 先按首字母归组，再让字母本身 A→Z 排序（# 垫底）
+  var gmap={};
+  bs.forEach(function(x){
+    var k=initialOf(x.b.name);
+    (gmap[k]=gmap[k]||[]).push(x);});
+  var keys=Object.keys(gmap).sort(function(a,b){
+    if(a==="#")return 1; if(b==="#")return -1;
+    return a<b?-1:a>b?1:0;});
+  var groups=keys.map(function(k){
+    return {k:k, items:gmap[k].sort(function(a,b){return byName(a.b,b.b)})};});
+
+  if(!groups.length)return h+'<div class="card"><div class="empty"><span class="e">🎂</span>No birthdays</div></div>';
+  h+=groups.map(function(g){
+    return '<div class="alsec">'+g.k+'</div><div class="card">'+
+      g.items.map(bdRowHTML).join("")+'</div>';}).join("");
+  return h;}
+
+function bdRowHTML(x){
+  return (function(x){
       var y=+x.b.date.slice(0,4);
       // 只显示填过的内容，没填就不占位
       var meta=(y>1900?esc(x.b.date):esc(x.b.date.slice(5)))+(x.b.btime?" "+esc(x.b.btime):"");
@@ -2150,9 +2404,7 @@ function vBday(){
         '<span class="badge'+(x.d<=7?" warn":"")+'">'+(x.d===0?"today 🎂":x.d+"d")+'</span>'+
         '<span style="flex:1"></span>'+
         '<button class="x edit" data-bded="'+x.b.id+'" title="Edit">✎</button>'+
-        '<button class="x" data-del-birthdays="'+x.b.id+'">×</button></div>';}).join("")
-    :'<div class="empty"><span class="e">🎂</span>No birthdays</div>')+'</div>';
-  return h;}
+        '<button class="x" data-del-birthdays="'+x.b.id+'">×</button></div>';})(x);}
 
 function cdRow(x){
   var since=(x.c.mode==="since"), n=x.d, past=n<0;
@@ -2174,7 +2426,18 @@ function vCountdown(){
   var sinces= all.filter(function(x){return x.c.mode==="since"}).sort(function(a,b){return a.d-b.d});
   var past  = all.filter(function(x){return x.c.mode!=="since" && x.d<0}).sort(function(a,b){return b.d-a.d});
 
-  var h='<button class="btn" id="addCd" style="width:100%;margin-bottom:12px">+ New countdown</button>';
+  // 顶部轮播：最近要到期的事
+  var soon=all.filter(function(x){return x.c.mode!=="since"&&x.d>=0})
+              .sort(function(a,b){return a.d-b.d}).slice(0,8);
+  var slides=soon.map(function(x){
+    var d=parse(x.c.date);
+    return '<div class="slide"><div class="lbl">Coming up</div>'+
+      '<div class="who">'+esc(x.c.name)+'</div>'+
+      '<div class="sub">'+MONS[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear()+
+        (x.c.note?" · "+esc(x.c.note):"")+'</div>'+
+      '<div class="big"><b>'+(x.d===0?"🎉":x.d)+'</b><span>'+
+        (x.d===0?"today":(x.d===1?"day left":"days left"))+'</span></div></div>';});
+  var h=carHTML("",slides);
   if(!all.length)return h+'<div class="card"><div class="empty"><span class="e">⏳</span>No countdowns</div></div>';
 
   // 头图：优先展示最近的倒数；没有则展示最久的正数
@@ -2251,6 +2514,7 @@ function cdSheet(rec){
 function ico(name,size){
   var p={
     calendar:'<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+    calendar2:'<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M7.5 14h5M7.5 17h9"/>',
     journal:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19v17.5H6.5A2.5 2.5 0 0 0 4 22z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H19"/>',
     flame:'<path d="M12 22c3.9 0 6.5-2.6 6.5-6 0-4.5-4.5-6-4.5-10.5C11 7 10 9 10 11c-.9-.6-1.5-1.6-1.5-3C6.9 9.6 5.5 11.9 5.5 15c0 3.6 2.7 7 6.5 7z"/>',
     wallet:'<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1"/><rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/><path d="M16.5 13.8h.01"/>',
@@ -2661,8 +2925,10 @@ function bind(){
   document.querySelectorAll("[data-hedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var hb=D.habits.filter(function(x){return x.id===el.dataset.hedit})[0]; if(hb)habitSheet(hb);};});
   var as=$("addSub");if(as)as.onclick=subSheet;
-  var ab=$("addBd");if(ab)ab.onclick=function(){bdSheet()};
-  var ac=$("addCd");if(ac)ac.onclick=function(){cdSheet()};
+  if(tab==="plan"&&planView==="day")bindDayGrid();   // 时间轴手势
+  // 顶部轮播启动（页面里有才启动）
+  var car=$("hcarT");
+  if(car)carBind(car.children.length); else clearInterval(__car.t);
   document.querySelectorAll("[data-cded]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var c=D.countdowns.filter(function(x){return x.id===el.dataset.cded})[0];
     if(c)cdSheet(c);};});
@@ -2851,6 +3117,57 @@ function bdShown(b,d){
   if(b.muted) return false;
   if(d==null)d=daysUntil((b.date||"").slice(5));
   return d<=14;}
+
+/* 姓名首字母：英文取首字母，中文按拼音归到 A–Z */
+var __coll=null;
+try{__coll=new Intl.Collator("zh-Hans-u-co-pinyin");}catch(e){}
+var LT="ABCDEFGHJKLMNOPQRSTWXYZ".split("");        // 拼音里没有 I U V
+var LB=["阿","八","擦","搭","蛾","发","噶","哈","击","喀","垃","妈","拿","哦","啪","期","然","撒","塌","挖","昔","压","匝"];
+function initialOf(name){
+  var c=(name||"").trim().charAt(0);
+  if(!c)return "#";
+  if(/[a-zA-Z]/.test(c))return c.toUpperCase();
+  if(/[0-9]/.test(c))return "#";
+  if(!__coll)return "#";
+  // 拿字符跟每个字母的边界字比较，落在哪一段就是哪个字母
+  var r="#";
+  for(var i=0;i<LB.length;i++){
+    if(__coll.compare(c,LB[i])>=0)r=LT[i]; else break;}
+  return r;}
+function byName(a,b){
+  if(__coll)return __coll.compare(a.name||"",b.name||"");
+  return (a.name||"").localeCompare(b.name||"");}
+
+/* 顶部轮播：自动播放，可左右滑动 */
+var __car={t:null,i:0,n:0};
+function carHTML(cls,slides){
+  if(!slides.length)return '<div class="hcar '+cls+'"><div class="empt">Nothing coming up</div></div>';
+  return '<div class="hcar '+cls+'" id="hcar"><div class="track" id="hcarT">'+
+    slides.join("")+'</div>'+
+    (slides.length>1?'<div class="dots" id="hcarD">'+
+      slides.map(function(_,i){return '<i'+(i?"":" class=\'on\'")+'></i>'}).join("")+'</div>':"")+
+    '</div>';}
+
+function carBind(n){
+  clearInterval(__car.t); __car.i=0; __car.n=n;
+  var el=$("hcarT"); if(!el||n<2)return;
+  function go(i){
+    __car.i=(i+n)%n;
+    el.style.transform="translateX("+(-__car.i*100)+"%)";
+    var d=$("hcarD"); if(d)d.querySelectorAll("i").forEach(function(x,k){
+      x.classList.toggle("on",k===__car.i)});}
+  __car.t=setInterval(function(){go(__car.i+1)},4200);
+  // 手动滑动后重新计时
+  var x0=0,on=false;
+  el.parentNode.addEventListener("touchstart",function(e){
+    if(e.touches.length!==1)return; x0=e.touches[0].clientX; on=true;},{passive:true});
+  el.parentNode.addEventListener("touchend",function(e){
+    if(!on)return; on=false;
+    var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)<40)return;
+    clearInterval(__car.t);
+    go(__car.i+(dx<0?1:-1));
+    __car.t=setInterval(function(){go(__car.i+1)},4200);},{passive:true});}
 
 function bdParse(str){
   var q=(str||"").trim().replace(/\s+/g," ");
@@ -3237,8 +3554,50 @@ function paintIcons(){
     el.innerHTML=ico(el.dataset.ti, el.closest("#tabs")?19:17);
     el.style.display="grid"; el.style.placeItems="center";});}
 
-function setTab(){document.querySelectorAll("#tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.t===tab)})}
-document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function(){tab=b.dataset.t;setTab();render()}});
+var __curTab="today";
+
+/* 左右滑动切换底栏页面。
+   日视图自己有横向翻天，所以那里不接管，避免打架。 */
+(function(){
+  var TABS=["today","plan","cal"];
+  var x0=0,y0=0,act=false;
+  document.addEventListener("touchstart",function(e){
+    if(e.touches.length!==1)return;
+    if(document.querySelector(".sheet.on,.qswrap.on,.drawer.on"))return;  // 弹层打开时不响应
+    if(tab==="plan"&&planView==="day")return;                            // 日视图交给它自己
+    var t=e.target;
+    if(t.closest&&t.closest(".cdstrip,.hcar,.tlscroll,.dtrack,input,textarea"))return;
+    x0=e.touches[0].clientX; y0=e.touches[0].clientY; act=true;},{passive:true});
+  document.addEventListener("touchend",function(e){
+    if(!act)return; act=false;
+    var t=e.changedTouches[0];
+    var dx=t.clientX-x0, dy=t.clientY-y0;
+    if(Math.abs(dx)<64||Math.abs(dx)<Math.abs(dy)*1.8)return;             // 必须是明确的横滑
+    var i=TABS.indexOf(curTabKey()); if(i<0)return;
+    var n=i+(dx<0?1:-1);
+    if(n<0||n>=TABS.length)return;
+    goTab(TABS[n]);},{passive:true});
+})();
+
+function curTabKey(){
+  if(tab!=="plan")return tab==="habit"?"":tab;      // 抽屉里的页面不高亮底栏
+  return planView==="day" ? "cal" : "plan";}
+function setTab(){
+  var k=curTabKey();
+  document.querySelectorAll("#tabs button").forEach(function(b){
+    b.classList.toggle("on",b.dataset.t===k)});}
+document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function(){
+  goTab(b.dataset.t);}});
+
+/* Plan → 默认周视图；Calendar → 默认当天的日视图 */
+function goTab(t){
+  if(t==="plan"){ tab="plan"; viewStack=[]; planView="week"; }
+  else if(t==="cal"){ tab="plan"; viewStack=[]; planView="day"; cursor=new Date(); }
+  else tab=t;
+  __curTab=t;
+  scrollWrapTop();
+  setTab(); render();}
+function scrollWrapTop(){ try{window.scrollTo(0,0)}catch(e){} }
 $("syncPill").onclick=cfgSheet;
 document.addEventListener("visibilitychange",function(){if(!document.hidden)sync()});
 setInterval(function(){if(!document.hidden)sync()},30000);
