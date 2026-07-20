@@ -513,6 +513,11 @@
   .achip:focus{background:var(--accent);color:#fff}
   .achip:disabled{opacity:.32}
   /* iOS 开关 */
+  /* 弹层里的开关行 */
+  .mrow{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:12px 14px;border-radius:12px;background:var(--card2);border:1px solid var(--line)}
+  .mrt{font-size:14.5px;font-weight:620}
+  .mrs{font-size:11.5px;color:var(--sub);margin-top:2px;line-height:1.35}
   .atog{width:51px;height:31px;border-radius:999px;background:var(--line2);border:1px solid var(--line);
     cursor:pointer;position:relative;transition:background .22s,border-color .22s;flex:none;padding:0}
   .atog::after{content:"";position:absolute;top:1.5px;left:1.5px;width:26px;height:26px;border-radius:50%;
@@ -718,11 +723,20 @@
   .evb{position:absolute;border-radius:7px;padding:3px 6px;overflow:hidden;cursor:pointer;
     font-size:11.5px;line-height:1.28;border-left:3px solid currentColor}
   .evb b{display:block;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  /* 上下边缘的缩放手柄（不可见，但有足够的触摸区） */
-  .evb .rz{position:absolute;left:0;right:0;height:14px;cursor:ns-resize;z-index:2}
-  .evb .rz.t{top:-4px}
-  .evb .rz.b{bottom:-4px}
-  .evb.editing{opacity:.35}
+  /* 选中态：高亮 + 两个圆形手柄（仿苹果日历） */
+  .evb.sel{z-index:6;box-shadow:0 0 0 2px var(--card),0 0 0 3.5px currentColor,var(--shx);
+    filter:saturate(1.15);cursor:grab}
+  .evb.sel:active{cursor:grabbing}
+  @media (hover:hover){
+    .evb:hover{filter:brightness(1.12)}
+    .tlcol{cursor:crosshair}          /* 空白处可拖出新日程 */
+    .evb{cursor:grab}
+  }
+  .evb .hd{position:absolute;width:11px;height:11px;border-radius:50%;
+    background:var(--card);border:2.5px solid currentColor;z-index:7;
+    cursor:ns-resize;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .evb .hd.t{top:-6px;right:-5px}
+  .evb .hd.b{bottom:-6px;left:-5px}
   /* 拖拽时的预览块 */
   .evb.ghostb{left:3px;right:3px;width:auto;pointer-events:none;z-index:9;
     background:color-mix(in srgb,var(--accent) 22%,var(--card));
@@ -1748,6 +1762,8 @@ function quickEvent(ds,st,et){
   q.onkeydown=function(e){if(e.key==="Enter")save()};
   $("qev").onclick=save;}
 
+var selEv=null;                       // 当前选中的日程
+
 function bindDayGrid(){
   document.querySelectorAll(".tlcol").forEach(function(col){
     if(col.__bd)return; col.__bd=1;
@@ -1755,21 +1771,10 @@ function bindDayGrid(){
 
     col.addEventListener("pointerdown",function(ev){
       if(ev.button&&ev.button!==0)return;
-      var blk=ev.target.closest?ev.target.closest(".evb"):null;
-      var handle=ev.target.classList&&ev.target.classList.contains("rz")
-                 ? (ev.target.classList.contains("t")?"top":"bot") : null;
       var rect=col.getBoundingClientRect();
       var y2m=function(y){return snap((y-rect.top)/HH*60);};
-      var startM=y2m(ev.clientY), mode=null, rec=null, s0=0, e0=0, timer=null;
-      var gh=null, moved=false;
-
-      // 没直接按在块上，但这个时刻已有日程 → 仍然选中它（块窄时容易按偏）
-      if(!blk){
-        var hit=todosOn(ds).filter(function(t){
-          if(!t.due_time||t.ro)return false;
-          var a=t2m(t.due_time), b=t.end_time?t2m(t.end_time):a+60;
-          return startM>=a&&startM<b;})[0];
-        if(hit)blk=col.querySelector('[data-ev="'+hit.id+'"]');}
+      var startM=y2m(ev.clientY);
+      var mode=null, rec=null, s0=0, e0=0, timer=null, gh=null, moved=false;
 
       function ghost(a,b){
         if(!gh){gh=document.createElement("div");gh.className="evb ghostb";col.appendChild(gh);}
@@ -1781,33 +1786,60 @@ function bindDayGrid(){
         clearTimeout(timer);
         if(gh&&gh.parentNode)gh.parentNode.removeChild(gh);
         gh=null;
-        col.removeEventListener("pointermove",mv);
-        col.removeEventListener("pointerup",up);
-        col.removeEventListener("pointercancel",clean);
-        if(blk)blk.classList.remove("editing");
+        document.removeEventListener("pointermove",mv);
+        document.removeEventListener("pointerup",up);
+        document.removeEventListener("pointercancel",clean);
         document.body.style.overflow="";}
 
-      function begin(m){
-        mode=m; window.__noTap=1;
+      function lock(){
+        window.__noTap=1;
         document.body.style.overflow="hidden";
-        if(blk)blk.classList.add("editing");
         try{col.setPointerCapture(ev.pointerId)}catch(e){}}
 
-      if(blk){
-        var rid=blk.dataset.ev;
-        rec=D.todos.filter(function(t){return t.id===rid})[0];   // 重复任务的虚拟实例查不到，自动跳过
-        if(rec&&rec.due_time){
-          s0=t2m(rec.due_time); e0=rec.end_time?t2m(rec.end_time):s0+60;
-          if(handle){ begin(handle); }                  // 边缘：立刻进入缩放
-          else timer=setTimeout(function(){begin("move")},260);  // 块内：长按后移动
-        }
+      // 该时刻落在哪条日程上（纯按时间判定）
+      function evAt(m){
+        var r=null;
+        todosOn(ds).forEach(function(t){
+          if(r||!t.due_time||t.ro)return;
+          var a=t2m(t.due_time), b=t.end_time?t2m(t.end_time):a+60;
+          if(m>=a&&m<b)r={t:t,a:a,b:b};});
+        return r;}
+
+      /* ── 已有选中：只对它操作，新建被锁住 ── */
+      if(selEv){
+        rec=D.todos.filter(function(t){return t.id===selEv})[0];
+        if(!rec||rec.due_date!==ds){ selEv=null; render(); return; }
+        s0=t2m(rec.due_time); e0=rec.end_time?t2m(rec.end_time):s0+60;
+        var tol=Math.min(12,Math.max(5,Math.floor((e0-s0)/3)));
+        if(Math.abs(startM-s0)<=tol)      mode="top";
+        else if(Math.abs(startM-e0)<=tol) mode="bot";
+        else if(startM>s0&&startM<e0)     mode="move";
+        else { selEv=null; render(); return; }      // 点到别处 → 取消选中
+        lock();
       }else{
-        timer=setTimeout(function(){begin("create");ghost(startM,startM+SNAP);},260);
+        /* ── 没有选中 ──
+           鼠标：按下即生效（桌面上没人长按）
+           手指：长按 280ms 再生效，避免和滚动打架 */
+        var h0=evAt(startM);
+        var isMouse=(ev.pointerType==="mouse"||ev.pointerType===undefined);
+        if(h0){
+          rec=D.todos.filter(function(t){return t.id===h0.t.id})[0];
+          if(rec){
+            s0=h0.a; e0=h0.b;
+            var pick=function(){
+              selEv=rec.id; mode="move"; lock();
+              var blk=col.querySelector('[data-ev="'+rec.id+'"]');
+              if(blk)blk.classList.add("sel");
+              if(!isMouse&&navigator.vibrate)navigator.vibrate(8);};
+            if(isMouse)pick(); else timer=setTimeout(pick,280);}
+        }else{
+          var mk=function(){mode="create"; lock(); ghost(startM,startM+SNAP);};
+          if(isMouse)mk(); else timer=setTimeout(mk,280);}
       }
 
       function mv(e){
         var m=y2m(e.clientY), d=m-startM;
-        if(Math.abs(e.clientY-ev.clientY)>4)moved=true;
+        if(Math.abs(e.clientY-ev.clientY)>5)moved=true;
         if(!mode){ if(moved)clearTimeout(timer); return; }
         e.preventDefault();
         if(mode==="create"){ ghost(Math.min(startM,m),Math.max(startM+SNAP,m)); return; }
@@ -1816,18 +1848,19 @@ function bindDayGrid(){
           var len=e0-s0, ns=Math.max(0,Math.min(1440-len,s0+d));
           ghost(ns,ns+len);
         }else if(mode==="top"){
-          var ns2=Math.min(e0-SNAP,s0+d); ghost(Math.max(0,ns2),e0);
+          ghost(Math.max(0,Math.min(e0-SNAP,s0+d)),e0);
         }else{
-          var ne=Math.max(s0+SNAP,e0+d); ghost(s0,Math.min(1440,ne));
+          ghost(s0,Math.min(1440,Math.max(s0+SNAP,e0+d)));
         }}
 
       function up(e){
         if(!mode){clean();return;}
         var m=y2m(e.clientY), d=m-startM;
         if(mode==="create"){
+          if(!moved){clean();render();return;}          // 只是点了一下，不建
           var a=Math.min(startM,m), b=Math.max(startM+SNAP,m);
           clean(); quickEvent(ds,m2hm(a),m2hm(b)); return;}
-        if(rec){
+        if(rec&&moved){
           var ns,ne;
           if(mode==="move"){ var len=e0-s0; ns=Math.max(0,Math.min(1440-len,s0+d)); ne=ns+len; }
           else if(mode==="top"){ ns=Math.max(0,Math.min(e0-SNAP,s0+d)); ne=e0; }
@@ -1838,9 +1871,9 @@ function bindDayGrid(){
         }
         clean(); render();}
 
-      col.addEventListener("pointermove",mv);
-      col.addEventListener("pointerup",up);
-      col.addEventListener("pointercancel",clean);
+      document.addEventListener("pointermove",mv);
+      document.addEventListener("pointerup",up);
+      document.addEventListener("pointercancel",clean);
     });
   });}
 
@@ -1856,10 +1889,11 @@ function dayCol(ds){
   ev.forEach(function(x){
     var w=100/x.cols, left=x.col*w;
     var gone=isPast(ds,x.e);                     // 时间已过
-    h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+(gone?" gone":"")+'" data-ev="'+x.t.id+'" data-eds="'+ds+'"'+
+    h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+(gone?" gone":"")+
+        (x.t.id===selEv?" sel":"")+'" data-ev="'+x.t.id+'" data-eds="'+ds+'"'+
        ' style="top:'+(x.s/60*HH)+'px;height:'+Math.max(20,(x.e-x.s)/60*HH-2)+'px;'+
        'left:calc('+left+'% + 3px);width:calc('+w+'% - 6px)">'+
-       '<i class="rz t"></i><i class="rz b"></i>'+
+       (x.t.id===selEv?'<i class="hd t"></i><i class="hd b"></i>':"")+
        '<b><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span></b>'+
        '<span>'+esc(x.t.due_time)+'–'+m2t(x.e)+
          (x.t.travel?'  ·  +'+esc(x.t.travel)+'m':"")+'</span>'+
@@ -2733,76 +2767,9 @@ function bindDrag(){
       document.addEventListener("pointercancel",up);
     });});}
 
-/* ---- 日视图：长按拖出一段时间来新建日程（仿 Apple 日历）---- */
-function bindTimeDraw(){
-  document.querySelectorAll("[data-dcol]").forEach(function(col){
-    if(col.__td)return; col.__td=1;
-    col.addEventListener("pointerdown",function(ev){
-      if(ev.button&&ev.button!==0)return;
-      if(ev.target.closest("[data-drag]"))return;          // 按在已有日程上 → 交给拖拽
-      var sc=$("tlscroll"), ds=col.dataset.dcol;
-      var rect=col.getBoundingClientRect();
-      var y0=ev.clientY-rect.top, started=false, prev=null, timer;
-      var isMouse=(ev.pointerType==="mouse"||ev.pointerType===undefined);
-      var snap=function(px){var m=Math.round(px/HH*60/15)*15; return Math.max(0,Math.min(1425,m));};
-      var a=snap(y0), b=a+60;
-
-      function begin(){
-        if(started)return;
-        started=true;
-        if(sc)sc.style.touchAction="none";
-        prev=document.createElement("div");
-        prev.className="evb prev";
-        col.appendChild(prev);
-        draw();}
-
-      // 手指：长按 260ms 启动（避免与滚动冲突）；鼠标：拖动即启动
-      if(!isMouse)timer=setTimeout(begin,260);
-
-      function draw(){
-        var s1=Math.min(a,b), e1=Math.max(a,b);
-        if(e1-s1<15)e1=s1+15;
-        prev.style.top=(s1/60*HH)+"px";
-        prev.style.height=Math.max(18,(e1-s1)/60*HH-2)+"px";
-        prev.style.left="3px"; prev.style.right="3px";
-        prev.innerHTML='<b>New</b><span>'+m2t(s1)+'–'+m2t(e1)+'</span>';}
-
-      function mv(e){
-        if(!started){
-          var dy=Math.abs(e.clientY-ev.clientY), dx=Math.abs(e.clientX-ev.clientX);
-          if(isMouse){ if(dy>4&&dy>=dx)begin(); else return; }
-          else { if(dy>10||dx>10){clearTimeout(timer);cleanup();} return; }}
-        e.preventDefault();
-        b=snap(e.clientY-col.getBoundingClientRect().top);
-        draw();}
-
-      function up(){
-        clearTimeout(timer);
-        if(started){
-          var s1=Math.min(a,b), e1=Math.min(1440,Math.max(a,b));
-          if(e1-s1<15)e1=Math.min(1440,s1+15);
-          cleanup();
-          newTodoSheet(ds,m2t(s1),m2t(e1));
-          setTimeout(function(){var n=$("nt"); if(n)n.focus();},120);
-        }else cleanup();}
-
-      function cleanup(){
-        started=false;
-        if(prev&&prev.parentNode)prev.parentNode.removeChild(prev);
-        prev=null;
-        if(sc)sc.style.touchAction="";
-        document.removeEventListener("pointermove",mv);
-        document.removeEventListener("pointerup",up);
-        document.removeEventListener("pointercancel",up);}
-
-      document.addEventListener("pointermove",mv,{passive:false});
-      document.addEventListener("pointerup",up);
-      document.addEventListener("pointercancel",up);
-    });});}
-
 function initDayView(){
   var sc=$("tlscroll"); if(!sc)return;
-  bindTimeDraw();
+  bindDayGrid();                       // 时间轴手势（选中 / 移动 / 缩放 / 新建）
   // 初始滚动到当前时间（或 7:00）
   var n=new Date(), m=(fmt(cursor)===todayStr())?n.getHours()*60+n.getMinutes():8*60;
   sc.scrollTop=Math.max(0,m/60*HH-sc.clientHeight/3);
@@ -3113,8 +3080,8 @@ function parseBd(str){
    muted   手动关掉 → 一直不显示
    都没设  → 14 天内自动显示 */
 function bdShown(b,d){
+  if(b.muted) return false;      // 永不提醒优先级最高
   if(b.pinned)return true;
-  if(b.muted) return false;
   if(d==null)d=daysUntil((b.date||"").slice(5));
   return d<=14;}
 
@@ -3207,6 +3174,10 @@ function bdSheet(rec){
       '<input class="inp" id="bp" placeholder="optional" value="'+esc(rec.place||"")+'">'+
       '<label class="fl">Note</label>'+
       '<input class="inp" id="bo" placeholder="optional" value="'+esc(rec.note||"")+'">'+
+      '<div class="mrow" style="margin-top:14px">'+
+        '<div><div class="mrt">Never remind</div>'+
+        '<div class="mrs">Keep the record, no reminder on Today</div></div>'+
+        '<button class="atog'+(rec.muted?" on":"")+'" id="bmute"></button></div>'+
       '<div class="row" style="margin-top:14px"><button class="btn" id="bv" style="flex:1">Save</button>'+
       '<button class="btn g" id="bx">Cancel</button></div>');
     setTimeout(function(){$("bn").focus()},80);
@@ -3228,12 +3199,18 @@ function bdSheet(rec){
       var v=$("bdp").value; if(!v)return;
       $("bd2").value=v.replace(/-/g,""); chk();};
 
+    var mute=!!rec.muted;
+    $("bmute").onclick=function(){
+      mute=!mute; $("bmute").classList.toggle("on",mute);};
+
     $("bv").onclick=function(){
       var n=$("bn").value.trim(); if(!n){$("bn").focus();return;}
       var r=chk(); if(!r)return;
       push("birthdays",{id:rec.id,name:n,date:r.date,btime:r.time,
         place:$("bp").value.trim()||null,
         note:$("bo").value.trim()||null,
+        muted:mute,
+        pinned:mute?false:!!rec.pinned,      // 永不提醒时取消置顶
         updated_at:new Date().toISOString()});
       closeSheet();render();};
     return;}
