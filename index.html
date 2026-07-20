@@ -16,7 +16,7 @@
   :root{
     /* 纸与墨：中性纸面 + 发丝分隔 + 克制的深玉色强调 */
     --bg:#FBFAF8; --card:#FFFFFF; --card2:#F7F6F3; --ink:#17191A; --sub:#6C7176; --faint:#A5AAAE;
-    --line:#E9E7E2; --line2:#F1EFEB; --grpbg:#EFEDE9;
+    --line:#E9E7E2; --line2:#F1EFEB; --sab:env(safe-area-inset-bottom); --grpbg:#EFEDE9;
     --accent:#1C6B57; --accent2:#12483A; --soft:#EAF1EE; --amber:#8A6317;
     --danger:#B4443B; --red:#C8443C; --daynum:#17191A;
     --r:14px; --r2:10px;
@@ -50,7 +50,7 @@
     -webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-variant-numeric:tabular-nums;letter-spacing:-.006em}
   ::selection{background:var(--soft);color:var(--accent2)}
-  body{min-height:100dvh;padding:0 14px calc(78px + env(safe-area-inset-bottom))}
+  body{min-height:100dvh;padding:0 14px 66px}
   .wrap{max-width:760px;margin:0 auto}
   button,input,textarea,select{font-family:var(--font);color:inherit}
   h1{font-size:25px;margin:0;letter-spacing:-.028em;font-weight:800;display:flex;align-items:baseline;min-width:0}
@@ -235,7 +235,7 @@
 
   /* 周视图：整屏固定，不产生页面滚动 */
   .wkfit{display:flex;flex-direction:column;min-height:0;
-    height:calc(100dvh - var(--topH,84px) - 96px - env(safe-area-inset-bottom))}
+    height:calc(100dvh - var(--topH,84px) - 66px)}
   .wkfit .focus{flex:none}
   .wkfit .grid{flex:1;min-height:0;height:auto}
   body.lockv{overflow:hidden;overscroll-behavior:none}
@@ -666,7 +666,8 @@
   /* tabbar */
   .tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:color-mix(in srgb,var(--bg) 82%,transparent);
     backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line);
-    padding:7px 4px calc(7px + env(safe-area-inset-bottom));z-index:30}
+    padding:9px 4px 5px;z-index:30;
+    }
   .tabs button{flex:1;border:none;background:transparent;cursor:pointer;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--faint);font-size:10.5px;font-weight:600}
   .tabs button.on{color:var(--ink);font-weight:700}
   .tabs button.on span{transform:translateY(-1px)}
@@ -742,9 +743,30 @@
 </aside>
 
 
+<div id="safeProbe" style="position:fixed;left:0;bottom:0;width:1px;height:env(safe-area-inset-bottom);pointer-events:none;opacity:0"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 
 <script>
+/* iOS 独立模式冷启动时 safe-area 首帧报 0（约 60ms 后才给真值），
+   会让底栏高度突变。这里先套用上次缓存的真值，消除跳动。 */
+(function(){try{
+  var v=localStorage.getItem("rec.sab");
+  if(v&&+v>0&&+v<80){document.documentElement.style.setProperty("--sab",v+"px");return;}
+  // 没有缓存时：屏幕高 >800 的机型基本都有底部横杠，先按 34 预留，拿到真值再覆盖
+  if(window.innerHeight>800)document.documentElement.style.setProperty("--sab","34px");
+}catch(e){}})();
+function keepSab(){
+  var p=document.getElementById("safeProbe"); if(!p)return;
+  var h=p.offsetHeight;
+  if(h>0&&h<80){
+    document.documentElement.style.setProperty("--sab",h+"px");
+    try{localStorage.setItem("rec.sab",String(h))}catch(e){}}}
+["load","pageshow","orientationchange"].forEach(function(e){
+  window.addEventListener(e,function(){
+    keepSab();
+    [60,200,600,1200].forEach(function(t){setTimeout(keepSab,t)});});});
+document.addEventListener("visibilitychange",function(){if(!document.hidden)keepSab()});
+
 (function(){
 "use strict";
 /* ============ 存储 ============ */
