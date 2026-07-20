@@ -16,7 +16,7 @@
   :root{
     /* 纸与墨：中性纸面 + 发丝分隔 + 克制的深玉色强调 */
     --bg:#FBFAF8; --card:#FFFFFF; --card2:#F7F6F3; --ink:#17191A; --sub:#6C7176; --faint:#A5AAAE;
-    --line:#E9E7E2; --line2:#F1EFEB; --sab:env(safe-area-inset-bottom); --grpbg:#EFEDE9;
+    --line:#E9E7E2; --line2:#F1EFEB; --sab:env(safe-area-inset-bottom); --cake:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 20h18M4 20v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5'/><path d='M8 13V9M12 13V8M16 13V9'/><path d='M8 6.5a1 1 0 1 0-1.6-1.2C6.9 4.4 8 3.5 8 3.5s1.1.9 1.6 1.8A1 1 0 0 1 8 6.5z' transform='translate(0 -0.5) scale(0.9)'/></svg>"); --grpbg:#EFEDE9;
     --accent:#1C6B57; --accent2:#12483A; --soft:#EAF1EE; --amber:#8A6317;
     --danger:#B4443B; --red:#C8443C; --daynum:#17191A;
     --r:14px; --r2:10px;
@@ -113,6 +113,15 @@
   .done .itxt{color:var(--faint);text-decoration:line-through}
   .meta{font-size:11.5px;color:var(--faint);margin-top:2px}
   .x{flex:none;border:none;background:transparent;color:var(--faint);font-size:17px;cursor:pointer;padding:0 4px;line-height:1}
+  .x.edit{font-size:14px;opacity:.75}
+  /* 数字输入 + 右侧日历选择 */
+  .pickbtn{position:relative;display:grid;place-items:center;flex:none;width:48px;
+    border:1px solid var(--line);border-radius:12px;background:var(--card2);
+    color:var(--sub);cursor:pointer}
+  .pickbtn:active{background:var(--soft);color:var(--accent)}
+  .pickbtn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;
+    border:none;background:transparent;cursor:pointer}
+  .x.edit:active{opacity:1;color:var(--accent)}
   .x:hover{color:var(--danger)}
 
   /* week grid */
@@ -139,11 +148,14 @@
   .cell::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;pointer-events:none;
     background:linear-gradient(transparent,var(--card));opacity:0;transition:opacity .2s}
   .cell.more::after{opacity:1}
+  /* 位置变化时真实滑行（FLIP），不是原地淡入 */
+  .ci.flip{will-change:transform}
   .ci{display:flex;gap:7px;align-items:center;font-size:12.5px;line-height:1.35;padding:2px 0;cursor:pointer}
   .ci.dn{color:var(--faint);text-decoration:line-through}
   .ci .tm{color:var(--sub);font-variant-numeric:tabular-nums;flex:none}
   /* 可拖元素：浏览器不得从这里发起滚动，手势完全交给脚本 */
-  [data-drag]{touch-action:none!important}
+  /* 允许系统原生竖向滚动；拖拽在长按后才接管 */
+  [data-drag]{touch-action:pan-y!important}
   /* 可拖拽条目：强制不可选中，长按只触发拖拽 */
   [data-drag],[data-dv],[data-drop],[data-hl],.tlcol,.dcell,.cell,.evb,.qsr,.hchip{
     -webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
@@ -263,6 +275,17 @@
   .cdcard .v{font-size:23px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
     line-height:1.1;margin-top:5px}
   .cdcard .u{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+  /* 生日卡片：暖色 + 蛋糕标记，跟倒计时区分开 */
+  .cdcard.bd{background:color-mix(in srgb,var(--amber) 9%,var(--card));
+    border-color:color-mix(in srgb,var(--amber) 26%,var(--line))}
+  .cdcard.bd .v{color:var(--amber)}
+  .cdcard.bd .n{display:flex;align-items:center;gap:5px}
+  .cdcard.bd .n::before{content:"";width:13px;height:13px;flex:none;
+    background:currentColor;color:var(--amber);
+    -webkit-mask:var(--cake) center/contain no-repeat;mask:var(--cake) center/contain no-repeat}
+  .cdcard .tag{font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:3px}
+  .cdcard.bd .tag{color:var(--amber);opacity:.85}
 
   .dwi .ic{width:22px;flex:none;display:grid;place-items:center;color:var(--sub)}
   .dwi.on .ic{color:var(--accent)}
@@ -273,6 +296,18 @@
     border:1.7px solid currentColor;box-sizing:border-box}
   .mk.on::after{content:"";position:absolute;inset:2.4px;border-radius:50%;background:currentColor}
   .mk.sm{width:13px;height:13px;border-width:1.6px}
+  /* 圆环本身只有 13px，扩出一圈隐形热区，手指才点得准 */
+  /* 日历里的生日/倒计时投影：只读，用方块区分于可勾选的圆环 */
+  .rotag{flex:none;font-size:8.5px;font-weight:800;letter-spacing:.04em;
+    padding:1.5px 5px;border-radius:5px;line-height:1.35;white-space:nowrap}
+  .rotag.bd{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+  .rotag.cd{background:var(--soft);color:var(--accent2)}
+  .rodot{width:9px;height:9px;flex:none;border-radius:2.5px}
+  .rodot.bd{background:var(--amber)}
+  .rodot.cd{background:var(--accent)}
+  .ci.ro,.ev.ro{opacity:.9}
+  .mk.hit{position:relative;cursor:pointer;touch-action:manipulation}
+  .mk.hit::before{content:"";position:absolute;inset:-11px;border-radius:50%}
   .mk.sm.on::after{inset:2px}
 
   /* 首页 · 主视觉 */
@@ -310,6 +345,17 @@
   .agnow{display:flex;align-items:center;gap:8px;padding:2px 0 2px 56px;margin:1px 0}
   .agnow i{flex:1;height:1.5px;background:var(--red);border-radius:2px}
   .agnow b{font-size:10px;font-weight:800;color:var(--red);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  /* 正在进行的事件：时刻线穿过条目内部，位置按已过时长的比例 */
+  .ag.live{position:relative}
+  .ag.live .agin{position:absolute;left:56px;right:0;height:1.5px;background:var(--red);
+    border-radius:2px;pointer-events:none;z-index:2;transform:translateY(-50%)}
+  .ag.live .agin::before{content:"";position:absolute;left:-3px;top:-2.75px;width:7px;height:7px;
+    border-radius:50%;background:var(--red)}
+  .ag.live .agin b{position:absolute;left:-50px;top:50%;transform:translateY(-50%);
+    font-size:10px;font-weight:800;color:var(--red);font-variant-numeric:tabular-nums;
+    background:var(--card);padding:0 2px}
+  /* 进行中的条目本身给一点存在感，但不喧宾夺主 */
+  .ag.live .tx{font-weight:650}
 
   /* 首页 · 指标 */
   .mets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
@@ -395,13 +441,13 @@
     border-radius:999px;padding:7px 13px;font-size:13px;font-weight:650;cursor:pointer;
     font-family:inherit;letter-spacing:-.01em;transition:.15s;white-space:nowrap}
   .fpills button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-  .fsw{display:flex;gap:10px;flex-wrap:wrap;padding:12px 2px 4px;max-width:100%}
+  .fsw{display:flex;gap:13px;flex-wrap:wrap;padding:12px 6px 8px;max-width:100%}
   .fsw button{width:30px;height:30px;flex:none;border-radius:50%;border:none;cursor:pointer;
     padding:0;position:relative;transition:box-shadow .15s}
-  /* 选中：用内描边表示，不向外扩，避免把整排挤出容器 */
-  .fsw button.on{box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 5px currentColor}
+  /* 选中：色块外面套一圈（中间留缝），与勾选标记同一套语言 */
+  .fsw button.on{box-shadow:0 0 0 2.5px var(--card),0 0 0 4.5px currentColor}
   .fsw button.none{background:var(--card2);box-shadow:inset 0 0 0 1.5px var(--line)}
-  .fsw button.none.on{box-shadow:inset 0 0 0 2px var(--ink)}
+  .fsw button.none.on{box-shadow:0 0 0 2.5px var(--card),0 0 0 4.5px var(--ink)}
   .fsw button.none::after{content:"";position:absolute;left:50%;top:4px;bottom:4px;width:1.5px;
     background:var(--line);transform:rotate(45deg);transform-origin:center}
   .fbtns{display:flex;gap:9px;margin-top:20px}
@@ -653,6 +699,11 @@
   .kvr{text-align:right;flex:none}
   .kvp{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.015em}
   .badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--soft);color:var(--accent2)}
+  /* 列表行里的徽章：定宽居中，左边文字再长也不会把它挤歪 */
+  .kv>.badge{flex:none;min-width:54px;text-align:center;font-variant-numeric:tabular-nums}
+  /* 编辑与删除紧挨在一起，间距一致 */
+  .kv>.x{margin-left:0}
+  .kv>.x.edit{margin-left:2px}
   .badge.warn{background:#FBF3E4;color:var(--amber)}
   .badge.off{background:var(--line);color:var(--faint)}
   .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 15px;font-size:13px;font-weight:600;
@@ -1231,6 +1282,8 @@ function nextDue(ds,rule){
   return null;}
 
 function toggleTodo(id){
+  if(window.__noTap){window.__noTap=0;return;}   // 刚才是在滑动，不算点击
+  flipCapture();                    // 先记下所有条目的当前位置
   var now=new Date().toISOString();
   // 重复任务的某一次：只在 done_dates 里增删这一天，不影响其它次
   if(id.indexOf("@")>0){
@@ -1267,8 +1320,40 @@ function hitsRule(t,ds){
     return b.getDate()===Math.min(a.getDate(),last);}
   return false;}
 
+/* 跨天事件：首日从开始时间到当日末，中间日全天，末日零点到结束时间 */
+function spanSeg(t,ds){
+  if(!t.end_date||t.end_date<=t.due_date)return null;
+  if(ds<t.due_date||ds>t.end_date)return null;
+  if(ds===t.due_date)return{head:true};
+  if(ds===t.end_date)return{tail:true};
+  return {mid:true};}
+
 function todosOn(ds){
   var real=D.todos.filter(function(t){return t.due_date===ds});
+  // 跨天事件在起始日之后的每一天也要出现
+  var span=D.todos.filter(function(t){
+      return t.end_date && t.due_date && t.end_date>t.due_date &&
+             ds>t.due_date && ds<=t.end_date;})
+    .map(function(t){
+      var seg=spanSeg(t,ds)||{};
+      return Object.assign({},t,{
+        id:t.id+"~"+ds, sid:t.id, vdate:ds, due_date:ds,
+        due_time: seg.tail?null:null,
+        end_time: seg.tail?t.end_time:null,
+        contFrom:true, contTo:(ds<t.end_date)});});
+  real=real.concat(span);
+
+  /* 生日与倒计时：只在渲染时投影到日历，不写进 todos 表。
+     所以在日历里删除、拖动都碰不到原记录，两边互不影响。 */
+  var mmdd=ds.slice(5);
+  D.birthdays.forEach(function(b){
+    if(((b.date||"").slice(5))!==mmdd)return;
+    real.push({id:"ro:bday:"+b.id, text:b.name, done:false, ro:1, kind:"bday",
+               due_date:ds, due_time:null, color:"amber"});});
+  D.countdowns.forEach(function(c){
+    if(c.date!==ds)return;
+    real.push({id:"ro:cd:"+c.id, text:c.name, done:false, ro:1, kind:"cd",
+               due_date:ds, due_time:null, color:"green"});});
   var virt=D.todos.filter(function(t){
       return t.repeat && t.due_date && t.due_date!==ds && hitsRule(t,ds)
              && jlist(t.skip_dates).indexOf(ds)<0;})
@@ -1298,7 +1383,9 @@ function render(){
     fab.onclick=function(){cursor=new Date();window.__centerToday=1;render()};document.body.appendChild(fab);}
   bind();
   paintIcons();
+  flipPlay();                       // 渲染完成后播放滑行动画
   $("qsBtn").style.display = (tab==="plan") ? "" : "none";
+  $("syncPill").style.display = (tab==="today") ? "" : "none";   // 同步标识只在首页显示
   // 悬浮按钮：图标随页面变化，一眼知道会加什么
   var fabIc={money:"wallet",bday:"gift",cdown:"flag",habit:"flame",subs:"repeat",diary:"journal"}[tab]||"plus";
   var fabEl=$("fab"); if(fabEl)fabEl.innerHTML=ico(fabIc,24);
@@ -1334,6 +1421,7 @@ function ringSVG(pct){
 
 function vToday(){
   var ds=todayStr(), d=new Date(), list=todosOn(ds), ib=inbox();
+  list=list.filter(function(t){return !t.ro});     // 首页不显示只读投影，避免混进待办计数
   var doneL=list.filter(function(t){return t.done});
   var openL=list.filter(function(t){return !t.done});
   var timed=list.filter(function(t){return t.due_time}).sort(function(a,b){return a.due_time<b.due_time?-1:1});
@@ -1377,17 +1465,25 @@ function vToday(){
   h+='<div class="card" style="padding:8px 13px 10px">';
   if(timed.length){
     h+='<div class="agenda">';
-    var placed=false;
+    var placed=false, nowTxt=pad(d.getHours())+':'+pad(d.getMinutes());
     timed.forEach(function(t){
-      var m=t2m(t.due_time), past=(m<now&&!t.done);
-      if(!placed&&m>now){placed=true;
-        h+='<div class="agnow"><b>'+pad(d.getHours())+':'+pad(d.getMinutes())+'</b><i></i></div>';}
+      var m=t2m(t.due_time);
       var e=t.end_time?t2m(t.end_time):m+60;
-      h+='<div class="ag'+(past?" past":"")+(t.done?" done":"")+'" data-goday="'+ds+'">'+
+      var ongoing=(now>=m&&now<e);              // 正在进行中
+      var past=(e<=now&&!t.done);               // 真正结束了才算过去
+      // 还没开始的事件之前插入时刻线
+      if(!placed&&m>now){placed=true;
+        h+='<div class="agnow"><b>'+nowTxt+'</b><i></i></div>';}
+      // 正在进行：时刻线画进这一条内部，按已过时长占比定位
+      var pct=0;
+      if(ongoing&&!placed){placed=true;
+        pct=progPos((now-m)/Math.max(1,e-m));}
+      h+='<div class="ag'+(past?" past":"")+(t.done?" done":"")+(pct?" live":"")+'" data-goday="'+ds+'">'+
+         (pct?'<span class="agin" style="top:'+pct+'%"><b>'+nowTxt+'</b></span>':"")+
          '<span class="tm">'+esc(t.due_time)+'</span>'+
          '<span class="bar '+colorOf(t)+'" style="background:currentColor"></span>'+
          '<span class="tx">'+esc(t.text)+'<small>'+esc(t.due_time)+'–'+m2t(Math.min(1440,e))+'</small></span></div>';});
-    if(!placed)h+='<div class="agnow"><b>'+pad(d.getHours())+':'+pad(d.getMinutes())+'</b><i></i></div>';
+    if(!placed)h+='<div class="agnow"><b>'+nowTxt+'</b><i></i></div>';
     h+='</div>';
   }else h+='<div class="empty" style="padding:22px 8px">No timed events · tap + to plan one</div>';
   h+='</div>';
@@ -1405,17 +1501,29 @@ function vToday(){
         '<span class="e">'+esc(hb.emoji||(on?"✓":"○"))+'</span>'+esc(hb.name)+'</button>';}).join("");
     h+='</div>';}
 
-  /* ── 置顶倒计时 ── */
-  var pins=D.countdowns.filter(function(c){return c.pinned})
-    .map(function(c){return{c:c,d:daysTo(c.date)}})
-    .sort(function(a,b){return (a.d<0?1:0)-(b.d<0?1:0) || Math.abs(a.d)-Math.abs(b.d);});
-  if(pins.length){
-    h+='<div class="sec">Countdown</div><div class="cdstrip">'+pins.map(function(x){
-      var since=(x.c.mode==="since"), n=x.d;
-      var big = since ? Math.abs(n)+1 : Math.abs(n);
-      var unit= since ? "days in" : (n===0?"today":n<0?"days ago":n===1?"day left":"days left");
-      return '<div class="cdcard" data-mgo="cdown"><div class="n">'+esc(x.c.name)+'</div>'+
-        '<div class="v">'+(!since&&n===0?"🎉":big)+'</div><div class="u">'+unit+'</div></div>';}).join("")+'</div>';}
+  /* ── 置顶倒计时 + 临近生日（同一排） ── */
+  var cards=D.countdowns.filter(function(c){return c.pinned})
+    .map(function(c){
+      var n=daysTo(c.date), since=(c.mode==="since");
+      return {go:"cdown", name:c.name, d:n, sort:(n<0?1:0)*1e6+Math.abs(n),
+        big: since?Math.abs(n)+1:(n===0?"🎉":Math.abs(n)),
+        unit: since?"days in":(n===0?"today":n<0?"days ago":n===1?"day left":"days left")};});
+
+  // 60 天内的生日一并放进来
+  D.birthdays.forEach(function(b){
+    var n=daysUntil(b.date.slice(5));
+    if(!bdShown(b,n))return;
+    cards.push({go:"bday", name:b.name, d:n, sort:n,
+      big: n===0?"🎂":n,
+      unit: n===0?"birthday":(n===1?"day left":"days left")});});
+
+  cards.sort(function(a,b){return a.sort-b.sort});
+  if(cards.length){
+    h+='<div class="sec">Countdown</div><div class="cdstrip">'+cards.map(function(x){
+      return '<div class="cdcard'+(x.go==="bday"?" bd":"")+'" data-mgo="'+x.go+'">'+
+        '<div class="tag">'+(x.go==="bday"?"Birthday":"Countdown")+'</div>'+
+        '<div class="n">'+esc(x.name)+'</div>'+
+        '<div class="v">'+x.big+'</div><div class="u">'+x.unit+'</div></div>';}).join("")+'</div>';}
 
   /* ── 指标 ── */
   var st=hs.length?Math.max.apply(null,hs.map(function(hb){return streak(hb.id)})):0;
@@ -1424,21 +1532,6 @@ function vToday(){
      '<div class="met" data-mgo="habit"><div class="v">'+st+'d</div><div class="k">Best streak</div></div>'+
      '<div class="met" data-mgo="diary"><div class="v">'+(dia&&dia.text?"✓":"—")+'</div><div class="k">Diary</div></div>'+
      '</div>';
-
-  /* ── 提醒 ── */
-  var alerts=[];
-  if(bd)alerts.push({i:"🎂",t:bd.b.name,s:bd.d===0?"today":"in "+bd.d+" days",go:"bday"});
-  var cd=D.countdowns.map(function(c){return{c:c,d:daysTo(c.date)}})
-        .filter(function(x){return x.c.mode!=="since"&&x.d>=0&&x.d<=30})
-        .sort(function(a,b){return a.d-b.d})[0];
-  if(cd)alerts.push({i:"⏳",t:cd.c.name,s:cd.d===0?"today":cd.d+" days left",go:"cdown"});
-  if(over.length)alerts.push({i:"⚠",t:over.length+" overdue task"+(over.length>1?"s":""),s:"tap to reschedule",go:"plan"});
-  if(ib.length)alerts.push({i:"▤",t:ib.length+" in ToDo",s:"unscheduled",go:"plan"});
-  if(alerts.length){
-    h+='<div class="sec">Reminders</div><div class="card">'+alerts.map(function(a){
-      return '<div class="kv" data-mgo="'+a.go+'" style="cursor:pointer">'+
-        '<div style="min-width:0"><div class="kvn">'+a.i+'  '+esc(a.t)+'</div>'+
-        '<div class="kvs">'+esc(a.s)+'</div></div><span class="kvs">›</span></div>';}).join("")+'</div>';}
 
   return h;}
 
@@ -1478,16 +1571,55 @@ function gWeek(){
     '<textarea id="wf" data-k="'+k+'" placeholder="What matters most this week?">'+esc(getFocus(k))+'</textarea></div>';
   h+='<div class="grid"><div class="cell" data-drop=""><div class="ch"><div class="cd">ToDo <small>'+ib.length+'</small></div>'+
      '<button class="cadd" data-new="">+</button></div><div class="citems">'+
-     ib.map(ciHTML).join("")+'</div></div>';
-  for(var i=0;i<7;i++){var d=addDays(s,i),ds=fmt(d),list=todosOn(ds);
+     doneLast(ib).map(ciHTML).join("")+'</div></div>';
+  for(var i=0;i<7;i++){var d=addDays(s,i),ds=fmt(d),list=doneLast(todosOn(ds));
     h+='<div class="cell'+(ds===ts?" today":"")+'" data-drop="'+ds+'"><div class="ch"><div class="cd" data-goday="'+ds+'" style="cursor:pointer">'+WDE[d.getDay()]+' <small>'+d.getDate()+'</small></div>'+
        '<button class="cadd" data-new="'+ds+'">+</button></div><div class="citems">'+list.map(ciHTML).join("")+
        '</div></div>';}
   return h+'</div></div>';}
-function ciHTML(t){return '<div class="ci'+(t.done?" dn":"")+'" data-tg="'+t.id+'" data-drag="'+t.id+'">'+
+/* 已完成的沉到底部，未完成留在上面（保持各自原有顺序） */
+function doneLast(list){
+  var a=[],b=[];
+  list.forEach(function(t){(t.done?b:a).push(t)});
+  return a.concat(b);}
+
+/* ---- FLIP 动画：记录移动前的位置 → 渲染后反推 → 播放滑行 ---- */
+var flipPrev=null;
+function flipCapture(){
+  var m={};
+  // 记录「整行」的位置：圆环和文字要一起滑，不能只动圆环
+  document.querySelectorAll("[data-drag]").forEach(function(el){
+    var id=el.dataset.drag; if(!id)return;
+    m[id]=el.getBoundingClientRect();});
+  flipPrev=m;}
+
+function flipPlay(){
+  if(!flipPrev)return;
+  var prev=flipPrev; flipPrev=null;
+  document.querySelectorAll("[data-drag]").forEach(function(el){
+    var p=prev[el.dataset.drag]; if(!p)return;
+    var r=el.getBoundingClientRect();
+    var dx=p.left-r.left, dy=p.top-r.top;
+    if(Math.abs(dx)<1&&Math.abs(dy)<1)return;      // 没动就不播
+    el.classList.add("flip");
+    el.style.transition="none";
+    el.style.transform="translate("+dx+"px,"+dy+"px)";
+    el.style.zIndex="3";
+    requestAnimationFrame(function(){
+      el.style.transition="transform .52s cubic-bezier(.22,.68,.24,1)";
+      el.style.transform="";
+      setTimeout(function(){
+        el.style.transition="";el.style.zIndex="";el.classList.remove("flip");},560);});});}
+
+function ciHTML(t){
+  if(t.ro)return '<div class="ci ro" data-mgo="'+(t.kind==="bday"?"bday":"cdown")+'">'+
+    '<span class="rotag '+(t.kind==="bday"?"bd":"cd")+'">'+(t.kind==="bday"?"Birthday":"Countdown")+'</span>'+
+    '<span class="ev" style="margin:0;font-size:11px;flex:1;min-width:0">'+esc(t.text)+'</span></div>';
+  return '<div class="ci'+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-tg="'+t.id+'">'+
   '<span class="mk sm '+colorOf(t)+(t.done?" on":"")+'"></span>'+
   '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" style="margin:0;font-size:11px;flex:1;min-width:0">'+
-  (t.due_time?esc(t.due_time)+" ":"")+esc(t.text)+'</span></div>';}
+  (t.contFrom?"↥ ":"")+(t.due_time?esc(t.due_time)+" ":"")+esc(t.text)+
+  ((t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom))?" ↧":"")+'</span></div>';}
 /* ---- 日视图：时间轴 ---- */
 var HH=60; // 每小时像素
 function t2m(s){if(!s)return null;var a=String(s).split(":");return (+a[0])*60+(+a[1]||0);}
@@ -1514,10 +1646,10 @@ function dayCol(ds){
   var list=todosOn(ds), ev=layout(list), h="";
   ev.forEach(function(x){
     var w=100/x.cols, left=x.col*w;
-    h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+'" data-tg="'+x.t.id+'" data-drag="'+x.t.id+'"'+
+    h+='<div class="evb '+colorOf(x.t)+(x.t.done?" dn":"")+'" data-drag="'+x.t.id+'"'+
        ' style="top:'+(x.s/60*HH)+'px;height:'+Math.max(20,(x.e-x.s)/60*HH-2)+'px;'+
        'left:calc('+left+'% + 3px);width:calc('+w+'% - 6px)">'+
-       '<b style="display:flex;align-items:center;gap:6px"><span class="mk sm'+(x.t.done?" on":"")+'"></span>'+
+       '<b style="display:flex;align-items:center;gap:6px"><span class="mk sm hit'+(x.t.done?" on":"")+'" data-tg="'+x.t.id+'"></span>'+
        '<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span></b>'+
        '<span>'+esc(x.t.due_time)+'–'+m2t(x.e)+
          (x.t.travel?'  ·  +'+esc(x.t.travel)+'m':"")+'</span>'+
@@ -1527,9 +1659,12 @@ function dayCol(ds){
 
 function allDayChips(ds){
   return todosOn(ds).filter(function(t){return !t.due_time}).map(function(t){
-    return '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" data-tg="'+t.id+'" data-drag="'+t.id+'"'+
+    if(t.ro)return '<span class="ev ro" data-mgo="'+(t.kind==="bday"?"bday":"cdown")+'"'+
       ' style="margin:0;display:inline-flex;align-items:center;gap:6px">'+
-      '<span class="mk sm'+(t.done?" on":"")+'"></span>'+esc(t.text)+'</span>';}).join("");}
+      '<span class="rotag '+(t.kind==="bday"?"bd":"cd")+'">'+(t.kind==="bday"?"Birthday":"Countdown")+'</span>'+esc(t.text)+'</span>';
+    return '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" data-drag="'+t.id+'"'+
+      ' style="margin:0;display:inline-flex;align-items:center;gap:6px">'+
+      '<span class="mk sm hit'+(t.done?" on":"")+'" data-tg="'+t.id+'"></span>'+esc(t.text)+'</span>';}).join("");}
 
 function gDay(){
   var d0=new Date(cursor), d1=addDays(d0,1), ds0=fmt(d0), ds1=fmt(d1), ts=todayStr();
@@ -1575,6 +1710,20 @@ function gDay(){
   h+='</div></div>';
   h+='</div>';
   return h;}
+
+/* 进度 → 视觉位置的映射。
+   完全线性的话，一小时里过了 5 分钟只移动 8%，看着像没动。
+   所以两头走得快、中间按比例：
+     开头 15% 的时间 → 占 18% 的视觉行程（立刻看出「已经开始」）
+     中间 70% 的时间 → 占 40%（大致按比例）
+     结尾 15% 的时间 → 占 18%（明确传达「快结束了」）*/
+function progPos(p){
+  p=Math.max(0,Math.min(1,p));
+  var v;
+  if(p<0.15)      v=0.12 + (p/0.15)*0.18;
+  else if(p<0.85) v=0.30 + ((p-0.15)/0.70)*0.40;
+  else            v=0.70 + ((p-0.85)/0.15)*0.18;
+  return v*100;}
 
 function nowLine(){var n=new Date(),m=n.getHours()*60+n.getMinutes();
   return '<div class="nowline" style="top:'+(m/60*HH)+'px"></div>';}
@@ -1987,10 +2136,20 @@ function vBday(){
   var bs=D.birthdays.map(function(b){return{b:b,d:daysUntil(b.date.slice(5))}}).sort(function(a,b){return a.d-b.d});
   var h='<button class="btn g" id="addBd" style="width:100%;margin-bottom:10px">+ Add Birthday</button>';
   h+='<div class="card">'+(bs.length?bs.map(function(x){
-      var y=+x.b.date.slice(0,4),age=y>1900?(new Date().getFullYear()-y):null;
-      return '<div class="kv"><div><div class="kvn">'+esc(x.b.name)+'</div>'+
-        '<div class="kvs">'+(y>1900?esc(x.b.date):esc(x.b.date.slice(5)))+(age!=null?" · turning "+age:"")+(x.b.note?" · "+esc(x.b.note):"")+'</div></div>'+
+      var y=+x.b.date.slice(0,4);
+      // 只显示填过的内容，没填就不占位
+      var meta=(y>1900?esc(x.b.date):esc(x.b.date.slice(5)))+(x.b.btime?" "+esc(x.b.btime):"");
+      if(x.b.place)meta+=" · ◎ "+esc(x.b.place);
+      if(x.b.note) meta+=" · "+esc(x.b.note);
+      var lit=bdShown(x.b,x.d);
+      return '<div class="kv"><button class="star'+(lit?" on":"")+'" data-bdmute="'+x.b.id+'"'+
+        ' title="'+(lit?"Showing on Today":"Tap to pin on Today")+'">'+
+        (lit?"★":"☆")+'</button>'+
+        '<div style="min-width:0;flex:0 1 58%"><div class="kvn">'+esc(x.b.name)+'</div>'+
+        '<div class="kvs">'+meta+'</div></div>'+
         '<span class="badge'+(x.d<=7?" warn":"")+'">'+(x.d===0?"today 🎂":x.d+"d")+'</span>'+
+        '<span style="flex:1"></span>'+
+        '<button class="x edit" data-bded="'+x.b.id+'" title="Edit">✎</button>'+
         '<button class="x" data-del-birthdays="'+x.b.id+'">×</button></div>';}).join("")
     :'<div class="empty"><span class="e">🎂</span>No birthdays</div>')+'</div>';
   return h;}
@@ -2002,9 +2161,11 @@ function cdRow(x){
     : (n===0 ? "today 🎉" : past ? Math.abs(n)+"d ago" : n+"d");
   return '<div class="kv"><button class="star'+(x.c.pinned?" on":"")+'" data-cdpin="'+x.c.id+'" title="Show on Today">'+
     (x.c.pinned?"★":"☆")+'</button>'+
-    '<div style="min-width:0;flex:1"><div class="kvn">'+esc(x.c.name)+'</div>'+
+    '<div style="min-width:0;flex:0 1 58%"><div class="kvn">'+esc(x.c.name)+'</div>'+
     '<div class="kvs">'+esc(x.c.date)+(x.c.note?' · '+esc(x.c.note):"")+'</div></div>'+
     '<span class="badge'+(!since&&!past&&n<=7?" warn":"")+(!since&&past?" off":"")+'">'+badge+'</span>'+
+    '<span style="flex:1"></span>'+
+    '<button class="x edit" data-cded="'+x.c.id+'" title="Edit">✎</button>'+
     '<button class="x" data-del-countdowns="'+x.c.id+'">×</button></div>';}
 
 function vCountdown(){
@@ -2035,15 +2196,21 @@ function vCountdown(){
   if(past.length)  h+='<div class="sec">Passed</div><div class="card">'+past.map(cdRow).join("")+'</div>';
   return h;}
 
-function cdSheet(){
-  openSheet('<h2>New countdown</h2>'+
-    '<label class="fl">What</label><input class="inp" id="cdn" maxlength="40" placeholder="Trip, exam, anniversary…">'+
-    '<label class="fl">Date</label><input class="inp" id="cdd" inputmode="numeric" autocomplete="off" placeholder="20260725">'+
+function cdSheet(rec){
+  var ed=!!rec;                          // 传了记录就是编辑
+  openSheet('<h2>'+(ed?"Edit countdown":"New countdown")+'</h2>'+
+    '<label class="fl">What</label><input class="inp" id="cdn" maxlength="40" placeholder="Trip, exam, anniversary…" value="'+(ed?esc(rec.name):"")+'">'+
+    '<label class="fl">Date</label>'+
+    '<div class="row" style="gap:8px;align-items:stretch">'+
+      '<input class="inp" id="cdd" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="20260725" style="flex:1" value="'+(ed?esc((rec.date||"").replace(/-/g,"")):"")+'">'+
+      '<label class="pickbtn" title="Pick a date">'+ico("calendar",18)+
+      '<input type="date" id="cdp" value="'+(ed?esc(rec.date):"")+'"></label>'+
+    '</div>'+
     '<div class="st" id="cds">Past date counts up · future date counts down</div>'+
-    '<label class="fl">Note</label><input class="inp" id="cdo" placeholder="optional">'+
+    '<label class="fl">Note</label><input class="inp" id="cdo" placeholder="optional" value="'+(ed?esc(rec.note||""):"")+'">'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="cdv" style="flex:1">Save</button>'+
     '<button class="btn g" id="cdx">Cancel</button></div>');
-  var mode="until";                      // 由日期自动判定：过去=正数，未来=倒数
+  var mode = ed ? (rec.mode||"until") : "until";
   setTimeout(function(){$("cdn").focus()},80);
   $("cdx").onclick=closeSheet;
   function preview(){
@@ -2058,12 +2225,23 @@ function cdSheet(){
       ? "day "+(Math.abs(n)+1)+"  (counting up)"
       : (n===0?"today":n+" days left"));
     return d;}
-  $("cdd").oninput=preview;
+  $("cdd").oninput=function(){
+    var d=preview();
+    if(d)$("cdp").value=d;};                 // 数字 → 同步到日历
+  $("cdp").onchange=function(){
+    var v=$("cdp").value; if(!v)return;
+    $("cdd").value=v.replace(/-/g,"");       // 日历 → 回填成 8 位数字
+    preview();};
   function save(){
     var n=$("cdn").value.trim(), d=preview();
     if(!n){$("cdn").focus();return;}
     if(!d){$("cdd").style.borderColor="var(--danger)";return;}
-    push("countdowns",{id:uid(),name:n,date:d,mode:mode,note:$("cdo").value||null,updated_at:new Date().toISOString()});
+    push("countdowns",{
+      id: ed?rec.id:uid(),
+      name:n, date:d, mode:mode,
+      note:$("cdo").value||null,
+      pinned: ed?!!rec.pinned:false,          // 编辑时保留置顶状态
+      updated_at:new Date().toISOString()});
     closeSheet();render();}
   $("cdv").onclick=save;
   $("cdn").onkeydown=function(e){if(e.key==="Enter")$("cdd").focus()};
@@ -2128,7 +2306,7 @@ function drawerHTML(){
   h+=MENU.map(function(m){
     var rt="";
     if(m.k==="subs")rt=D.subscriptions.length||"";
-    if(m.k==="bday")rt=D.birthdays.length||"";
+
     return '<div class="dwi'+(tab===m.k?" on":"")+'" data-go="'+m.k+'">'+
       '<span class="ic">'+ico(m.ic)+'</span>'+m.n+(rt?'<span class="rt">'+rt+'</span>':"")+'</div>';}).join("");
   h+='<div class="dwsec">Settings</div>';
@@ -2181,7 +2359,9 @@ function bindDrag(){
       var id=el.dataset.drag, sx=ev.clientX, sy=ev.clientY, started=false, timer;
       var isMouse=(ev.pointerType==="mouse"||ev.pointerType===undefined);
       // 竖向滑动时手动驱动所在容器滚动（因为拖拽期间原生滚动被锁）
-      var scroller=el.closest(".citems,.qslist,.tlscroll,.mwrap,.dbody")||null;
+      // 没有内部滚动容器时（如首页），回落到整页——否则手指按在待办上就划不动了
+      var scroller=el.closest(".citems,.qslist,.tlscroll,.mwrap,.dbody")
+                 || document.scrollingElement || document.documentElement;
       var panning=false, lastY=ev.clientY, lastT=Date.now(), vel=0;
       stopMomentum();                               // 手指落下 → 立刻刹车
       function lockScroll(on){
@@ -2205,7 +2385,7 @@ function bindDrag(){
         moveGhost(x||sx,y||sy);}
       // 手指：长按 250ms 启动；鼠标：拖动即启动（单击仍是勾选）
       if(!isMouse){
-        lockScroll(true);                       // 按下即锁，避免长按判定期被滚动抢走
+        // 不锁滚动：手指没长按住之前，滚动完全交给系统，保证跟手
         timer=setTimeout(function(){begin(sx,sy)},250);}
       function moveGhost(x,y){
         if(!dragState)return;
@@ -2227,19 +2407,13 @@ function bindDrag(){
         if(!dragState.vy&&dragState.timer){clearInterval(dragState.timer);dragState.timer=null;}
       }
       function mv(e){
-        if(panning){                                  // 已进入滚动模式：自己驱动容器
-          var now=Date.now(), dt=Math.max(1,now-lastT), dyy=e.clientY-lastY;
-          if(scroller)scroller.scrollTop -= dyy;
-          vel = vel*0.7 + (dyy/dt)*0.3;             // 平滑后的瞬时速度
-          lastY=e.clientY; lastT=now; return;}
+        if(panning){window.__noTap=1;return;}         // 已判定为滚动：交给系统，不干预
         if(!started){
           var dx=Math.abs(e.clientX-sx), dy=Math.abs(e.clientY-sy);
           if(isMouse){ if(dx>4||dy>4)begin(e.clientX,e.clientY); else return; }
           else {
-            if(dy>9&&dy>dx&&scroller){                // 竖向为主 → 转为滚动
-              clearTimeout(timer); panning=true; lastY=e.clientY;
-              scroller.scrollTop -= (e.clientY-sy);
-              return;}
+            if(dy>9&&dy>dx){                          // 竖向为主 → 放手，让系统滚
+              clearTimeout(timer); panning=true; return;}
             if(dx>9||dy>9){clearTimeout(timer);cleanup();}
             return;}}
         e.preventDefault();
@@ -2277,7 +2451,8 @@ function bindDrag(){
           render();}
         cleanup();}
       function cleanup(){
-        if(panning&&scroller&&Date.now()-lastT<90)startMomentum(scroller,vel);
+        if(started)window.__noTap=1;
+
         panning=false;
         lockScroll(false);
         var z=$("dz"); if(z)z.classList.remove("on","hot");
@@ -2486,12 +2661,27 @@ function bind(){
   document.querySelectorAll("[data-hedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var hb=D.habits.filter(function(x){return x.id===el.dataset.hedit})[0]; if(hb)habitSheet(hb);};});
   var as=$("addSub");if(as)as.onclick=subSheet;
-  var ab=$("addBd");if(ab)ab.onclick=bdSheet;
-  var ac=$("addCd");if(ac)ac.onclick=cdSheet;
+  var ab=$("addBd");if(ab)ab.onclick=function(){bdSheet()};
+  var ac=$("addCd");if(ac)ac.onclick=function(){cdSheet()};
+  document.querySelectorAll("[data-cded]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var c=D.countdowns.filter(function(x){return x.id===el.dataset.cded})[0];
+    if(c)cdSheet(c);};});
+  document.querySelectorAll("[data-bded]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var b=D.birthdays.filter(function(x){return x.id===el.dataset.bded})[0];
+    if(b)bdSheet(b);};});
   document.querySelectorAll("[data-cdpin]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var c=D.countdowns.filter(function(x){return x.id===el.dataset.cdpin})[0]; if(!c)return;
     push("countdowns",Object.assign({},c,{pinned:!c.pinned,updated_at:new Date().toISOString()}));
     toast(c.pinned?"Removed from Today":"Pinned to Today");render();};});
+  document.querySelectorAll("[data-bdmute]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var b=D.birthdays.filter(function(x){return x.id===el.dataset.bdmute})[0]; if(!b)return;
+    var d=daysUntil((b.date||"").slice(5)), on=bdShown(b,d);
+    var next = on ? {pinned:false,muted:true}          // 正显示 → 关掉
+                  : (d<=14 ? {pinned:false,muted:false}// 14 天内 → 恢复自动
+                           : {pinned:true, muted:false});// 14 天外 → 手动置顶
+    push("birthdays",Object.assign({},b,next,{updated_at:new Date().toISOString()}));
+    toast(on?"Hidden from Today":(d<=14?"Showing on Today":"Pinned to Today"));
+    render();};});
 }
 function saveDiary(v){var c=D.diary.filter(function(x){return x.id===diaryDate})[0]||{};
   push("diary",{id:diaryDate,date:diaryDate,mood:c.mood||null,text:v,updated_at:new Date().toISOString()});}
@@ -2505,16 +2695,22 @@ function newTodoSheet(ds,st,et){
   var COLORS={c0:"#EF4444",c1:"#F59E0B",c2:"#10B981",c3:"#3B82F6",c4:"#8B5CF6",c5:"#EC4899"};
   var REP=[["","Never"],["daily","Daily"],["weekday","Weekdays"],["weekly","Weekly"],["monthly","Monthly"]];
   var TRV=[["","None"],["5","5 min"],["15","15 min"],["30","30 min"],["60","1 hour"]];
-  var pick="", rep="", trv="";
-  var mode = ds ? "event" : "todo";          // event=有日期时间 / todo=纯待办
-  var allday = !st;
+  var CK=Object.keys(COLORS);
+  var pick = CK[Math.floor(Math.random()*CK.length)];   // 颜色默认随机
+  var rep="", trv="";
+  var mode = ds ? "event" : "todo";
+  var allday = false;                                   // 全天默认关闭
+  // 未指定时间 → 预填「下一个整刻 ~ 一小时后」
+  if(!st){var n0=new Date(), h0=n0.getHours(), m0=Math.ceil(n0.getMinutes()/15)*15;
+    if(m0>=60){h0=(h0+1)%24;m0=0;}
+    st=pad(h0)+":"+pad(m0); et=pad((h0+1)%24)+":"+pad(m0);}
 
   openSheet('<div class="fsheet">'+
     '<div class="ahd"><button class="acir" id="nx">✕</button>'+
       '<span class="t">New</span>'+
       '<button class="acir ok" id="nv">✓</button></div>'+
 
-    '<div class="aseg" id="nseg">'+
+    (ds?'<div class="aseg" id="nseg">':'<div class="aseg" id="nseg" style="display:none">')+
       '<button data-md="event"'+(mode==="event"?' class="on"':'')+'>Event</button>'+
       '<button data-md="todo"'+(mode==="todo"?' class="on"':'')+'>To-do</button></div>'+
 
@@ -2530,7 +2726,7 @@ function newTodoSheet(ds,st,et){
         '<input class="achip" id="nd" type="date" value="'+(ds||todayStr())+'">'+
         '<input class="achip" id="nm" type="time" value="'+(st||"")+'"'+(allday?" disabled":"")+'></span></div>'+
       '<div class="arow"><span class="ak">Ends</span><span class="av">'+
-        '<input class="achip" id="nd2" type="date" value="'+(ds||todayStr())+'" disabled>'+
+        '<input class="achip" id="nd2" type="date" value="'+(ds||todayStr())+'">'+
         '<input class="achip" id="nm2" type="time" value="'+(et||"")+'"'+(allday?" disabled":"")+'></span></div>'+
       '<div class="arow"><span class="ak">Travel time</span></div>'+
       '<div class="aopts" id="ntrv">'+TRV.map(function(r,i2){
@@ -2546,9 +2742,9 @@ function newTodoSheet(ds,st,et){
     '<div class="agrp">'+
       '<div class="arow"><span class="ak">Color</span></div>'+
       '<div class="fsw" id="nsw" style="padding:0 16px 15px;margin-top:-2px">'+
-      '<button class="none on" data-cl=""></button>'+
-      Object.keys(COLORS).map(function(k){
-        return '<button data-cl="'+k+'" style="background:'+COLORS[k]+';color:'+COLORS[k]+'"></button>';}).join("")+
+      '<button class="none" data-cl=""></button>'+
+      CK.map(function(k){
+        return '<button data-cl="'+k+'"'+(k===pick?' class="on"':'')+' style="background:'+COLORS[k]+';color:'+COLORS[k]+'"></button>';}).join("")+
       '</div></div>'+
 
     '<div class="agrp"><div class="arow" style="align-items:flex-start">'+
@@ -2584,7 +2780,11 @@ function newTodoSheet(ds,st,et){
     var v=$("nm").value; if(!v)return;
     if(!$("nm2").value||t2m($("nm2").value)<=t2m(v))
       $("nm2").value=m2t(Math.min(1439,t2m(v)+60));};
-  $("nd").onchange=function(){$("nd2").value=$("nd").value;};
+  $("nd").onchange=function(){
+    var a2=$("nd").value, b2=$("nd2").value;
+    if(!b2||b2<a2)$("nd2").value=a2;};
+  $("nd2").onchange=function(){
+    if($("nd2").value<$("nd").value)$("nd2").value=$("nd").value;};   // 结束不得早于开始
 
   function pills(id,setter){
     var box=$(id); if(!box)return;
@@ -2600,9 +2800,13 @@ function newTodoSheet(ds,st,et){
 
   function save(){
     var v=$("nt").value.trim(); if(!v){$("nt").focus();return;}
-    var ev=(mode==="event"), dv= ev ? ($("nd").value||null) : null;
+    var ev=(mode==="event");
+    // To-do 也保留打开时那一天：从周一点 + 建的待办就留在周一，
+    // 只有从 ToDo 收集箱（没带日期）建的才真正无日期
+    var dv = ev ? ($("nd").value||null) : (ds||null);
     push("todos",{id:uid(),text:v,done:false,sort:Date.now(),
       due_date:dv,
+      end_date: (ev&&$("nd2").value&&dv&&$("nd2").value>dv)?$("nd2").value:null,
       due_time: (ev&&!allday&&$("nm").value)||null,
       end_time: (ev&&!allday&&$("nm2").value)||null,
       color:pick||null, repeat:(dv&&rep)||null,
@@ -2637,20 +2841,120 @@ function parseBd(str){
   var d=parseYMD(mt[2]); if(!d)return null;
   return {name:mt[1].trim(), date:d};}
 
-function bdSheet(){
-  openSheet('<h2>Add Birthday</h2>'+
-    '<input class="inp" id="bq" autocapitalize="off" autocomplete="off">'+
-    '<div class="row" style="margin-top:14px"><button class="btn" id="bv" style="flex:1">Save</button><button class="btn g" id="bx">Cancel</button></div>');
+/* 一行输入：姓名 + 8 位日期 +（可选）4 位出生时间 */
+/* 生日是否出现在首页：
+   pinned  手动打星 → 一直显示
+   muted   手动关掉 → 一直不显示
+   都没设  → 14 天内自动显示 */
+function bdShown(b,d){
+  if(b.pinned)return true;
+  if(b.muted) return false;
+  if(d==null)d=daysUntil((b.date||"").slice(5));
+  return d<=14;}
+
+function bdParse(str){
+  var q=(str||"").trim().replace(/\s+/g," ");
+  if(!q)return null;
+  var parts=q.split(" "), date=null, time=null, name=[];
+  parts.forEach(function(p){
+    if(/^\d{8}$/.test(p)&&!date){date=p;return;}
+    if(/^\d{4}$/.test(p)){
+      if(!date){date=String(new Date().getFullYear())+p;return;}   // 只写月日 → 补今年
+      if(!time){time=p;return;}}
+    name.push(p);});
+  if(!date)return null;
+  var d=parseYMD(date); if(!d)return null;
+  var nm=name.join(" ").trim(); if(!nm)return null;
+  var tm=null;
+  if(time&&/^([01]\d|2[0-3])[0-5]\d$/.test(time))tm=time.slice(0,2)+":"+time.slice(2);
+  return {name:nm,date:d,time:tm};}
+
+function bdSheet(rec){
+  var ed=!!rec;
+
+  /* 编辑：分字段，看得清也改得准 */
+  if(ed){
+    openSheet('<h2>Edit birthday</h2>'+
+      '<label class="fl">Name</label>'+
+      '<input class="inp" id="bn" maxlength="40" autocapitalize="off" autocomplete="off" value="'+esc(rec.name)+'">'+
+      '<label class="fl">Date</label>'+
+      '<div class="row" style="gap:8px;align-items:stretch">'+
+        '<input class="inp" id="bd2" inputmode="numeric" maxlength="8" placeholder="19900101" style="flex:1" value="'+esc((rec.date||"").replace(/-/g,""))+'">'+
+        '<label class="pickbtn" title="Pick a date">'+ico("calendar",18)+
+        '<input type="date" id="bdp" value="'+esc(rec.date||"")+'"></label>'+
+      '</div>'+
+      '<label class="fl">Time</label>'+
+      '<input class="inp" id="bt" inputmode="numeric" maxlength="4" placeholder="0730（optional）" value="'+esc((rec.btime||"").replace(":",""))+'">'+
+      '<div class="st" id="bs"></div>'+
+      '<label class="fl">Birthplace</label>'+
+      '<input class="inp" id="bp" placeholder="optional" value="'+esc(rec.place||"")+'">'+
+      '<label class="fl">Note</label>'+
+      '<input class="inp" id="bo" placeholder="optional" value="'+esc(rec.note||"")+'">'+
+      '<div class="row" style="margin-top:14px"><button class="btn" id="bv" style="flex:1">Save</button>'+
+      '<button class="btn g" id="bx">Cancel</button></div>');
+    setTimeout(function(){$("bn").focus()},80);
+    $("bx").onclick=closeSheet;
+
+    function chk(){
+      var st=$("bs"), v=$("bd2").value.trim(), d=parseYMD(v);
+      if(!d){st.className="st bad";st.textContent="Date should be 8 digits";return null;}
+      $("bdp").value=d;
+      var t=$("bt").value.trim(), tm=null;
+      if(t){ if(!/^([01]\d|2[0-3])[0-5]\d$/.test(t)){st.className="st bad";st.textContent="Time should be 4 digits, e.g. 1115";return null;}
+             tm=t.slice(0,2)+":"+t.slice(2); }
+      var dd=parse(d);
+      st.className="st good";
+      st.textContent=MONS[dd.getMonth()]+" "+dd.getDate()+", "+dd.getFullYear()+(tm?"  "+tm:"");
+      return {date:d,time:tm};}
+    $("bd2").oninput=chk; $("bt").oninput=chk; chk();
+    $("bdp").onchange=function(){
+      var v=$("bdp").value; if(!v)return;
+      $("bd2").value=v.replace(/-/g,""); chk();};
+
+    $("bv").onclick=function(){
+      var n=$("bn").value.trim(); if(!n){$("bn").focus();return;}
+      var r=chk(); if(!r)return;
+      push("birthdays",{id:rec.id,name:n,date:r.date,btime:r.time,
+        place:$("bp").value.trim()||null,
+        note:$("bo").value.trim()||null,
+        updated_at:new Date().toISOString()});
+      closeSheet();render();};
+    return;}
+
+  /* 新建：一行快速录入 */
+  openSheet('<h2>Add birthday</h2>'+
+    '<input class="inp" id="bq" autocapitalize="off" autocomplete="off" '+
+      'placeholder="×× 19900101（0730）">'+
+    '<div class="st" id="bs"></div>'+
+    '<label class="fl">Birthplace</label>'+
+    '<input class="inp" id="bp" placeholder="optional">'+
+    '<label class="fl">Note</label>'+
+    '<input class="inp" id="bo" placeholder="optional">'+
+    '<div class="row" style="margin-top:14px"><button class="btn" id="bv" style="flex:1">Save</button>'+
+    '<button class="btn g" id="bx">Cancel</button></div>');
   var q=$("bq");
   setTimeout(function(){q.focus()},80);
-  function save(){
-    var r=parseBd(q.value);
-    if(!r){q.style.borderColor="var(--danger)";return;}
-    push("birthdays",{id:uid(),name:r.name,date:r.date,note:null,updated_at:new Date().toISOString()});
-    closeSheet();render();}
-  q.oninput=function(){q.style.borderColor=""};
-  q.onkeydown=function(e){if(e.key==="Enter")save()};
   $("bx").onclick=closeSheet;
+
+  function preview(){
+    var st=$("bs"), r=bdParse(q.value);
+    if(!q.value.trim()){st.className="st";st.textContent="";return null;}
+    if(!r){st.className="st bad";st.textContent="e.g. 张三 19900101 0730";return null;}
+    var d=parse(r.date);
+    st.className="st good";
+    st.textContent=r.name+" · "+MONS[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear()+(r.time?"  "+r.time:"");
+    return r;}
+  q.oninput=preview;
+
+  function save(){
+    var r=preview();
+    if(!r){q.style.borderColor="var(--danger)";return;}
+    push("birthdays",{id:uid(),name:r.name,date:r.date,btime:r.time,
+      place:$("bp").value.trim()||null,
+      note:$("bo").value.trim()||null,
+      updated_at:new Date().toISOString()});
+    closeSheet();render();}
+  q.onkeydown=function(e){if(e.key==="Enter")save()};
   $("bv").onclick=save;}
 
 /* ---- 更多菜单：设置 + 导出日历 ---- */
@@ -2824,13 +3128,22 @@ $("qsTab").querySelectorAll("[data-qt]").forEach(function(el){el.onclick=functio
   qsTab=el.dataset.qt;
   $("qsTab").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b===el)});
   qsPaint();};});
-$("syncPill").onclick=statusSheet;
-$("syncPill").onclick=function(){
-  if(!cfg){cfgSheet();return;}
-  toast("Syncing…");
-  sync().then(function(){
-    if(lastErr)toast("Sync issue: "+lastErr.slice(0,60));
-    else toast("Synced · "+D.todos.length+" tasks");});};
+/* 短按：立即同步；长按 0.5 秒：打开诊断面板（原先被覆盖，等于没有入口）*/
+(function(){
+  var el=$("syncPill"), lp=null, long=false;
+  el.onclick=function(){
+    if(long){long=false;return;}
+    if(!cfg){cfgSheet();return;}
+    toast("Syncing…");
+    sync().then(function(){
+      if(lastErr)toast("Sync issue: "+lastErr.slice(0,60));
+      else toast("Synced · "+D.todos.length+" tasks");});};
+  el.addEventListener("pointerdown",function(){
+    long=false;
+    lp=setTimeout(function(){long=true;statusSheet();},500);});
+  ["pointerup","pointerleave","pointercancel"].forEach(function(e){
+    el.addEventListener(e,function(){clearTimeout(lp)});});
+})();
 document.addEventListener("visibilitychange",function(){if(!document.hidden)wxLoad();});
 $("srx").onclick=searchClose;
 $("srin").oninput=searchRun;
