@@ -98,11 +98,23 @@
 
   /* list */
   ul.list{list-style:none;margin:0;padding:0}
-  li.item{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;border-top:1px solid var(--line2)}
+  /* 首页待办：左未完成 / 右已完成 */
+  .tdsplit{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .tdcol{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    overflow:hidden;min-height:96px;box-shadow:var(--sh)}
+  .tdh{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--faint);padding:11px 12px 7px}
+  .tdh b{color:var(--sub);font-weight:800;letter-spacing:0}
+  .tdcol.done{background:color-mix(in srgb,var(--accent) 5%,var(--card))}
+  .tdcol .item{padding:9px 11px;gap:9px;font-size:13.5px}
+  .tdcol .item .x{display:none}                  /* 窄栏里不放删除，长按拖到底部删 */
+  .tdcol .chk{width:18px;height:18px}
+  .tdempty{padding:14px 12px 18px;color:var(--faint);font-size:12px}
+  li.item{display:flex;align-items:center;gap:11px;padding:12px 13px;border-top:1px solid var(--line2)}
   ul.list>li.item:first-child{border-top:none}
   li.item:first-child{border-top:none}
   /* 勾选：空心环 → 环内实心点（与日历标记同一语言）*/
-  .chk{flex:none;width:20px;height:20px;margin-top:1px;border-radius:50%;
+  .chk{flex:none;width:20px;height:20px;border-radius:50%;
     border:1.8px solid var(--faint);cursor:pointer;position:relative;
     transition:border-color .15s;box-sizing:border-box}
   .chk.on{border-color:var(--accent)}
@@ -337,6 +349,13 @@
   .hcar .dots{position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;gap:5px}
   .hcar .dots i{width:5px;height:5px;border-radius:50%;background:var(--line);transition:all .3s}
   .hcar .dots i.on{background:var(--sub);width:14px;border-radius:3px}
+  /* 星座水印：图片来自 ./zodiac/ 文件夹 */
+  .hcar .slide{position:relative;overflow:hidden}
+  .zod{position:absolute;top:50%;width:auto;pointer-events:none}
+  .zodn{position:absolute;right:14px;bottom:6px;font-size:19px;font-weight:600;
+    color:var(--amber);opacity:.9;pointer-events:none;
+    font-family:"Snell Roundhand","Apple Chancery","Segoe Script","Brush Script MT",cursive}
+  .hcar .slide>.lbl,.hcar .slide>.who,.hcar .slide>.sub,.hcar .slide>.big{position:relative;z-index:1}
   .hcar .empt{padding:26px 20px;text-align:center;color:var(--faint);font-size:13px}
   .rotag{flex:none;font-size:8.5px;font-weight:800;letter-spacing:.04em;
     padding:1.5px 5px;border-radius:5px;line-height:1.35;white-space:nowrap}
@@ -780,6 +799,12 @@
   .total span:last-child{font-size:19px;font-weight:750;color:var(--ink);letter-spacing:-.02em}
 
   /* 通讯录式首字母分组标题 */
+  /* 换页滑入 */
+  @keyframes slideL{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+  @keyframes slideR{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+  #view.sl{animation:slideL .3s cubic-bezier(.22,.72,.24,1)}
+  #view.sr{animation:slideR .3s cubic-bezier(.22,.72,.24,1)}
+  .alsec.rc{color:var(--accent2)}
   .alsec{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--sub);
     padding:14px 4px 5px;position:sticky;top:var(--topH,84px);z-index:5;
     background:var(--bg)}
@@ -1499,7 +1524,7 @@ function vToday(){
   var doneL=list.filter(function(t){return t.done});
   var openL=list.filter(function(t){return !t.done});
   var timed=list.filter(function(t){return t.due_time}).sort(function(a,b){return a.due_time<b.due_time?-1:1});
-  var untimed=openL.filter(function(t){return !t.due_time});
+  var untimed=list.filter(function(t){return !t.due_time});   // 含已完成，勾选后移到右栏而不是消失
   var hs=D.habits.filter(function(h){return !h.archived});
   var doneH=hs.filter(function(h){return logged(h.id,ds)}).length;
   var dia=D.diary.filter(function(x){return x.id===ds})[0];
@@ -1562,10 +1587,18 @@ function vToday(){
   }else h+='<div class="empty" style="padding:22px 8px">No timed events · tap + to plan one</div>';
   h+='</div>';
 
-  /* ── 待办 ── */
-  h+='<div class="sec">To-do'+(openL.length?' · '+openL.length:'')+'<button class="dadd" id="tdAdd" style="float:right;margin-top:-3px">+</button></div>';
-  h+='<div class="card">'+(untimed.length?'<ul class="list">'+untimed.map(itemHTML).join("")+'</ul>'
-     :'<div class="empty" style="padding:20px 8px" id="tdAdd2">All clear</div>')+'</div>';
+  /* ── 待办：左边未完成 / 右边已完成 ── */
+  var tdOpen=untimed.filter(function(t){return !t.done});
+  var tdDone=untimed.filter(function(t){return t.done});
+  h+='<div class="sec">To-do<button class="dadd" id="tdAdd" style="float:right;margin-top:-3px">+</button></div>';
+  h+='<div class="tdsplit">'+
+     '<div class="tdcol"><div class="tdh">To-do'+(tdOpen.length?' <b>'+tdOpen.length+'</b>':"")+'</div>'+
+       (tdOpen.length?tdOpen.map(itemHTML).join("")
+        :'<div class="tdempty" id="tdAdd2">All clear</div>')+'</div>'+
+     '<div class="tdcol done"><div class="tdh">Done'+(tdDone.length?' <b>'+tdDone.length+'</b>':"")+'</div>'+
+       (tdDone.length?tdDone.map(itemHTML).join("")
+        :'<div class="tdempty">—</div>')+'</div>'+
+     '</div>';
 
   /* ── 打卡 ── */
   if(hs.length){
@@ -2393,13 +2426,10 @@ function vSubs(){
 
 function vBday(){
   var bs=D.birthdays.map(function(b){return{b:b,d:daysUntil(b.date.slice(5))}}).sort(function(a,b){return a.d-b.d});
-  // 顶部轮播：本月要过生日的人
-  var mm=String(new Date().getMonth()+1).padStart(2,"0");
-  var thisMonth=bs.filter(function(x){return (x.b.date||"").slice(5,7)===mm});
-  var pool=thisMonth.length?thisMonth:bs.slice(0,5);
-  var slides=pool.slice(0,8).map(function(x){
+  // 顶部轮播：最近要过生日的几个（bs 已按临近程度排好）
+  var slides=bs.slice(0,6).map(function(x){
     var d=parse(x.b.date), md=MONS[d.getMonth()]+" "+d.getDate();
-    return '<div class="slide"><div class="lbl">'+(thisMonth.length?"This month":"Coming up")+'</div>'+
+    return '<div class="slide">'+zodImg(x.b.date)+'<div class="lbl">Coming up</div>'+
       '<div class="who">'+esc(x.b.name)+'</div>'+
       '<div class="sub">'+md+(x.b.place?" · ◎ "+esc(x.b.place):"")+'</div>'+
       '<div class="big"><b>'+(x.d===0?"🎂":x.d)+'</b><span>'+
@@ -2417,6 +2447,13 @@ function vBday(){
     return {k:k, items:gmap[k].sort(function(a,b){return byName(a.b,b.b)})};});
 
   if(!groups.length)return h+'<div class="card"><div class="empty"><span class="e">🎂</span>No birthdays</div></div>';
+
+  // 最近要过的几个，单独放一段，不用去字母表里翻
+  var near=bs.slice(0,3);
+  if(near.length)
+    h+='<div class="alsec rc">Recently</div><div class="card">'+
+       near.map(bdRowHTML).join("")+'</div>';
+
   h+=groups.map(function(g){
     return '<div class="alsec">'+g.k+'</div><div class="card">'+
       g.items.map(bdRowHTML).join("")+'</div>';}).join("");
@@ -2462,7 +2499,7 @@ function vCountdown(){
 
   // 顶部轮播：最近要到期的事
   var soon=all.filter(function(x){return x.c.mode!=="since"&&x.d>=0})
-              .sort(function(a,b){return a.d-b.d}).slice(0,8);
+              .sort(function(a,b){return a.d-b.d}).slice(0,6);
   var slides=soon.map(function(x){
     var d=parse(x.c.date);
     return '<div class="slide"><div class="lbl">Coming up</div>'+
@@ -2552,7 +2589,7 @@ function ico(name,size){
     journal:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19v17.5H6.5A2.5 2.5 0 0 0 4 22z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H19"/>',
     flame:'<path d="M12 22c3.9 0 6.5-2.6 6.5-6 0-4.5-4.5-6-4.5-10.5C11 7 10 9 10 11c-.9-.6-1.5-1.6-1.5-3C6.9 9.6 5.5 11.9 5.5 15c0 3.6 2.7 7 6.5 7z"/>',
     wallet:'<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1"/><rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/><path d="M16.5 13.8h.01"/>',
-    flag:'<path d="M5 21V4M5 4h11l-2 3.5L16 11H5"/>',
+    flag:'<path d="M6.5 20.5V3.5M6.5 3.5h11l-2.2 3.75L17.5 11h-11"/>',
     gift:'<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13.5h18M12 9v12"/><path d="M12 9S9.5 4.5 7.2 5.4C5.6 6 5.9 9 8.6 9zM12 9s2.5-4.5 4.8-3.6C18.4 6 18.1 9 15.4 9z"/>',
     repeat:'<path d="M3 11.5a7 7 0 0 1 7-7h8"/><path d="m15 1.5 3 3-3 3"/><path d="M21 12.5a7 7 0 0 1-7 7H6"/><path d="m9 22.5-3-3 3-3"/>',
     chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
@@ -3105,6 +3142,57 @@ function byName(a,b){
   if(__coll)return __coll.compare(a.name||"",b.name||"");
   return (a.name||"").localeCompare(b.name||"");}
 
+/* ── 星座水印 ──
+   图片放在 ./zodiac/ 文件夹，换图包只需替换文件。
+   每个星座的高度 / 右边距 / 倾斜角单独调过。*/
+var ZOD=[
+ ["Capricorn",  1,19,172,32,12],
+ ["Aquarius",   2,18,150, 8, 0],
+ ["Pisces",     3,20,150,14, 0],
+ ["Aries",      4,19,152,12, 0],
+ ["Taurus",     5,20,176,16,12],
+ ["Gemini",     6,21,172,12,12],
+ ["Cancer",     7,22,150,22, 0],
+ ["Leo",        8,22,178,34,12],
+ ["Virgo",      9,22,176,20,12],
+ ["Libra",     10,23,150,-4, 0],
+ ["Scorpio",   11,22,150,-4, 0],
+ ["Sagittarius",12,21,160,30,12]
+];
+function zodiacOf(ds){
+  var d=parse(ds); if(!d)return ZOD[0];
+  var m=d.getMonth()+1, day=d.getDate();
+  for(var i=0;i<ZOD.length;i++) if(m===ZOD[i][1] && day<=ZOD[i][2]) return ZOD[i];
+  for(var j=0;j<ZOD.length;j++) if(m===ZOD[j][1] && day> ZOD[j][2]) return ZOD[(j+1)%12];
+  return ZOD[m%12];}
+function zodImg(ds){
+  var z=zodiacOf(ds);
+  var tr="translateY(-50%)"+(z[5]?" rotate("+z[5]+"deg)":"");
+  return '<img class="zod" src="./zodiac/'+z[0]+'.webp" alt="" aria-hidden="true" '+
+         'onerror="this.style.display=&quot;none&quot;" '+
+         'style="height:'+z[3]+'px;right:'+z[4]+'px;transform:'+tr+'">'+
+         '<div class="zodn">'+z[0]+'</div>';}
+
+/* 姓名首字母：英文取首字母，中文按拼音归到 A–Z */
+var __coll=null;
+try{__coll=new Intl.Collator("zh-Hans-u-co-pinyin");}catch(e){}
+var LT="ABCDEFGHJKLMNOPQRSTWXYZ".split("");        // 拼音里没有 I U V
+var LB=["阿","八","擦","搭","蛾","发","噶","哈","击","喀","垃","妈","拿","哦","啪","期","然","撒","塌","挖","昔","压","匝"];
+function initialOf(name){
+  var c=(name||"").trim().charAt(0);
+  if(!c)return "#";
+  if(/[a-zA-Z]/.test(c))return c.toUpperCase();
+  if(/[0-9]/.test(c))return "#";
+  if(!__coll)return "#";
+  // 拿字符跟每个字母的边界字比较，落在哪一段就是哪个字母
+  var r="#";
+  for(var i=0;i<LB.length;i++){
+    if(__coll.compare(c,LB[i])>=0)r=LT[i]; else break;}
+  return r;}
+function byName(a,b){
+  if(__coll)return __coll.compare(a.name||"",b.name||"");
+  return (a.name||"").localeCompare(b.name||"");}
+
 /* 顶部轮播：自动播放，可左右滑动 */
 var __car={t:null,i:0,n:0};
 function carHTML(cls,slides){
@@ -3544,7 +3632,9 @@ var __curTab="today";
     if(tab==="plan"&&planView==="day")return;                            // 日视图交给它自己
     var t=e.target;
     if(t.closest&&t.closest(".cdstrip,.hcar,.tlscroll,.dtrack,input,textarea"))return;
-    x0=e.touches[0].clientX; y0=e.touches[0].clientY; act=true;},{passive:true});
+    var X=e.touches[0].clientX, W=window.innerWidth;
+    if(X<24||X>W-24)return;              // 贴边不接管，留给系统返回手势
+    x0=X; y0=e.touches[0].clientY; act=true;},{passive:true});
   document.addEventListener("touchend",function(e){
     if(!act)return; act=false;
     var t=e.changedTouches[0];
@@ -3568,12 +3658,24 @@ document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function
 
 /* Plan → 默认周视图；Calendar → 默认当天的日视图 */
 function goTab(t){
+  var ORD=["today","plan","cal"];
+  var from=ORD.indexOf(curTabKey()), to=ORD.indexOf(t);
+  var dir=(from>=0&&to>=0&&from!==to)?(to>from?1:-1):0;
   if(t==="plan"){ tab="plan"; viewStack=[]; planView="week"; }
   else if(t==="cal"){ tab="plan"; viewStack=[]; planView="day"; cursor=new Date(); }
   else tab=t;
   __curTab=t;
   scrollWrapTop();
-  setTab(); render();}
+  setTab(); render();
+  if(dir)slideIn(dir);}
+
+/* 换页时让内容从对应方向滑入，避免"啪"地闪出来 */
+function slideIn(dir){
+  var v=$("view"); if(!v)return;
+  v.classList.remove("sl","sr");
+  void v.offsetWidth;                     // 强制重排，动画才会重新播放
+  v.classList.add(dir>0?"sl":"sr");
+  setTimeout(function(){v.classList.remove("sl","sr")},340);}
 function scrollWrapTop(){ try{window.scrollTo(0,0)}catch(e){} }
 $("syncPill").onclick=cfgSheet;
 document.addEventListener("visibilitychange",function(){if(!document.hidden)sync()});
