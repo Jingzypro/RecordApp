@@ -109,6 +109,17 @@
   .tdcol .item{padding:9px 11px;gap:9px;font-size:13.5px}
   .tdcol .item .x{display:none}                  /* 窄栏里不放删除，长按拖到底部删 */
   .tdcol .chk{width:18px;height:18px}
+  /* 行高锁死 → 单行 36px，正好露出 3 条，多的在框里滑 */
+  .tdcol .itxt{font-size:13.5px;line-height:18px}
+  .tdlist{max-height:110px;overflow-y:auto;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tdlist::-webkit-scrollbar{display:none}
+  /* 还有更多时，底部一道渐隐提示 */
+  .tdwrap{position:relative}
+  .tdwrap.more::after{content:"";position:absolute;left:0;right:0;bottom:0;height:20px;
+    pointer-events:none;background:linear-gradient(transparent,var(--card))}
+  .tdcol.done .tdwrap.more::after{background:linear-gradient(transparent,
+    color-mix(in srgb,var(--accent) 5%,var(--card)))}
   .tdempty{padding:14px 12px 18px;color:var(--faint);font-size:12px}
   li.item{display:flex;align-items:center;gap:11px;padding:12px 13px;border-top:1px solid var(--line2)}
   ul.list>li.item:first-child{border-top:none}
@@ -1301,11 +1312,12 @@ function searchClose(){$("srwrap").classList.remove("on");$("srin").value="";}
 
 /* ---- 撤销提示条：删除不弹确认，给一次反悔的机会 ---- */
 var toastT=null;
-function toast(msg,undoFn){
+function toast(msg,undoFn,label){
   var el=$("toast"),b=$("toastAct");
   $("toastMsg").textContent=msg;
   clearTimeout(toastT);
-  if(undoFn){b.style.display="";b.onclick=function(){clearTimeout(toastT);el.classList.remove("on");undoFn();};}
+  if(undoFn){b.style.display="";b.textContent=label||"Undo";
+    b.onclick=function(){clearTimeout(toastT);el.classList.remove("on");undoFn();};}
   else b.style.display="none";
   el.classList.add("on");
   toastT=setTimeout(function(){el.classList.remove("on")},5000);}
@@ -1352,6 +1364,7 @@ function flush(){if(!cfg||!outbox.length)return Promise.resolve(true);
        return flush();}
      return false;});}
 function sync(){if(!cfg){setSync("local");return Promise.resolve(false)}
+  if(navigator.onLine===false){setSync("offline");return Promise.resolve(false)}
   if(syncing)return Promise.resolve(false);
   syncing=true;setSync("syncing");
   return flush().then(function(ok){if(ok===false)throw new Error(lastErr||"upload failed");
@@ -1364,7 +1377,9 @@ function sync(){if(!cfg){setSync("local");return Promise.resolve(false)}
     syncing=false;return false;});}
 function setSync(s){var p=$("syncPill");
   p.className="pill"+(s==="ok"?" ok":s==="syncing"?" syncing":s==="offline"?" offline":"");
-  $("syncTxt").textContent=s==="ok"?"Synced":s==="syncing"?"Syncing":s==="offline"?"Offline":"Not linked";}
+  var n=outbox.length;
+  $("syncTxt").textContent=s==="ok"?"Synced":s==="syncing"?"Syncing":
+    s==="offline"?("Offline"+(n?" · "+n:"")):"Not linked";}
 
 /* ============ 待办 ============ */
 function addTodo(text,date,time){text=(text||"").trim();if(!text)return;
@@ -1462,6 +1477,15 @@ function todosOn(ds){
   return real.concat(virt)
     .sort(function(a,b){return (a.due_time||"99").localeCompare(b.due_time||"99")||(a.sort-b.sort)});}
 function inbox(){return D.todos.filter(function(t){return !t.due_date}).sort(function(a,b){return b.sort-a.sort})}
+/* 周视图的 ToDo 格：只属于这一周。
+   老数据（没有 week 字段）暂时挂在「当前真实周」，碰过一次就会归位。
+   任何一周看不到的无日期待办，仍可在底部 ToDo → Undated 里找到。 */
+function weekInbox(k){
+  var cur=weekKey(new Date());
+  return D.todos.filter(function(t){
+    if(t.due_date)return false;
+    return t.week ? t.week===k : k===cur;
+  }).sort(function(a,b){return b.sort-a.sort});}
 function getFocus(k){var f=D.weekly_focus.filter(function(x){return x.id===k})[0];return f?f.text:""}
 
 /* ============ 渲染 ============ */
@@ -1496,6 +1520,9 @@ function render(){
   syncTopH();
   if(window.__mScroll){window.removeEventListener("scroll",window.__mScroll);window.__mScroll=null;}
   if(window.__yScroll){window.removeEventListener("scroll",window.__yScroll);window.__yScroll=null;}
+  if(tab==="today")
+    document.querySelectorAll(".tdlist").forEach(function(el){
+      el.parentNode.classList.toggle("more", el.scrollHeight>el.clientHeight+2);});
   if(tab==="plan"&&planView==="week")
     document.querySelectorAll(".citems").forEach(function(el){
       el.parentNode.classList.toggle("more", el.scrollHeight>el.clientHeight+2);});
@@ -1503,10 +1530,10 @@ function render(){
   if(tab==="plan"&&planView==="year")initYearScroll();
   if(tab==="plan"&&planView==="day")initDayView();
 }
-function itemHTML(t){
+function itemHTML(t,bare){
   return '<li class="item'+(t.done?" done":"")+'" data-drag="'+t.id+'"><div class="chk'+(t.done?" on":"")+'" data-tg="'+t.id+'"></div>'+
     '<div class="itxt">'+esc(t.text)+
-    (t.due_date||t.due_time?'<div class="meta">'+(t.due_date?esc(t.due_date):"")+(t.due_time?" "+esc(t.due_time):"")+'</div>':"")+
+    ((!bare&&(t.due_date||t.due_time))?'<div class="meta">'+(t.due_date?esc(t.due_date):"")+(t.due_time?" "+esc(t.due_time):"")+'</div>':"")+
     '</div><button class="x" data-del-todos="'+t.id+'">×</button></li>';}
 
 /* ---- 今天 ---- */
@@ -1560,7 +1587,8 @@ function vToday(){
      '</div>';
 
   /* ── 今日时间线 ── */
-  h+='<div class="sec">Today' + (timed.length?' · '+timed.length:'') + '</div>';
+  h+='<div class="sec">Today' + (timed.length?' · '+timed.length:'') +
+     '<button class="dadd" id="evAdd" style="float:right;margin-top:-3px">+</button></div>';
   h+='<div class="card" style="padding:8px 13px 10px">';
   if(timed.length){
     h+='<div class="agenda">';
@@ -1591,13 +1619,15 @@ function vToday(){
   var tdOpen=untimed.filter(function(t){return !t.done});
   var tdDone=untimed.filter(function(t){return t.done});
   h+='<div class="sec">To-do<button class="dadd" id="tdAdd" style="float:right;margin-top:-3px">+</button></div>';
+  var tdBox=function(list,empId){
+    if(!list.length)return '<div class="tdempty"'+(empId?' id="'+empId+'"':"")+'>'+(empId?"All clear":"—")+'</div>';
+    return '<div class="tdwrap"><ul class="list tdlist">'+
+      list.map(function(t){return itemHTML(t,true)}).join("")+'</ul></div>';};
   h+='<div class="tdsplit">'+
      '<div class="tdcol"><div class="tdh">To-do'+(tdOpen.length?' <b>'+tdOpen.length+'</b>':"")+'</div>'+
-       (tdOpen.length?tdOpen.map(itemHTML).join("")
-        :'<div class="tdempty" id="tdAdd2">All clear</div>')+'</div>'+
+       tdBox(tdOpen,"tdAdd2")+'</div>'+
      '<div class="tdcol done"><div class="tdh">Done'+(tdDone.length?' <b>'+tdDone.length+'</b>':"")+'</div>'+
-       (tdDone.length?tdDone.map(itemHTML).join("")
-        :'<div class="tdempty">—</div>')+'</div>'+
+       tdBox(tdDone,"")+'</div>'+
      '</div>';
 
   /* ── 打卡 ── */
@@ -1668,7 +1698,7 @@ function vPlan(){
   return gDay();}
 
 function gWeek(){
-  var s=startOfWeek(cursor),k=weekKey(cursor),ib=inbox(),ts=todayStr();
+  var s=startOfWeek(cursor),k=weekKey(cursor),ib=weekInbox(k),ts=todayStr();
   var e=addDays(s,6);
   var h='<div class="wkfit"><div class="row" style="justify-content:space-between;margin-bottom:8px">'+
     '<button class="pill" data-nav="-1">‹ Prev</button>'+
@@ -1676,8 +1706,8 @@ function gWeek(){
     '<button class="pill" data-nav="1">Next ›</button></div>';
   h+='<div class="focus"><div class="lbl">WEEKLY FOCUS</div>'+
     '<textarea id="wf" data-k="'+k+'" placeholder="What matters most this week?">'+esc(getFocus(k))+'</textarea></div>';
-  h+='<div class="grid"><div class="cell" data-drop=""><div class="ch"><div class="cd">ToDo <small>'+ib.length+'</small></div>'+
-     '<button class="cadd" data-new="">+</button></div><div class="citems">'+
+  h+='<div class="grid"><div class="cell" data-drop="" data-week="'+k+'"><div class="ch"><div class="cd">ToDo <small>'+ib.length+'</small></div>'+
+     '<button class="cadd" data-newwk="'+k+'">+</button></div><div class="citems">'+
      doneLast(ib).map(ciHTML).join("")+'</div></div>';
   for(var i=0;i<7;i++){var d=addDays(s,i),ds=fmt(d),list=splitDay(todosOn(ds));
     h+='<div class="cell'+(ds===ts?" today":"")+'" data-drop="'+ds+'"><div class="ch"><div class="cd" data-goday="'+ds+'" style="cursor:pointer">'+WDE[d.getDay()]+' <small>'+d.getDate()+'</small></div>'+
@@ -2770,14 +2800,15 @@ function bindDrag(){
               push("todos",Object.assign({},st2,{skip_dates:JSON.stringify(sk),updated_at:new Date().toISOString()}));
               push("todos",{id:uid(),text:st2.text,done:false,sort:Date.now(),due_date:nds,
                 due_time:st2.due_time||null,end_time:st2.end_time||null,color:st2.color||null,
-                repeat:null,updated_at:new Date().toISOString()});
+                repeat:null,week:null,updated_at:new Date().toISOString()});
               toast("Moved this one only");}
             cell.classList.remove("over");
           }else if(cell){
             var t=D.todos.filter(function(x){return x.id===dragState.id})[0];
             var nd=cell.dataset.drop||null;
-            if(t&&(t.due_date||null)!==nd){
-              push("todos",Object.assign({},t,{due_date:nd,updated_at:new Date().toISOString()}));}
+            var nw=nd?null:(cell.dataset.week||null);      // 落进 ToDo 格 → 归属那一周
+            if(t&&((t.due_date||null)!==nd||(t.week||null)!==nw)){
+              push("todos",Object.assign({},t,{due_date:nd,week:nw,updated_at:new Date().toISOString()}));}
             cell.classList.remove("over");}
           $("dz").classList.remove("on","hot");
           dragState.ghost.remove();
@@ -2887,8 +2918,9 @@ function bind(){
   var al=$("addLed"); if(al)al.onclick=ledSheet;
   var il=$("impLed"); if(il)il.onclick=impSheet;
   var tl=$("todayLed"); if(tl)tl.onclick=ledSheet;
-  var ta=$("tdAdd");  if(ta)ta.onclick=function(){newTodoSheet(todayStr())};
-  var ta2=$("tdAdd2");if(ta2)ta2.onclick=function(){newTodoSheet(todayStr())};
+  var ta=$("tdAdd");  if(ta)ta.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
+  var ta2=$("tdAdd2");if(ta2)ta2.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
+  var ea=$("evAdd");  if(ea)ea.onclick=function(){newTodoSheet(todayStr(),null,null,"event")};
   // 首页快捷动作
   var q1=$("qaTask"); if(q1)q1.onclick=capOpen;
   var q2=$("qaCost"); if(q2)q2.onclick=ledSheet;
@@ -2911,6 +2943,8 @@ function bind(){
   document.querySelectorAll("[data-day]").forEach(function(el){el.onclick=function(){
     cursor=parse(el.dataset.day);goView("day");render()}});
   document.querySelectorAll("[data-new]").forEach(function(el){el.onclick=function(){newTodoSheet(el.dataset.new)}});
+  document.querySelectorAll("[data-newwk]").forEach(function(el){el.onclick=function(){
+    newTodoSheet(null,null,null,"todo",el.dataset.newwk)}});
   var wf=$("wf");
   if(wf)wf.onblur=function(){push("weekly_focus",{id:wf.dataset.k,text:wf.value,updated_at:new Date().toISOString()})};
   var dtxt=$("dtxt"),dd=$("dd");
@@ -2961,14 +2995,14 @@ function openSheet(html){$("sheet").classList.remove("form");$("sheet").innerHTM
 function closeSheet(){$("ov").classList.remove("show");$("sheet").classList.remove("form")}
 $("ov").onclick=function(e){if(e.target===$("ov"))closeSheet()};
 
-function newTodoSheet(ds,st,et){
+function newTodoSheet(ds,st,et,md,wk){
   var COLORS={c0:"#EF4444",c1:"#F59E0B",c2:"#10B981",c3:"#3B82F6",c4:"#8B5CF6",c5:"#EC4899"};
   var REP=[["","Never"],["daily","Daily"],["weekday","Weekdays"],["weekly","Weekly"],["monthly","Monthly"]];
   var TRV=[["","None"],["5","5 min"],["15","15 min"],["30","30 min"],["60","1 hour"]];
   var CK=Object.keys(COLORS);
   var pick = CK[Math.floor(Math.random()*CK.length)];   // 颜色默认随机
   var rep="", trv="";
-  var mode = ds ? "event" : "todo";
+  var mode = md || (ds ? "event" : "todo");
   var allday = false;                                   // 全天默认关闭
   // 未指定时间 → 预填「下一个整刻 ~ 一小时后」
   if(!st){var n0=new Date(), h0=n0.getHours(), m0=Math.ceil(n0.getMinutes()/15)*15;
@@ -3076,6 +3110,7 @@ function newTodoSheet(ds,st,et){
     var dv = ev ? ($("nd").value||null) : (ds||null);
     push("todos",{id:uid(),text:v,done:false,sort:Date.now(),
       due_date:dv,
+      week: (!dv&&wk)?wk:null,          // 无日期待办归属某一周；有日期就不需要
       end_date: (ev&&$("nd2").value&&dv&&$("nd2").value>dv)?$("nd2").value:null,
       due_time: (ev&&!allday&&$("nm").value)||null,
       end_time: (ev&&!allday&&$("nm2").value)||null,
@@ -3677,6 +3712,36 @@ function slideIn(dir){
   v.classList.add(dir>0?"sl":"sr");
   setTimeout(function(){v.classList.remove("sl","sr")},340);}
 function scrollWrapTop(){ try{window.scrollTo(0,0)}catch(e){} }
+/* 一次性迁移：把改版前遗留的「无日期待办」归入当前这一周。
+   跑过一次就打标记，不会重复推送。 */
+(function(){
+  try{ if(store.get("rec.wkmig")==="1")return; }catch(e){}
+  var k=weekKey(new Date()), n=0;
+  D.todos.slice().forEach(function(t){
+    if(t.due_date||t.week)return;
+    push("todos",Object.assign({},t,{week:k,updated_at:new Date().toISOString()}));n++;});
+  try{ store.set("rec.wkmig","1"); }catch(e){}
+})();
+
+/* ---- 离线支持：注册 Service Worker ---- */
+if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+  var __hadCtrl=!!navigator.serviceWorker.controller, __reloaded=false;
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("./sw.js").then(function(reg){
+      reg.addEventListener("updatefound",function(){
+        var w=reg.installing; if(!w)return;
+        w.addEventListener("statechange",function(){
+          // 新版本已就绪：不偷偷刷新，问一句再换，免得打字打一半被打断
+          if(w.state==="installed"&&navigator.serviceWorker.controller)
+            toast("New version ready",function(){w.postMessage("skip-waiting")},"Reload");});});
+    }).catch(function(){});});
+  navigator.serviceWorker.addEventListener("controllerchange",function(){
+    if(!__hadCtrl||__reloaded)return; __reloaded=true; location.reload();});
+}
+/* 网络恢复 → 立刻补传；断网 → 立刻改状态，别让用户干等 */
+window.addEventListener("online", function(){ if(cfg)sync(); else setSync("local"); });
+window.addEventListener("offline",function(){ if(cfg)setSync("offline"); });
+
 $("syncPill").onclick=cfgSheet;
 document.addEventListener("visibilitychange",function(){if(!document.hidden)sync()});
 setInterval(function(){if(!document.hidden)sync()},30000);
