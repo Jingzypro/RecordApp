@@ -16,6 +16,8 @@
   :root{
     /* 纸与墨：中性纸面 + 发丝分隔 + 克制的深玉色强调 */
     --bg:#FBFAF8; --card:#FFFFFF; --card2:#F7F6F3; --ink:#17191A; --sub:#6C7176; --faint:#A5AAAE;
+    --kbox:#EFEEEA; --ktrk:#1A1D21; --kface:#DEDDD8; --kknb:#7B8085;
+    --kmoon:#4F52D6; --ksun:#D9A21B;
     --line:#E9E7E2; --line2:#F1EFEB; --sab:env(safe-area-inset-bottom); --cake:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 20h18M4 20v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5'/><path d='M8 13V9M12 13V8M16 13V9'/><path d='M8 6.5a1 1 0 1 0-1.6-1.2C6.9 4.4 8 3.5 8 3.5s1.1.9 1.6 1.8A1 1 0 0 1 8 6.5z' transform='translate(0 -0.5) scale(0.9)'/></svg>"); --grpbg:#EFEDE9;
     --accent:#1C6B57; --accent2:#12483A; --soft:#EAF1EE; --amber:#8A6317;
     --danger:#B4443B; --red:#C8443C; --daynum:#17191A;
@@ -26,7 +28,10 @@
   }
   /* 深色配色：跟随系统（未手动指定浅色时）*/
   @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){ --bg:#0B0C0C; --card:#141617; --card2:#1A1D1E; --ink:#EAECEA; --sub:#8E9498;
+    :root:not([data-theme="light"]){
+      --kbox:#1A1C1E; --ktrk:#000000; --kface:#2C2F33; --kknb:#9AA0A6;
+      --kmoon:#6E6CE8; --ksun:#F0C020;
+      --bg:#0B0C0C; --card:#141617; --card2:#1A1D1E; --ink:#EAECEA; --sub:#8E9498;
       --faint:#5A6165; --line:#232729; --line2:#1C1F21; --grpbg:#000000;
       --accent:#57B79B; --accent2:#7FD0B7; --soft:#152220; --amber:#C29A4A;
       --danger:#E0736A; --red:#E5544B; --daynum:#FFFFFF;
@@ -34,7 +39,10 @@
       --shx:0 2px 8px rgba(0,0,0,.5),0 18px 40px rgba(0,0,0,.45); }
   }
   /* 手动强制深色 */
-  :root[data-theme="dark"]{ --bg:#0B0C0C; --card:#141617; --card2:#1A1D1E; --ink:#EAECEA; --sub:#8E9498;
+  :root[data-theme="dark"]{
+    --kbox:#1A1C1E; --ktrk:#000000; --kface:#2C2F33; --kknb:#9AA0A6;
+    --kmoon:#6E6CE8; --ksun:#F0C020;
+    --bg:#0B0C0C; --card:#141617; --card2:#1A1D1E; --ink:#EAECEA; --sub:#8E9498;
     --faint:#5A6165; --line:#232729; --line2:#1C1F21;
     --accent:#57B79B; --accent2:#7FD0B7; --soft:#152220; --amber:#C29A4A;
     --danger:#E0736A; --red:#E5544B; --daynum:#FFFFFF;
@@ -178,17 +186,18 @@
 
   /* 待办：未完成用浅色胶囊包住；前面是空心/实心圆环 */
   .ci.todo .cip{flex:1;min-width:0;display:flex;align-items:center;gap:6px;
-    padding:3px 8px;border-radius:8px;
+    padding:3px 8px;border-radius:8px;font-size:11.5px;
     background:color-mix(in srgb,var(--ink) 8%,transparent);
     color:var(--ink);font-weight:600}
   .ci.todo .cipt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .ci.todo.dn .cip{background:transparent;color:var(--faint);font-weight:500}
+  .ci.todo.dn .cip{background:transparent;color:var(--faint);font-weight:600}
   .ci.todo.dn .cipt{text-decoration:line-through}
 
   /* 日程：前面一道彩色竖线 + 时间 + 标题 */
   .ci.evt .cibar{flex:none;width:2.5px;height:13px;border-radius:2px;background:currentColor}
   .ci.evt .citm{flex:none;color:var(--sub);font-variant-numeric:tabular-nums;font-size:11.5px}
-  .ci.evt .citx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ci.evt .citx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:var(--ink);font-weight:600}
   .ci.evt.dn .citx,.ci.evt.dn .citm{color:var(--faint);text-decoration:line-through}
   .ci .tm{color:var(--sub);font-variant-numeric:tabular-nums;flex:none}
   /* 可拖元素：浏览器不得从这里发起滚动，手势完全交给脚本 */
@@ -779,6 +788,350 @@
   .evb.dn{opacity:.5;text-decoration:line-through}
   .nowline{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:3;pointer-events:none}
   .nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--red)}
+  /* 习惯：类型徽章 + 首页 chip 上的数值 */
+  .hkd{font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--sub);background:var(--card2);
+    border:1px solid var(--line);border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:1px}
+  .hchip .hv{font-weight:700;margin-left:2px;opacity:.9}
+  .hsw{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--sub);cursor:pointer}
+
+  /* ---- 习惯列表卡：与记录卡同款 ---- */
+  .hlist{display:flex;flex-direction:column;gap:12px}
+  .hcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--sh);padding:15px 16px 16px;cursor:pointer}
+  .hch{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .hcn{font-size:16px;font-weight:750;letter-spacing:-.02em;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hcm{font-size:11.5px;color:var(--faint);flex:none}
+  .hcs{font-size:11px;font-weight:650;color:var(--faint);margin:14px 0 7px;letter-spacing:.02em}
+  .hcw{display:flex;gap:14px}
+  .hcq{flex:1;min-width:0}
+  .hcq .k{display:block;font-size:11px;color:var(--sub);margin-bottom:3px}
+  .hcq b{font-size:23px;font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .hcq.off b{color:var(--faint)}
+  .hcnum{display:flex;align-items:baseline;gap:8px}
+  .hcnum b{font-size:28px;font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .hcnum.off b{color:var(--faint)}
+  .hcnum .u{font-size:13px;color:var(--sub);font-weight:600}
+  .hcnum .st{margin-left:auto;font-size:11.5px;color:var(--faint)}
+  .hcta{text-align:center;padding:14px;border-radius:var(--r2);border:1px dashed var(--line);
+    color:var(--sub);font-size:13.5px;font-weight:650;cursor:pointer}
+  .hcta:active{background:var(--soft);border-color:var(--accent);color:var(--accent2)}
+  .hemg{display:flex;flex-wrap:wrap;gap:6px}
+  .hemg button{border:none;background:transparent;font-size:22px;line-height:1;
+    padding:7px 8px;border-radius:10px;cursor:pointer}
+  .hemg button.on{background:var(--soft)}
+  .lgbig.sm{padding:11px 13px;font-size:13.5px;gap:9px}
+  .lgbig.sm svg{width:18px;height:18px}
+  .hcchip{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+  .hcchip span{font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 10px;
+    background:var(--card2);color:var(--faint)}
+  .hcchip span.on{background:var(--soft);color:var(--accent2)}
+  .hbar{display:flex;gap:2px;height:15px;align-items:stretch}
+  .hbar i{flex:1;border-radius:2px;background:var(--line2)}
+  .hbar i.on{background:color-mix(in srgb,var(--accent) 55%,transparent)}
+  .hbar i.td{outline:1.5px solid var(--accent);outline-offset:-1.5px}
+
+  .hcsum{margin-top:11px;font-size:12.5px;color:var(--sub);line-height:1.55}
+  .inp.sm{padding:8px 11px;font-size:13.5px}
+  .hfr{border:1px solid var(--line);border-radius:var(--r2);padding:10px 11px;margin-top:8px;background:var(--card2)}
+  .hfx{flex:none;width:32px;height:32px;border:none;border-radius:9px;background:transparent;
+    color:var(--faint);font-size:19px;cursor:pointer}
+  .hfx:active{background:var(--line2)}
+  .lgbl{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+  .lgbl>span{font-size:13px;font-weight:650;color:var(--sub)}
+
+  /* 属性行 */
+  .fldh{display:flex;align-items:center;justify-content:space-between;margin:20px 0 8px}
+  .fldh span{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.02em}
+  .fldadd{border:none;background:var(--ink);color:var(--bg);border-radius:999px;
+    padding:6px 16px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .fldl{border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;background:var(--card2)}
+  .fldz{padding:16px;text-align:center;font-size:12.5px;color:var(--faint)}
+  .fld{display:flex;align-items:center;gap:11px;padding:11px 12px;
+    border-top:1px solid var(--line);cursor:pointer}
+  .fld:first-child{border-top:none}
+  .fld:active{background:var(--soft)}
+  .fldic{flex:none;width:34px;height:34px;border-radius:10px;background:var(--card);
+    border:1px solid var(--line);display:grid;place-items:center;font-size:14px;color:var(--sub)}
+  .fldb{flex:1;min-width:0}
+  .fldb b{display:block;font-size:14px;font-weight:650;letter-spacing:-.01em}
+  .fldb i{display:block;font-size:11px;color:var(--faint);font-style:normal;margin-top:2px}
+  .req{font-style:normal;font-size:9.5px;font-weight:700;color:var(--danger);
+    background:color-mix(in srgb,var(--danger) 12%,transparent);
+    border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+  .fldc{flex:none;color:var(--faint);font-size:17px}
+  .ftyg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .ftyg button{border:1px solid var(--line);background:var(--card2);color:var(--sub);
+    border-radius:var(--r2);padding:10px 2px;font-size:11.5px;font-weight:600;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:4px}
+  .ftyg button span{font-size:14px}
+  .ftyg button.on{background:var(--soft);border-color:var(--accent);color:var(--accent2)}
+
+  /* 打卡页 */
+  .lgttl{text-align:center;margin-bottom:20px}
+  .lgttl b{display:block;font-size:19px;font-weight:750;letter-spacing:-.02em}
+  .lgttl i{display:block;font-size:12.5px;color:var(--faint);font-style:normal;margin-top:3px}
+  .lglab{font-size:12.5px;font-weight:650;color:var(--sub);margin:18px 0 7px}
+  .lglab em{font-style:normal;color:var(--danger);margin-left:3px}
+  .lglab small{font-size:11px;color:var(--faint);font-weight:500}
+  .stars{display:flex;gap:10px}
+  .stars button{border:none;background:transparent;color:var(--line2);font-size:30px;
+    line-height:1;padding:0;cursor:pointer;transition:color .12s}
+  .stars button.on{color:var(--amber)}
+  .lgerr{font-size:12.5px;color:var(--danger);margin-top:12px;display:none}
+  .lgerr.on{display:block}
+  .st5{font-style:normal;color:var(--amber)}
+  .lgrow .v.rt{color:var(--line2);letter-spacing:1px}
+
+  /* 记录时间线 */
+  .tl{position:relative;padding-left:16px}
+  .tl::before{content:"";position:absolute;left:3px;top:6px;bottom:6px;width:1.5px;background:var(--line)}
+  .tli{position:relative;margin-bottom:12px;cursor:pointer}
+  .tli::before{content:"";position:absolute;left:-16px;top:5px;width:7px;height:7px;border-radius:50%;
+    background:var(--card);border:1.5px solid var(--accent)}
+  .tld{font-size:13px;font-weight:750;margin-bottom:7px;letter-spacing:-.01em}
+  .tld small{font-size:11px;color:var(--faint);font-weight:600;margin-left:4px}
+  .tlt{float:right;font-size:11px;color:var(--faint);font-weight:600;font-variant-numeric:tabular-nums}
+  .tlc .tlt{position:absolute;top:9px;right:12px;float:none}
+  .tlc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px}
+  .lgrow{display:flex;align-items:baseline;gap:9px;padding:4px 0;font-size:13px}
+  .lgrow .i{flex:none;width:15px;text-align:center;color:var(--faint);font-size:11.5px}
+  .lgrow .k{flex:none;color:var(--sub);min-width:58px}
+  .lgrow .v{flex:1;min-width:0;font-weight:650;color:var(--accent2)}
+  .lgrow .v.tx{font-weight:400;color:var(--sub);line-height:1.55}
+
+  /* 属性统计 */
+  .ftab{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:9px}
+  .ftab button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--sub);
+    border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .ftab button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .fhd{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .fhd .i{color:var(--faint);font-size:13px}
+  .fhd b{font-size:15px;font-weight:750}
+  .fhd .tg{font-size:10.5px;font-weight:650;color:var(--faint);background:var(--card2);
+    border-radius:5px;padding:2px 6px}
+  .f4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .f4 div{background:var(--card2);border-radius:var(--r2);padding:9px 6px;text-align:center}
+  .f4 i{display:block;font-size:10.5px;color:var(--faint);font-style:normal;margin-bottom:3px}
+  .f4 b{font-size:15px;font-weight:750;font-variant-numeric:tabular-nums}
+  .funit{font-size:11px;color:var(--faint);margin-bottom:8px}
+  .fbig{font-size:30px;font-weight:750;letter-spacing:-.03em;margin-bottom:10px}
+  .fbig small{font-size:11px;color:var(--faint);font-weight:600;margin-left:6px}
+  .fchart{height:80px;margin-top:6px}
+  .fchart svg{width:100%;height:100%;overflow:visible}
+  .trend{display:flex;align-items:flex-end;gap:2px;height:54px}
+  .trend i{flex:1;background:var(--line2);border-radius:2px;height:22%}
+  .trend i.on{background:var(--hc,var(--accent));height:100%}
+  .trendx{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:6px}
+
+  /* 颜色盘 */
+  .cpal{display:flex;gap:9px;flex-wrap:wrap}
+  .cpal button{width:30px;height:30px;border-radius:50%;border:2px solid transparent;
+    cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+  .cpal button.on{border-color:var(--ink);transform:scale(1.06)}
+
+  /* 列表卡：打卡条用习惯自己的颜色 */
+  .hcard{position:relative;overflow:hidden}
+  .hdone{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:var(--r2);
+    font-size:13.5px;font-weight:650;cursor:pointer;
+    background:color-mix(in srgb,var(--hc) 14%,transparent);color:var(--hc)}
+  .hcta{text-align:center;padding:12px;border-radius:var(--r2);cursor:pointer;
+    border:1px dashed color-mix(in srgb,var(--hc) 45%,var(--line));
+    color:color-mix(in srgb,var(--hc) 75%,var(--sub));font-size:13.5px;font-weight:650}
+  .hcta:active{background:color-mix(in srgb,var(--hc) 10%,transparent)}
+  .hbar i.on{background:color-mix(in srgb,var(--hc) 62%,transparent)}
+  .hbar i.td{outline:1.5px solid var(--hc);outline-offset:-1.5px}
+  .hdel{position:absolute;top:0;right:0;bottom:0;width:74px;border:none;cursor:pointer;
+    background:var(--danger);color:#fff;font-size:13.5px;font-weight:700;
+    transform:translateX(100%);transition:transform .18s cubic-bezier(.3,.8,.3,1)}
+  .hcard.armed .hdel{transform:translateX(0)}
+  .hcard.armed{transform:translateX(-74px);transition:transform .18s cubic-bezier(.3,.8,.3,1)}
+  .hcard{transition:transform .18s cubic-bezier(.3,.8,.3,1)}
+
+  /* 记录页的一周条 */
+  .hwk{display:flex;align-items:center;gap:4px;margin-bottom:14px}
+  .hwn{flex:none;width:26px;height:34px;border:none;background:transparent;color:var(--faint);
+    font-size:17px;cursor:pointer;padding:0}
+  .hwr{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .hwd{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 7px;
+    border-radius:10px;cursor:pointer}
+  .hwd span{font-size:10px;color:var(--faint)}
+  .hwd b{font-size:14px;font-weight:650;font-variant-numeric:tabular-nums}
+  .hwd i{width:5px;height:5px;border-radius:50%;background:transparent}
+  .hwd i.on{background:var(--hc)}
+  .hwd.td{background:var(--card2)}
+  .hwd.td b{color:var(--hc)}
+  .hwd.fu{opacity:.3;cursor:default}
+
+  /* 时段表盘：黑轨道 + 同色盘面与滑窗，中间露黑缝 */
+  .kbox{background:var(--kbox);border-radius:20px;padding:16px 14px 14px;margin-top:6px}
+  .khead{display:flex;gap:14px;margin-bottom:2px}
+  .khead>div{flex:1}
+  .khead span{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+    color:var(--sub);letter-spacing:.04em;margin-bottom:3px}
+  .khead b{font-size:21px;font-weight:750;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;color:var(--ink)}
+  .kdial{width:100%;max-width:270px;margin:2px auto 0;display:block;touch-action:none;
+    user-select:none;-webkit-user-select:none}
+  .ktrack{fill:none;stroke:var(--ktrk);stroke-width:28}
+  .kface{fill:var(--kface)}
+  .karc{fill:none;stroke:var(--kface);stroke-width:18;stroke-linecap:round;
+    transition:stroke-width .14s cubic-bezier(.3,.8,.3,1)}
+  .kdial.act .karc{stroke-width:21}
+  .kridge{stroke:var(--ktrk);stroke-width:1;opacity:.42}
+  .ktick{stroke:var(--kknb);stroke-width:.9;opacity:.5}
+  .ktick.hr{stroke-width:1.1;opacity:.72}
+  .ktick.six{stroke-width:1.5;opacity:1}
+  .klab{fill:var(--kknb);font-size:10px;font-weight:600;font-family:var(--font)}
+  .klab.big{fill:var(--ink);font-size:12px;font-weight:750}
+  .kmoon{fill:var(--kmoon);stroke:var(--kmoon);stroke-width:1.4;
+    stroke-linejoin:round;pointer-events:none}
+  .ksun{fill:none;stroke:var(--ksun);stroke-width:2.1;
+    stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+  .kh .kico{fill:none;stroke:var(--kknb);stroke-width:2.5;
+    stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+  .kdur{text-align:center;margin-top:12px;font-size:17px;font-weight:750;
+    letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+  .kdur.pulse{animation:dpul .13s ease-out}
+  @keyframes dpul{0%{opacity:.5}100%{opacity:1}}
+  @media(prefers-reduced-motion:reduce){.kdur.pulse{animation:none}}
+  .lgnote{font-size:12px;color:var(--amber);margin:-10px 0 14px;font-weight:600}
+  .hadd{margin-left:auto;font-style:normal;font-size:11.5px;opacity:.75;font-weight:600}
+  .hcsum .warn{font-style:normal;color:var(--amber);font-weight:650;margin-left:8px}
+  .stc.warn .v{color:var(--amber)}
+  .stnote{font-size:12px;color:var(--amber);margin:-4px 0 12px;font-weight:600}
+  .split{font-style:normal;font-size:10.5px;font-weight:650;color:var(--amber);
+    background:color-mix(in srgb,var(--amber) 14%,transparent);
+    border-radius:5px;padding:2px 7px;margin-left:8px;vertical-align:1px}
+  .hcd.sp::after{content:"";position:absolute;right:5px;top:5px;width:5px;height:5px;
+    border-radius:50%;background:var(--amber)}
+  .hcd{position:relative}
+  .hwdd{display:flex;gap:3px;align-items:center;height:5px}
+  .hwdd i{width:5px;height:5px;border-radius:50%;background:transparent}
+  .hwdd i.on{background:var(--hc)}
+  .tlc{position:relative}
+  .tlc+.tlc{margin-top:7px}
+
+  /* ---- 习惯详情 ---- */
+  .hseg{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .hseg .sw{display:flex;gap:2px;background:var(--card2);padding:3px;border-radius:var(--r2);
+    border:1px solid var(--line);flex:1}
+  .hseg .sw button{flex:1;border:none;background:transparent;font-size:13px;font-weight:600;
+    color:var(--sub);padding:7px 10px;border-radius:9px;cursor:pointer}
+  .hseg .sw button.on{background:var(--soft);color:var(--accent2)}
+  .lgdt{flex:none;display:flex;align-items:center;gap:2px}
+  .lgdt button{border:none;background:transparent;color:var(--sub);font-size:17px;
+    padding:0 6px;cursor:pointer;line-height:1}
+  .lgdt button:disabled{opacity:.25}
+  .lgdt b{font-size:12px;color:var(--faint);font-weight:650;min-width:56px;text-align:center}
+  .lgback{margin:-8px 0 14px;font-size:11.5px;font-weight:650;color:var(--amber)}
+  .hcalh{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px}
+  .hcalh span{text-align:center;font-size:10.5px;color:var(--faint);font-weight:700}
+  .hcal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .hcz{aspect-ratio:1}
+  .hcd{aspect-ratio:1;border-radius:12px;background:var(--card2);border:1.5px solid transparent;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    cursor:pointer;color:var(--sub)}
+  .hcd b{font-size:16px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;
+    letter-spacing:-.02em}
+  .hcd i{font-size:9.5px;font-style:normal;line-height:1;opacity:.95;font-weight:600}
+  .hcd.on{background:color-mix(in srgb,var(--hc) 16%,transparent);color:var(--hc)}
+  .hcd.td{border-color:var(--hc)}
+  .hcd.fu{opacity:.28;cursor:default}
+  .hmon{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .hmon b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+  .hrec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--sh);overflow:hidden}
+  .hrr{display:flex;gap:12px;padding:12px 14px;border-top:1px solid var(--line2);cursor:pointer}
+  .hrr:first-child{border-top:none}
+  .hrd{flex:none;width:44px;text-align:center}
+  .hrd b{display:block;font-size:17px;font-weight:750;line-height:1.1;font-variant-numeric:tabular-nums}
+  .hrd i{font-size:10px;color:var(--faint);font-style:normal}
+  .hrb{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .hrb .v{font-size:13.5px;font-weight:700;color:var(--accent2)}
+  .hrb .c{font-size:11.5px;font-weight:600;background:var(--card2);color:var(--sub);
+    border-radius:999px;padding:3px 9px}
+  .hrb .c.on{background:var(--soft);color:var(--accent2)}
+  .hrb .nt{flex-basis:100%;font-size:12.5px;color:var(--sub);line-height:1.5}
+  .hrb .miss{font-size:12.5px;color:var(--faint)}
+
+  /* ---- 统计 ---- */
+  .stg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+  .stc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 14px}
+  .stc .k{font-size:11px;color:var(--faint);font-weight:650;letter-spacing:.04em}
+  .stc .v{font-size:22px;font-weight:750;letter-spacing:-.025em;margin-top:4px}
+  .stc .v small{font-size:11px;color:var(--faint);font-weight:600;margin-left:2px}
+  .stl{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:13px}
+  .stl .n{flex:none;width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .stl .b{flex:1;height:7px;border-radius:4px;background:var(--line2);overflow:hidden}
+  .stl .b i{display:block;height:100%;background:var(--accent);border-radius:4px}
+  .stl .p{flex:none;width:62px;text-align:right;font-size:12px;color:var(--sub);
+    font-variant-numeric:tabular-nums}
+
+  /* ---- 模板选择 ---- */
+  .tplg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .tpl{border:1px solid var(--line);background:var(--card2);border-radius:var(--r2);
+    padding:14px 6px 13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px}
+  .tpl .e{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;
+    background:var(--card);border:1px solid var(--line);color:var(--ink)}
+  .tpl b{font-size:13px;font-weight:650;color:var(--ink)}
+  .tpl:active{background:var(--soft);border-color:var(--accent)}
+  .tpl.other .e{color:var(--faint)}
+  .hemj{font-size:15px;line-height:1}
+  .hcn svg,.lgttl svg{vertical-align:-2px;margin-right:6px}
+  .hchip .e svg{vertical-align:-2px}
+
+  /* ---- 记录卡 ---- */
+  .lgh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 16px}
+  .lght{font-size:18px;font-weight:750;letter-spacing:-.022em;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lghm{font-size:11.5px;color:var(--faint);flex:none;font-variant-numeric:tabular-nums}
+  .lgk{font-size:11.5px;font-weight:650;color:var(--sub);margin:16px 0 8px;letter-spacing:.01em}
+  .lgk:first-child{margin-top:0}
+
+  .lgbig{display:flex;align-items:center;gap:11px;padding:15px;border-radius:var(--r2);
+    cursor:pointer;user-select:none;font-size:14.5px;font-weight:650;
+    border:1px dashed var(--line);color:var(--faint);transition:.15s}
+  .lgbig.on{border:1px solid transparent;background:var(--soft);color:var(--accent2)}
+  .lgbig svg{flex:none}
+
+  .lgtw{display:flex;gap:12px}
+  .lgtc{flex:1;min-width:0}
+  .lgtin{width:100%;border:none;background:transparent;padding:0;outline:none;color:var(--ink);
+    font-family:var(--font);font-size:25px;font-weight:750;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;-webkit-appearance:none}
+  .lgnum{display:flex;align-items:baseline;gap:9px}
+  .lgnum input{flex:1;min-width:0;border:none;background:transparent;padding:0;outline:none;color:var(--ink);
+    font-family:var(--font);font-size:30px;font-weight:750;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;-webkit-appearance:none}
+  .lgnum input::-webkit-outer-spin-button,.lgnum input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .lgnum .u{flex:none;font-size:14px;color:var(--sub);font-weight:600}
+
+  .lgbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;
+    padding:12px 14px;border-radius:var(--r2);background:var(--card2);color:var(--sub);font-size:13px}
+  .lgbar.ok{background:var(--soft);color:var(--accent2);font-weight:650}
+  .lgbar span{flex:none;font-weight:500;opacity:.85}
+
+  .lgspark{display:flex;align-items:flex-end;gap:5px;height:48px}
+  .lgspark i{flex:1;border-radius:3px;background:var(--line2);min-height:4px}
+  .lgspark i.on{background:color-mix(in srgb,var(--accent) 32%,transparent)}
+  .lgspark i.td{background:var(--accent)}
+
+  .lgit,.lgqk{display:flex;flex-wrap:wrap;gap:7px}
+  .lgit button,.lgqk button{border:1px solid var(--line);background:transparent;color:var(--sub);
+    border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+  .lgit button.on{background:var(--soft);border-color:transparent;color:var(--accent2)}
+  .lgqk button:active{background:var(--card2)}
+  .lgsc{display:flex;gap:7px}
+  .lgsc button{flex:1;border:1px solid var(--line);background:transparent;color:var(--sub);
+    border-radius:var(--r2);padding:11px 0;font-size:15px;font-weight:650;cursor:pointer;transition:.15s}
+  .lgsc button.on{background:var(--soft);border-color:transparent;color:var(--accent2)}
+  .lgn{width:100%;border:1px solid var(--line);border-radius:var(--r2);padding:11px 13px;
+    font-family:var(--font);font-size:14px;line-height:1.6;background:transparent;color:var(--ink);
+    min-height:72px;resize:vertical;outline:none;transition:border-color .15s}
+  .lgn:focus{border-color:var(--accent)}
+  .lgn::placeholder{color:var(--faint)}
+
   .hrow{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--line)}
   .hrow:first-child{border-top:none}
   .hemo{font-size:19px;flex:none;width:26px;text-align:center}
@@ -811,15 +1164,22 @@
 
   /* 通讯录式首字母分组标题 */
   /* 换页滑入 */
-  @keyframes slideL{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
-  @keyframes slideR{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
-  #view.sl{animation:slideL .3s cubic-bezier(.22,.72,.24,1)}
-  #view.sr{animation:slideR .3s cubic-bezier(.22,.72,.24,1)}
+  @keyframes slideL{from{opacity:.5;transform:translate3d(18px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+  @keyframes slideR{from{opacity:.5;transform:translate3d(-18px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+  #view.sl{animation:slideL .28s cubic-bezier(.25,.8,.3,1)}
+  #view.sr{animation:slideR .28s cubic-bezier(.25,.8,.3,1)}
+  #view.sl,#view.sr{will-change:transform,opacity;backface-visibility:hidden}
+  /* 切页这 0.28 秒里关掉顶栏毛玻璃：每帧重算 backdrop 是掉帧的主因 */
+  body.swapping .top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
   .alsec.rc{color:var(--accent2)}
   .alsec{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--sub);
     padding:14px 4px 5px;position:sticky;top:var(--topH,84px);z-index:5;
     background:var(--bg)}
   .sec{font-size:10.5px;font-weight:700;color:var(--faint);letter-spacing:.11em;text-transform:uppercase;margin:22px 3px 9px}
+  /* 可跳转的分区标题：后面跟一个小箭头 */
+  .sec .secgo{cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+  .sec .secgo::after{content:"›";font-size:13px;font-weight:800;line-height:1;opacity:.65}
+  .sec .secgo:active{color:var(--sub)}
   .empty{text-align:center;padding:40px 16px;color:var(--faint);font-size:13.5px;letter-spacing:-.005em}
   .empty .e{font-size:32px;display:block;margin-bottom:8px}
 
@@ -871,7 +1231,7 @@
 <nav class="tabs" id="tabs">
   <button data-t="today"><i data-ti="sun"></i>Today</button>
   <button data-t="plan"><i data-ti="calendar"></i>Plan</button>
-  <button data-t="cal"><i data-ti="calendar2"></i>Calendar</button>
+  <button data-t="habit"><i data-ti="flame"></i>Rituals</button>
 </nav>
 <div class="qswrap" id="qswrap">
   <div class="qshd"><button class="pill" id="qsX">‹</button><h3>ToDo</h3><span style="width:44px"></span></div>
@@ -1230,6 +1590,7 @@ function heatmap(habitId){
   var logs={};
   D.habit_logs.forEach(function(l){
     if(habitId&&l.habit_id!==habitId)return;
+    if(!l)return;
     logs[l.date]=(logs[l.date]||0)+1;});
   var total=habitId?1:Math.max(1,D.habits.filter(function(h){return !h.archived}).length);
   for(var w=0;w<26;w++)for(var d=0;d<7;d++){
@@ -1492,6 +1853,9 @@ function getFocus(k){var f=D.weekly_focus.filter(function(x){return x.id===k})[0
 function render(){
   var ttl=$("pageTitle");
   if(tab==="plan"){ttl.innerHTML=planHeader();ttl.style.cssText="margin:0";}
+  else if(tab==="habit"&&habitOpen&&habitById(habitOpen)){
+    ttl.style.cssText="margin:0";
+    ttl.innerHTML='<button class="ybtn" id="hBack">‹ '+esc(habitById(habitOpen).name)+'</button>';}
   else{ttl.style.cssText="";
     var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones"}[tab]||"Record";
     ttl.innerHTML=esc(lbl)+(tab==="today"?wxChip():"");}
@@ -1587,7 +1951,8 @@ function vToday(){
      '</div>';
 
   /* ── 今日时间线 ── */
-  h+='<div class="sec">Today' + (timed.length?' · '+timed.length:'') +
+  h+='<div class="sec"><span class="secgo" data-goday="'+ds+'">Today' +
+     (timed.length?' · '+timed.length:'') + '</span>' +
      '<button class="dadd" id="evAdd" style="float:right;margin-top:-3px">+</button></div>';
   h+='<div class="card" style="padding:8px 13px 10px">';
   if(timed.length){
@@ -1618,7 +1983,8 @@ function vToday(){
   /* ── 待办：左边未完成 / 右边已完成 ── */
   var tdOpen=untimed.filter(function(t){return !t.done});
   var tdDone=untimed.filter(function(t){return t.done});
-  h+='<div class="sec">To-do<button class="dadd" id="tdAdd" style="float:right;margin-top:-3px">+</button></div>';
+  h+='<div class="sec"><span class="secgo" id="tdGo">To-do</span>'+
+     '<button class="dadd" id="tdAdd" style="float:right;margin-top:-3px">+</button></div>';
   var tdBox=function(list,empId){
     if(!list.length)return '<div class="tdempty"'+(empId?' id="'+empId+'"':"")+'>'+(empId?"All clear":"—")+'</div>';
     return '<div class="tdwrap"><ul class="list tdlist">'+
@@ -1632,10 +1998,12 @@ function vToday(){
 
   /* ── 打卡 ── */
   if(hs.length){
-    h+='<div class="sec">Habit · '+doneH+'/'+hs.length+'</div><div class="hstrip">';
-    h+=hs.map(function(hb){var on=logged(hb.id,ds);
+    h+='<div class="sec"><span class="secgo" data-mgo="habit">Habit · '+doneH+'/'+hs.length+'</span></div><div class="hstrip">';
+    h+=hs.map(function(hb){var lg=logOf(hb.id,ds), on=!!lg;
+      var mf=mainField(hb), mv=mf?lvals(lg)[mf.id]:null;
       return '<button class="hchip'+(on?" on":"")+'" data-hl="'+hb.id+'|'+ds+'">'+
-        '<span class="e">'+esc(hb.emoji||(on?"✓":"○"))+'</span>'+esc(hb.name)+'</button>';}).join("");
+        '<span class="e">'+hicon(hb,15)+'</span>'+esc(hb.name)+
+        (mv!=null&&mv!==""?'<b class="hv">'+esc(fnum(mv,mf.dec)+(mf.unit||""))+'</b>':"")+'</button>';}).join("");
     h+='</div>';}
 
   /* ── 置顶倒计时 + 临近生日（同一排） ── */
@@ -1656,7 +2024,7 @@ function vToday(){
 
   cards.sort(function(a,b){return a.sort-b.sort});
   if(cards.length){
-    h+='<div class="sec">Countdown</div><div class="cdstrip">'+cards.map(function(x){
+    h+='<div class="sec"><span class="secgo" data-mgo="cdown">Countdown</span></div><div class="cdstrip">'+cards.map(function(x){
       return '<div class="cdcard'+(x.go==="bday"?" bd":"")+'" data-mgo="'+x.go+'">'+
         '<div class="tag">'+(x.go==="bday"?"Birthday":"Countdown")+'</div>'+
         '<div class="n">'+esc(x.name)+'</div>'+
@@ -2208,54 +2576,769 @@ function vDiary(){
   return h;}
 
 /* ---- 习惯 ---- */
-function logged(hid,ds){return D.habit_logs.some(function(l){return l.habit_id===hid&&l.date===ds})}
+/* ============ 习惯 ============
+   一个习惯 = 打卡 + 若干自定义属性
+   属性类型：number 数字 / rating 评分 / bool 开关 / multi 多选 / text 文本
+   打卡 = 当天存在一条记录；属性值统一存在 habit_logs.vals（JSON 对象）
+   —— 这样睡眠可以同时有「时长 + 睡眠质量 + 入睡困难 + 备注」四个维度 */
+var FTY={clock:"时段",number:"数字",rating:"评分",bool:"开关",multi:"多选",text:"文本"};
+var FIC={clock:"◷",number:"#",rating:"☆",bool:"◉",multi:"☑",text:"T"};
+var FTYL=[["clock","时段"],["number","数字"],["rating","评分"],["bool","开关"],["multi","多选"],["text","文本"]];
+
+function jarr(v){try{var a=JSON.parse(v||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
+function jobj(v){try{var o=JSON.parse(v||"{}");return (o&&typeof o==="object"&&!Array.isArray(o))?o:{}}catch(e){return {}}}
+var HICO={moon:1,book:1,bottle:1,droplet:1,dumbbell:1,lotus:1,bowl:1,briefcase:1,
+  check:1,flame:1,sun:1,flag:1,gift:1,chart:1,wallet:1,journal:1,calendar:1,repeat:1};
+/* 习惯图标：新数据存图标名，老数据存 emoji，两种都认 */
+function hicon(hb,size){
+  var e=(hb&&hb.emoji)||"check";
+  return HICO[e] ? ico(e,size||17) : '<span class="hemj">'+esc(e)+'</span>';}
+
+function habitById(id){return D.habits.filter(function(h){return h.id===id})[0]||null;}
+function hfields(hb){return jarr(hb&&hb.fields);}
+function logOf(hid,ds){return D.habit_logs.filter(function(l){return l.habit_id===hid&&l.date===ds})[0]||null;}
+function lvals(l){return jobj(l&&l.vals);}
+
+/* 打卡 = 有记录 */
+function logged(hid,ds){return !!logOf(hid,ds);}
+function logDone(hb,l){return !!l;}
 function streak(hid){var n=0,d=new Date();
   if(!logged(hid,fmt(d)))d=addDays(d,-1);
   while(logged(hid,fmt(d))){n++;d=addDays(d,-1);}return n;}
-function vHabit(){
-  var hs=D.habits.filter(function(h){return !h.archived}).sort(function(a,b){return a.sort-b.sort});
-  var days=[];for(var i=6;i>=0;i--)days.push(addDays(new Date(),-i));
-  var h='<button class="btn" id="addHb" style="width:100%;margin-bottom:12px">+ New habit</button>';
-  if(!hs.length)return h+'<div class="card"><div class="empty"><span class="e">🌱</span>No habits yet</div></div>';
-  h+='<div class="card">'+hs.map(function(hb){
-    var st=streak(hb.id);
-    return '<div class="hrow"><span class="hemo" data-hedit="'+hb.id+'" style="cursor:pointer">'+esc(hb.emoji||"✅")+'</span>'+
-      '<div style="flex:1;min-width:0"><div class="hname">'+esc(hb.name)+'</div>'+
-      (st?'<div class="hstreak">🔥 '+st+'d streak</div>':'<div class="hstreak" style="color:var(--faint)">Not started</div>')+'</div>'+
-      '<button class="x" data-del-habits="'+hb.id+'">×</button></div>'+
-      '<div style="padding:0 12px 11px;display:flex;gap:4px;justify-content:flex-end">'+days.map(function(d){
-        var ds=fmt(d),on=logged(hb.id,ds);
-        return '<div class="hd '+(on?"on ":"")+(ds===todayStr()?"tdy":"")+'" data-hl="'+hb.id+'|'+ds+'">'+WDE[d.getDay()].slice(0,1)+'</div>';}).join("")+'</div>';
-    }).join("")+'</div>';
-  if(hs.length)h+='<div class="sec">Consistency</div><div class="card" style="padding:14px 15px">'+heatmap(null)+'</div>';
-  return h;}
-var HEMO=["✅","💪","🏃","📚","💧","🧘","🌙","🍎","✍️","🎯","🧹","💊","🎧","☀️","🛏","🚭","🎸","🥗"];
-function habitSheet(hb){
-  var pick=(hb&&hb.emoji)||"✅";
-  openSheet('<h2>'+(hb?"Edit habit":"New habit")+'</h2>'+
-    '<label class="fl">Name</label><input class="inp" id="hn" maxlength="40" value="'+esc(hb?hb.name:"")+'" placeholder="Read, workout, water…">'+
-    '<label class="fl">Icon</label><div class="row" id="hem" style="flex-wrap:wrap;gap:6px"></div>'+
-    '<div class="row" style="margin-top:14px"><button class="btn" id="hv" style="flex:1">Save</button>'+
-    '<button class="btn g" id="hx">Cancel</button></div>');
-  function draw(){
-    $("hem").innerHTML=HEMO.map(function(e){
-      return '<button class="pill'+(e===pick?" ok":"")+'" data-he="'+e+'" style="font-size:17px;padding:6px 10px">'+e+'</button>';}).join("");
-    $("hem").querySelectorAll("[data-he]").forEach(function(el){
-      el.onclick=function(){pick=el.dataset.he;draw();};});}
-  draw();
-  setTimeout(function(){if(!hb)$("hn").focus()},80);
-  $("hx").onclick=closeSheet;
-  function save(){
-    var v=$("hn").value.trim(); if(!v)return;
-    if(hb)push("habits",Object.assign({},hb,{name:v,emoji:pick,updated_at:new Date().toISOString()}));
-    else push("habits",{id:uid(),name:v,emoji:pick,sort:Date.now(),archived:false,updated_at:new Date().toISOString()});
-    closeSheet();render();}
-  $("hv").onclick=save;
-  $("hn").onkeydown=function(e){if(e.key==="Enter")save()};}
 
-function toggleLog(hid,ds){var id=hid+"_"+ds;
-  if(logged(hid,ds))drop("habit_logs",id);
-  else push("habit_logs",{id:id,habit_id:hid,date:ds,updated_at:new Date().toISOString()});}
+function fnum(v,dec){
+  var n=+v; if(isNaN(n))return "";
+  return dec ? String(Math.round(n*10)/10) : String(Math.round(n));}
+
+function fmtField(f,v){
+  if(v==null||v==="")return "";
+  if(f.type==="clock")return (typeof v==="number")
+    ? (Math.round(v*10)/10)+"h"
+    : (v.s+" → "+v.e+"　"+clockHr(v)+"h");
+  if(f.type==="number")return fnum(v,f.dec)+(f.unit||"");
+  if(f.type==="rating")return '<em class="st5">'+"★".repeat(+v)+'</em>'+"★".repeat(Math.max(0,5-(+v)));
+  if(f.type==="bool")return v?"是":"否";
+  if(f.type==="multi")return (Array.isArray(v)?v:[]).join("、");
+  return String(v);}
+
+/* 有值的字段才显示；bool 的 false 也算有值 */
+function hasVal(f,v){
+  if(v==null||v==="")return false;
+  if(f.type==="clock")return (typeof v==="number") ? true : !!(v&&v.s&&v.e);
+  if(f.type==="multi")return Array.isArray(v)&&v.length>0;
+  return true;}
+
+/* 首页 chip / 列表卡上的一行摘要 */
+function logSummary(hb,l){
+  if(!l)return "";
+  var vs=lvals(l), out=[];
+  hfields(hb).forEach(function(f){
+    if(f.type==="text")return;
+    var v=vs[f.id]; if(!hasVal(f,v))return;
+    out.push(f.label+" "+(f.type==="rating"?(v+"★"):fmtField(f,v)));});
+  return out.join("　·　");}
+
+/* 主数字属性：列表卡和近 28 天条用它 */
+function mainField(hb){
+  var fs=hfields(hb);
+  for(var i=0;i<fs.length;i++)if(fs[i].type==="clock")return fs[i];
+  for(var j=0;j<fs.length;j++)if(fs[j].type==="number")return fs[j];
+  return null;}
+/* 主字段的数值：时段折算成小时 */
+function fVal(f,v){
+  if(!f||!hasVal(f,v))return null;
+  return f.type==="clock" ? clockHr(v) : +v;}
+function fUnit(f){return f&&f.type==="clock" ? "小时" : ((f&&f.unit)||"");}
+
+/* 一天可能有多条 */
+function logsOn(hid,ds){
+  return D.habit_logs.filter(function(l){return l.habit_id===hid&&l.date===ds})
+    .sort(function(a,b){return String(a.start_time||"").localeCompare(String(b.start_time||""))});}
+function isMulti(hb){return !!(hb&&hb.multi);}
+
+/* ---- 时段属性：24 小时表盘 ---- */
+var DR=95, DC=120;
+var KTRK=28;      /* 黑色轨道宽度 */
+var KBAND=18;     /* 选中带宽度 → 两侧各露 5px 黑缝 */
+var KFACE=81;     /* 灰色盘面半径，正好贴住轨道内缘 */
+
+function dpt(r,minutes){
+  var a=(minutes/1440)*2*Math.PI - Math.PI/2;
+  return [DC+r*Math.cos(a), DC+r*Math.sin(a)];}
+function darc(r,s,e){
+  var span=(e-s+1440)%1440;
+  if(span===0)span=1439;
+  var p1=dpt(r,s), p2=dpt(r,e);
+  return "M"+p1[0].toFixed(1)+" "+p1[1].toFixed(1)+
+    " A"+r+" "+r+" 0 "+(span>720?1:0)+" 1 "+p2[0].toFixed(1)+" "+p2[1].toFixed(1);}
+
+function clockMin(v){
+  if(typeof v==="number")return Math.round(v*60);
+  if(!v||v.s==null||v.e==null)return null;
+  var a=t2m(v.s), b=t2m(v.e);
+  if(b<=a)b+=1440;
+  return b-a;}
+function clockHr(v){var m=clockMin(v); return m==null?null:Math.round(m/60*100)/100;}
+
+/* 图标直接落在带子的圆头里，不再另画胶囊 */
+function dknob(id,m,name){
+  var p=dpt(DR,m);
+  var ip=ico(name,24).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+  return '<g id="'+id+'" class="kh"><g class="kico" transform="translate('+
+    p[0].toFixed(1)+','+p[1].toFixed(1)+') scale(.4) translate(-12,-12)">'+ip+'</g></g>';}
+
+/* 带子上的细密沟槽 */
+function karcRidge(s,e){
+  var span=(e-s+1440)%1440||1440, out="";
+  for(var i=26;i<span-26;i+=12){
+    var m=(s+i)%1440;
+    var a=dpt(DR-4.5,m), b=dpt(DR+4.5,m);
+    out+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+
+      '" y2="'+b[1].toFixed(1)+'" class="kridge"/>';}
+  return out;}
+
+function dialSVG(s,e,col,sIco,eIco){
+  sIco=sIco||"bed"; eIco=eIco||"alarm";
+  var ticks="",labels="";
+  for(var t=0;t<1440;t+=15){
+    var hour=(t%60===0), six=(t%360===0);
+    var r1=KFACE-7, r2=r1-(six?8:hour?5.5:3);
+    var a1=dpt(r1,t), a2=dpt(r2,t);
+    ticks+='<line x1="'+a1[0].toFixed(1)+'" y1="'+a1[1].toFixed(1)+'" x2="'+a2[0].toFixed(1)+
+      '" y2="'+a2[1].toFixed(1)+'" class="ktick'+(six?" six":hour?" hr":"")+'"/>';}
+  for(var hh=0;hh<24;hh+=2){
+    var lp=dpt(KFACE-24,hh*60);
+    labels+='<text x="'+lp[0].toFixed(1)+'" y="'+(lp[1]+3.6).toFixed(1)+
+      '" text-anchor="middle" class="klab'+(hh%6===0?" big":"")+'">'+hh+'</text>';}
+  var mn=ico("moon",22).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+  var sn=ico("sun",22).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+  return '<svg viewBox="0 0 240 240" class="kdial" id="kdial">'+
+    '<circle cx="120" cy="120" r="'+DR+'" class="ktrack"/>'+
+    '<circle cx="120" cy="120" r="'+KFACE+'" class="kface"/>'+
+    '<path id="karc" d="'+darc(DR,s,e)+'" class="karc"/>'+
+    '<g id="kridge">'+karcRidge(s,e)+'</g>'+
+    dknob("khs",s,sIco)+dknob("khe",e,eIco)+
+    ticks+labels+
+    '<g class="kmoon" transform="translate(120,88) scale(.6) translate(-12,-12)">'+mn+'</g>'+
+    '<g class="ksun" transform="translate(120,152) scale(.6) translate(-12,-12)">'+sn+'</g>'+
+    '</svg>';}
+
+function bindDial(sMin,eMin,onChange){
+  var svg=$("kdial"); if(!svg)return function(){return null};
+  var st={s:sMin,e:eMin,drag:null,last:null};
+  var arc=$("karc"), gs=$("khs"), ge=$("khe"), rg=$("kridge"), cu=$("kdur");
+  function place(g,m){
+    var p=dpt(DR,m);
+    g.querySelector(".kico").setAttribute("transform",
+      "translate("+p[0].toFixed(1)+","+p[1].toFixed(1)+") scale(.4) translate(-12,-12)");}
+  function dur(){return (st.e-st.s+1440)%1440||1440;}
+  function paint(){
+    arc.setAttribute("d",darc(DR,st.s,st.e));
+    rg.innerHTML=karcRidge(st.s,st.e);
+    place(gs,st.s); place(ge,st.e);
+    var d=dur();
+    cu.textContent=Math.floor(d/60)+" 小时"+(d%60?" "+(d%60)+" 分":"");
+    onChange(st.s,st.e,d);}
+  function local(ev){
+    var r=svg.getBoundingClientRect();
+    return [(ev.clientX-r.left)/r.width*240, (ev.clientY-r.top)/r.height*240];}
+  function toMin(p){
+    var a=Math.atan2(p[1]-DC,p[0]-DC)+Math.PI/2;
+    if(a<0)a+=2*Math.PI;
+    return (Math.round(a/(2*Math.PI)*1440/5)*5)%1440;}
+  function near(m,x){var d=Math.abs(m-x);return Math.min(d,1440-d);}
+  /* 每跨过一格给一次轻震动，模拟拨盘的段落感 */
+  function tick(m){
+    if(st.last===m)return;
+    st.last=m;
+    if(navigator.vibrate){try{navigator.vibrate(4)}catch(e){}}
+    cu.classList.remove("pulse"); void cu.offsetWidth; cu.classList.add("pulse");}
+  function grab(ev){
+    ev.preventDefault();
+    var m=toMin(local(ev));
+    st.drag = near(m,st.s)<=near(m,st.e) ? "s" : "e";
+    svg.classList.add("act");
+    svg.setPointerCapture(ev.pointerId);
+    st[st.drag]=m; st.last=m; paint();}
+  svg.addEventListener("pointerdown",grab);
+  svg.addEventListener("pointermove",function(ev){
+    if(!st.drag)return;
+    ev.preventDefault();
+    var m=toMin(local(ev));
+    if(m===st[st.drag])return;
+    st[st.drag]=m; tick(m); paint();});
+  function end(){st.drag=null; st.last=null; svg.classList.remove("act");}
+  svg.addEventListener("pointerup",end);
+  svg.addEventListener("pointercancel",end);
+  paint();
+  return function(){return {s:m2t(st.s), e:m2t(st.e)};};}
+
+/* ---- 模板：每个模板自带一套属性 ---- */
+var HTPL=[
+  {n:"睡眠", e:"moon", c:"c3", multi:true, f:[
+    {id:"dur",  label:"时段",     type:"clock", slab:"就寝", elab:"起床", req:true},
+    {id:"qual", label:"睡眠质量", type:"rating"},
+    {id:"hard", label:"入睡困难", type:"bool"},
+    {id:"note", label:"备注",     type:"text"}]},
+  {n:"阅读", e:"book", c:"c3", f:[
+    {id:"dur",  label:"时长",   type:"number", unit:"分钟"},
+    {id:"book", label:"书名",   type:"text"},
+    {id:"note", label:"备注",   type:"text"}]},
+  {n:"护肤", e:"bottle", c:"c5", f:[
+    {id:"step", label:"护肤步骤", type:"multi",
+      opts:["洁面","爽肤水","精华","乳液/面霜","面膜","身体乳","其他"]},
+    {id:"skin", label:"皮肤状态", type:"rating"},
+    {id:"sun",  label:"防晒",     type:"bool"},
+    {id:"note", label:"备注",     type:"text"}]},
+  {n:"喝水", e:"droplet", c:"c3", f:[
+    {id:"cup",  label:"杯数", type:"number", unit:"杯"},
+    {id:"note", label:"备注", type:"text"}]},
+  null,
+  {n:"运动", e:"dumbbell", c:"c0", f:[
+    {id:"dur",  label:"时长",     type:"number", unit:"分钟"},
+    {id:"kind", label:"运动类型", type:"multi", opts:["跑步","力量","瑜伽","游泳","骑行","球类"]},
+    {id:"hard", label:"强度",     type:"rating"},
+    {id:"note", label:"备注",     type:"text"}]},
+  {n:"冥想", e:"lotus", c:"c5", f:[
+    {id:"dur",  label:"时长", type:"number", unit:"分钟"},
+    {id:"note", label:"备注", type:"text"}]},
+  {n:"吃饭", e:"bowl", c:"c1", f:[
+    {id:"meal", label:"餐次",   type:"multi", opts:["早餐","午餐","晚餐","加餐"]},
+    {id:"home", label:"在家做", type:"bool"},
+    {id:"note", label:"备注",   type:"text"}]},
+  {n:"工作", e:"briefcase", c:"c2", f:[
+    {id:"dur",  label:"时段",   type:"clock", slab:"上班", elab:"下班"},
+    {id:"focus",label:"专注度", type:"rating"},
+    {id:"note", label:"备注",   type:"text"}]}
+];
+
+function tplSheet(){
+  openSheet('<div class="lgh"><span class="lght">新建习惯</span>'+
+    '<span class="lghm">选一个模板，或自己配</span></div>'+
+    '<div class="tplg">'+HTPL.map(function(t,i){
+      if(!t)return '<button class="tpl other" data-tp="-1"><span class="e">'+ico("plus",21)+'</span>'+
+        '<b>其他</b></button>';
+      return '<button class="tpl" data-tp="'+i+'"><span class="e">'+ico(t.e,21)+'</span>'+
+        '<b>'+t.n+'</b></button>';}).join("")+'</div>');
+  $("sheet").querySelectorAll("[data-tp]").forEach(function(el){el.onclick=function(){
+    var i=+el.dataset.tp;
+    closeSheet();
+    setTimeout(function(){habitSheet(null, i<0?null:HTPL[i]);},120);};});}
+
+/* ---- 习惯定义：属性做成可点开的行，照参考版 ---- */
+var hbDraft=null;
+/* 待办和习惯共用同一套标记色 */
+var COLORS={c0:"#BF5B4B",   /* 陶土红 */
+            c1:"#BE8A3C",   /* 赭黄   */
+            c2:"#2E7D62",   /* 松绿   */
+            c3:"#3D6E9E",   /* 钢蓝   */
+            c4:"#55599B",   /* 靛蓝   */
+            c5:"#96566E"};  /* 桑葚   */
+var HCDEF="c2";
+function hcol(hb){return COLORS[(hb&&hb.color)||HCDEF]||COLORS[HCDEF];}
+
+function habitSheet(hb,tpl,resume){
+  if(!resume){
+    hbDraft={hb:hb||null,
+      name: hb?hb.name:((tpl&&tpl.n)||""),
+      emoji:(hb&&hb.emoji)||(tpl&&tpl.e)||"check",
+      color:(hb&&hb.color)||(tpl&&tpl.c)||HCDEF,
+      multi:hb?!!hb.multi:!!(tpl&&tpl.multi),
+      fields:(hb?hfields(hb):((tpl&&tpl.f)||[])).map(function(f){return Object.assign({},f)}),
+      title: hb?"编辑习惯":(tpl?(tpl.n+"记录"):"新建习惯")};}
+  var d=hbDraft;
+
+  openSheet('<h2>'+esc(d.title)+'</h2>'+
+    '<label class="fl">名称</label>'+
+    '<input class="inp" id="hn" maxlength="40" value="'+esc(d.name)+'" placeholder="睡眠 / 阅读 / 护肤">'+
+    '<label class="fl">打卡颜色</label><div class="cpal" id="hcp">'+Object.keys(COLORS).map(function(k){
+      return '<button data-cl="'+k+'"'+(k===d.color?' class="on"':'')+
+        ' style="background:'+COLORS[k]+'"></button>';}).join("")+'</div>'+
+    '<div class="lgbl" style="margin-top:16px"><span>一天可以打卡多次</span>'+
+      '<button class="atog'+(d.multi?" on":"")+'" id="hmul"></button></div>'+
+    '<div class="fldh"><span>打卡属性</span><button class="fldadd" id="hfadd">添加</button></div>'+
+    '<div class="fldl" id="hfl"></div>'+
+    '<div class="row" style="margin-top:16px"><button class="btn" id="hv" style="flex:1">保存</button>'+
+    '<button class="btn g" id="hx">取消</button></div>'+
+    (d.hb?'<button class="btn g" id="hdel" style="width:100%;margin-top:10px;color:var(--danger)">删除这个习惯</button>':""));
+
+  function sync(){d.name=$("hn").value;}
+  $("hn").oninput=sync;
+  $("hmul").onclick=function(){d.multi=!d.multi;$("hmul").classList.toggle("on",d.multi);};
+  $("hcp").querySelectorAll("[data-cl]").forEach(function(el){el.onclick=function(){
+    d.color=el.dataset.cl;
+    $("hcp").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b===el)});};});
+
+  function drawFields(){
+    if(!d.fields.length){
+      $("hfl").innerHTML='<div class="fldz">还没有属性 · 只记打卡也可以</div>';return;}
+    $("hfl").innerHTML=d.fields.map(function(f,i){
+      return '<div class="fld" data-fe="'+i+'">'+
+        '<span class="fldic">'+FIC[f.type]+'</span>'+
+        '<span class="fldb"><b>'+esc(f.label||"未命名")+
+          (f.req?'<em class="req">必填</em>':"")+'</b>'+
+          '<i>'+FTY[f.type]+'类型'+(f.type==="number"&&f.unit?' · '+esc(f.unit):"")+'</i></span>'+
+        '<span class="fldc">›</span></div>';}).join("");
+    $("hfl").querySelectorAll("[data-fe]").forEach(function(el){
+      el.onclick=function(){sync();fieldSheet(+el.dataset.fe);};});}
+  drawFields();
+
+  $("hfadd").onclick=function(){sync();fieldSheet(-1);};
+  setTimeout(function(){if(!d.hb&&!d.name)$("hn").focus()},80);
+  $("hx").onclick=function(){hbDraft=null;closeSheet();};
+
+  var dl=$("hdel");
+  if(dl)dl.onclick=function(){
+    var h0=d.hb, snap=Object.assign({},h0);
+    var logs=D.habit_logs.filter(function(l){return l.habit_id===h0.id}).map(function(l){return Object.assign({},l)});
+    logs.forEach(function(l){drop("habit_logs",l.id)});
+    drop("habits",h0.id);
+    hbDraft=null;habitOpen=null;closeSheet();render();
+    toast("已删除 "+h0.name,function(){
+      push("habits",snap);
+      logs.forEach(function(l){push("habit_logs",l)});
+      render();});};
+
+  $("hv").onclick=function(){
+    sync();
+    var v=(d.name||"").trim(); if(!v){$("hn").focus();return;}
+    var fs=d.fields.filter(function(f){return (f.label||"").trim()});
+    var base={name:v,emoji:d.emoji,color:d.color,multi:d.multi,
+      fields:JSON.stringify(fs),updated_at:new Date().toISOString()};
+    if(d.hb)push("habits",Object.assign({},d.hb,base));
+    else push("habits",Object.assign({id:uid(),sort:Date.now(),archived:false},base));
+    hbDraft=null;closeSheet();render();};}
+
+/* 单个属性的编辑页 */
+function fieldSheet(idx){
+  var isNew=(idx<0);
+  var f=isNew ? {id:"f"+Date.now().toString(36),label:"",type:"number",unit:"",req:false}
+              : Object.assign({},hbDraft.fields[idx]);
+  function back(){habitSheet(hbDraft.hb,null,true);}
+
+  function draw(){
+    openSheet('<h2>'+(isNew?"添加属性":"编辑属性")+'</h2>'+
+      '<label class="fl">属性名</label>'+
+      '<input class="inp" id="fn" maxlength="20" value="'+esc(f.label||"")+'" placeholder="时长 / 睡眠质量 / 备注">'+
+      '<label class="fl">类型</label><div class="ftyg" id="fty">'+FTYL.map(function(r){
+        return '<button data-fv="'+r[0]+'"'+(r[0]===f.type?' class="on"':'')+'>'+
+          '<span>'+FIC[r[0]]+'</span>'+r[1]+'</button>';}).join("")+'</div>'+
+      (f.type==="number"
+        ? '<label class="fl">单位</label><input class="inp" id="fu" maxlength="10" value="'+esc(f.unit||"")+'" placeholder="小时 / 分钟 / 杯">'
+        : "")+
+      (f.type==="multi"
+        ? '<label class="fl">选项（逗号分隔）</label><input class="inp" id="fo" maxlength="200" value="'+esc((f.opts||[]).join("，"))+'" placeholder="洁面，爽肤水，精华">'
+        : "")+
+      (f.type==="clock"
+        ? '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">开始叫什么</label>'+
+          '<input class="inp" id="fsl" maxlength="8" value="'+esc(f.slab||"")+'" placeholder="就寝"></div>'+
+          '<div style="flex:1"><label class="fl">结束叫什么</label>'+
+          '<input class="inp" id="fel" maxlength="8" value="'+esc(f.elab||"")+'" placeholder="起床"></div></div>'
+        : "")+
+      '<div class="lgbl" style="margin-top:16px"><span>必填</span>'+
+        '<button class="atog'+(f.req?" on":"")+'" id="fq"></button></div>'+
+      '<div class="row" style="margin-top:18px"><button class="btn" id="fok" style="flex:1">保存</button>'+
+      '<button class="btn g" id="fx">取消</button></div>'+
+      (isNew?"":'<button class="btn g" id="fdel" style="width:100%;margin-top:10px;color:var(--danger)">删除这个属性</button>'));
+
+    $("fn").oninput=function(){f.label=$("fn").value;};
+    $("fty").querySelectorAll("[data-fv]").forEach(function(el){el.onclick=function(){
+      f.label=$("fn").value;
+      var u=$("fu"), o=$("fo");
+      if(u)f.unit=u.value; if(o)f.opts=o.value.split(/[,，]/).map(function(x){return x.trim()}).filter(Boolean);
+      f.type=el.dataset.fv; draw();};});
+    $("fq").onclick=function(){f.req=!f.req;$("fq").classList.toggle("on",f.req);};
+    $("fx").onclick=back;
+    var fd=$("fdel");
+    if(fd)fd.onclick=function(){hbDraft.fields.splice(idx,1);back();};
+    $("fok").onclick=function(){
+      f.label=$("fn").value.trim();
+      if(!f.label){$("fn").focus();return;}
+      if(f.type==="number"){f.unit=($("fu").value||"").trim();
+        f.dec=/小时|kg|km|公斤|升/.test(f.unit)?1:0;}
+      if(f.type==="clock"){f.slab=($("fsl").value||"").trim()||"开始";f.elab=($("fel").value||"").trim()||"结束";}
+      if(f.type==="multi")f.opts=($("fo").value||"").split(/[,，]/).map(function(x){return x.trim()}).filter(Boolean);
+      if(isNew)hbDraft.fields.push(f); else hbDraft.fields[idx]=f;
+      back();};}
+  draw();}
+
+/* ---- 打卡页：照参考版，标题居中 + 记录时间 + 逐属性输入 ---- */
+function ckSVG(on){
+  return '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+    'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+
+    '<circle cx="12" cy="12" r="9"/>'+(on?'<path d="m8.4 12.1 2.5 2.5 4.7-5.2"/>':'')+'</svg>';}
+
+function quickLog(hid,ds){
+  var hb=habitById(hid); if(!hb)return;
+  if(!hfields(hb).length&&!isMulti(hb)){
+    var id=hid+"_"+ds, l=logOf(hid,ds);
+    if(l)drop("habit_logs",id);
+    else push("habit_logs",{id:id,habit_id:hid,date:ds,vals:"{}",
+      start_time:m2t(new Date().getHours()*60+new Date().getMinutes()),
+      updated_at:new Date().toISOString()});
+    render();return;}
+  logSheet(hb,ds,isMulti(hb)?null:((logOf(hid,ds)||{}).id||null));}
+
+/* logId 为空 = 新建一条；多次打卡的习惯每次都是新的一条 */
+function logSheet(hb,ds,logId){
+  ds=ds||todayStr();
+  var l=logId ? D.habit_logs.filter(function(x){return x.id===logId})[0]
+              : (isMulti(hb)?null:logOf(hb.id,ds));
+  var vs=lvals(l), exists=!!l;
+  var fs=hfields(hb);
+  var now=new Date();
+  var tm=(l&&l.start_time)||m2t(now.getHours()*60+now.getMinutes());
+  var hasClock=fs.some(function(f){return f.type==="clock"});
+  var draft={}, getClock={};
+  fs.forEach(function(f){
+    var v=vs[f.id];
+    draft[f.id]= f.type==="multi" ? (Array.isArray(v)?v.slice():[]) : (v==null?null:v);});
+
+  function fieldHTML(f){
+    var v=draft[f.id];
+    var lab='<div class="lglab">'+esc(f.label)+(f.req?'<em>*</em>':"")+
+      (f.type==="number"&&f.unit?'<small>（'+esc(f.unit)+'）</small>':"")+'</div>';
+    if(f.type==="clock"){
+      var sv=1380, ev2=420;
+      if(v&&v.s&&v.e){sv=t2m(v.s);ev2=t2m(v.e);}
+      else if(typeof v==="number"){ev2=(sv+Math.round(v*60))%1440;}
+      return lab+'<div class="kbox">'+
+        '<div class="khead">'+
+          '<div><span>'+ico("bed",13)+esc(f.slab||"就寝")+'</span><b id="dst">'+m2t(sv)+'</b></div>'+
+          '<div><span>'+ico("alarm",13)+esc(f.elab||"起床")+'</span><b id="det">'+m2t(ev2)+'</b></div>'+
+        '</div>'+
+        dialSVG(sv,ev2,hcol(hb))+
+        '<div class="kdur" id="kdur">—</div></div>';}
+    if(f.type==="number")
+      return lab+'<input class="inp" id="fv_'+f.id+'" type="number" inputmode="decimal" step="any" '+
+        'placeholder="请输入'+esc(f.label)+'" value="'+(v==null?"":esc(v))+'">';
+    if(f.type==="rating")
+      return lab+'<div class="stars" data-fr="'+f.id+'">'+[1,2,3,4,5].map(function(n){
+        return '<button data-rv="'+n+'" class="'+(v&&n<=v?"on":"")+'">★</button>';}).join("")+'</div>';
+    if(f.type==="bool")
+      return '<div class="lgbl"><span>'+esc(f.label)+(f.req?' <em class="rq">*</em>':"")+'</span>'+
+        '<button class="atog'+(v===true?" on":"")+'" data-fb="'+f.id+'"></button></div>';
+    if(f.type==="multi")
+      return lab+'<div class="lgit" data-fm="'+f.id+'">'+(f.opts||[]).map(function(o){
+        return '<button data-mv="'+esc(o)+'"'+(v.indexOf(o)>=0?' class="on"':'')+'>'+esc(o)+'</button>';}).join("")+'</div>';
+    return lab+'<textarea class="lgn" id="fv_'+f.id+'" maxlength="500" placeholder="请输入'+esc(f.label)+'">'+
+      esc(v==null?"":v)+'</textarea>';}
+
+  var same=logsOn(hb.id,ds).filter(function(x){return !l||x.id!==l.id});
+  openSheet('<div class="lgttl"><b>'+(exists?"编辑记录":"打卡")+'</b><i>'+hicon(hb,14)+esc(hb.name)+'</i></div>'+
+    (same.length?'<div class="lgnote">这天已经有 '+same.length+' 条记录，这是第 '+(same.length+1)+' 条</div>':"")+
+    '<div class="lglab">'+(hasClock?"日期":"记录时间")+'</div>'+
+    (hasClock
+      ? '<input class="inp" id="lgdt" type="date" value="'+esc(ds)+'" max="'+esc(todayStr())+'">'
+      : '<input class="inp" id="lgdt" type="datetime-local" value="'+esc(ds+"T"+tm)+'" max="'+esc(todayStr()+"T23:59")+'">')+
+    (fs.length?fs.map(fieldHTML).join(""):'<div class="hdone" style="margin-top:16px">'+ckSVG(true)+'<span>打卡</span></div>')+
+    '<div class="lgerr" id="lgerr"></div>'+
+    '<div class="row" style="margin-top:18px">'+
+    '<button class="btn g" id="lgx" style="flex:1">取消</button>'+
+    '<button class="btn" id="lgok" style="flex:1">保存</button></div>'+
+    (exists?'<button class="btn g" id="lgdel" style="width:100%;margin-top:10px;color:var(--danger)">删除这条记录</button>':''));
+
+  fs.forEach(function(f){
+    if(f.type!=="clock")return;
+    var v=draft[f.id];
+    var sv=(v&&v.s)?t2m(v.s):1380, ev2=(v&&v.e)?t2m(v.e):420;
+    getClock[f.id]=bindDial(sv,ev2,function(a,b){
+      $("dst").textContent=m2t(a); $("det").textContent=m2t(b);});});
+
+  $("lgdt").onchange=function(){
+    var val=$("lgdt").value||"";
+    var nd=val.slice(0,10);
+    if(!nd)return;
+    if(nd>todayStr()){$("lgdt").value=hasClock?todayStr():(todayStr()+"T"+tm);return;}
+    if(nd!==ds)logSheet(hb,nd,null);};
+
+  $("sheet").querySelectorAll("[data-fr]").forEach(function(box){
+    var fid=box.dataset.fr;
+    box.querySelectorAll("[data-rv]").forEach(function(el){el.onclick=function(){
+      var n=+el.dataset.rv;
+      draft[fid]=(draft[fid]===n)?null:n;
+      box.querySelectorAll("button").forEach(function(b){
+        b.classList.toggle("on", draft[fid]!=null && +b.dataset.rv<=draft[fid]);});};});});
+  $("sheet").querySelectorAll("[data-fb]").forEach(function(el){
+    var fid=el.dataset.fb;
+    el.onclick=function(){draft[fid]=!(draft[fid]===true);el.classList.toggle("on",draft[fid]===true);};});
+  $("sheet").querySelectorAll("[data-fm]").forEach(function(box){
+    var fid=box.dataset.fm;
+    box.querySelectorAll("[data-mv]").forEach(function(el){el.onclick=function(){
+      var o=el.dataset.mv, i=draft[fid].indexOf(o);
+      if(i>=0)draft[fid].splice(i,1); else draft[fid].push(o);
+      el.classList.toggle("on", draft[fid].indexOf(o)>=0);};});});
+
+  $("lgx").onclick=closeSheet;
+  var dl=$("lgdel");
+  if(dl)dl.onclick=function(){drop("habit_logs",l.id);closeSheet();render();};
+
+  $("lgok").onclick=function(){
+    var out={}, miss=[];
+    fs.forEach(function(f){
+      var v=null;
+      if(f.type==="clock")v=getClock[f.id]?getClock[f.id]():null;
+      else if(f.type==="number"){var n=parseFloat($("fv_"+f.id).value); if(!isNaN(n))v=n;}
+      else if(f.type==="text"){var t=$("fv_"+f.id).value.trim(); if(t)v=t;}
+      else if(f.type==="multi"){if(draft[f.id].length)v=draft[f.id];}
+      else if(draft[f.id]!=null)v=draft[f.id];
+      if(v!=null)out[f.id]=v;
+      else if(f.req)miss.push(f.label);});
+    if(miss.length){
+      $("lgerr").textContent="还差必填项："+miss.join("、");
+      $("lgerr").classList.add("on");return;}
+    var val=($("lgdt").value||"");
+    var st = hasClock ? (out[(fs.filter(function(f){return f.type==="clock"})[0]||{}).id]||{}).s || tm
+                      : (val.slice(11,16)||tm);
+    var id = l ? l.id : (hb.id+"_"+ds+(logsOn(hb.id,ds).length?"_"+Math.random().toString(36).slice(2,7):""));
+    push("habit_logs",{id:id,habit_id:hb.id,date:ds,
+      vals:JSON.stringify(out), start_time:st, updated_at:new Date().toISOString()});
+    closeSheet();render();};}
+
+/* ---- 列表 ---- */
+var habitOpen=null, habitMode="log", habitMon=new Date(), habitWk=new Date(), habitTab=0;
+
+function barStrip(hb){
+  var out="", ts=todayStr();
+  for(var i=27;i>=0;i--){var ds=fmt(addDays(new Date(),-i));
+    out+='<i class="'+(logged(hb.id,ds)?"on":"")+(ds===ts?" td":"")+'"></i>';}
+  return out;}
+
+function vHabit(){
+  if(habitOpen){var hx=habitById(habitOpen); if(hx)return vHabitOne(hx); habitOpen=null;}
+  var hs=D.habits.filter(function(h){return !h.archived}).sort(function(a,b){return a.sort-b.sort});
+  if(!hs.length)return '<div class="card"><div class="empty"><span class="e">🌱</span>还没有习惯，点右下角 + 新建</div></div>';
+  var ts=todayStr();
+  return '<div class="hlist">'+hs.map(function(hb){
+    var ls=logsOn(hb.id,ts), l=ls[ls.length-1], st=streak(hb.id), sm=logSummary(hb,l), c=hcol(hb);
+    var mf=mainField(hb), tot=null;
+    if(mf&&ls.length>1){tot=0;ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]);if(vv!=null)tot+=vv;});}
+    return '<div class="hcard" data-hopen="'+hb.id+'" data-hpress="'+hb.id+'" style="--hc:'+c+'">'+
+      '<button class="hdel" data-hdel="'+hb.id+'">删除</button>'+
+      '<div class="hch"><span class="hcn">'+hicon(hb,18)+esc(hb.name)+'</span>'+
+      '<span class="hcm">连续 '+st+' 天</span></div>'+
+      '<div class="'+(l?"hdone":"hcta")+'" data-hl="'+hb.id+'|'+ts+'">'+
+        (l?ckSVG(true)+'<span>今天已打卡'+(ls.length>1?' · '+ls.length+' 段':'')+'</span>':'＋ 打卡')+
+        (isMulti(hb)&&l?'<em class="hadd">再记一次</em>':"")+'</div>'+
+      (tot!=null?'<div class="hcsum">合计 '+esc(fnum(tot,1)+fUnit(mf))+
+        '<em class="warn">分 '+ls.length+' 段</em></div>':(sm?'<div class="hcsum">'+esc(sm)+'</div>':""))+
+      '<div class="hcs">近 28 天</div><div class="hbar">'+barStrip(hb)+'</div>'+
+    '</div>';}).join("")+'</div>';}
+
+/* ---- 详情 ---- */
+/* 平均时刻：跨午夜的先补一天再平均，否则会算成中午 */
+function avgClock(list,late){
+  if(!list.length)return null;
+  var sum=0;
+  list.forEach(function(x){sum += (late&&x<720)?x+1440:x;});
+  return m2t(Math.round(sum/list.length)%1440);}
+
+function monLabel(d){return d.getFullYear()+" / "+pad(d.getMonth()+1);}
+
+/* 大日历：格子撑成正方形，日期数字放大，用习惯自己的颜色 */
+function hCal(hb){
+  var y=habitMon.getFullYear(), m=habitMon.getMonth();
+  var lead=new Date(y,m,1).getDay(), last=new Date(y,m+1,0).getDate();
+  var ts=todayStr(), mf=mainField(hb), out="";
+  for(var i=0;i<lead;i++)out+='<div class="hcz"></div>';
+  for(var d=1;d<=last;d++){
+    var ds=y+"-"+pad(m+1)+"-"+pad(d);
+    var ls=logsOn(hb.id,ds), l=ls[0], fu=(ds>ts);
+    var sm="";
+    if(ls.length&&mf){
+      var tt=null;
+      ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]); if(vv!=null)tt=(tt||0)+vv;});
+      if(tt!=null)sm=fnum(tt,mf.type==="clock"?1:mf.dec);}
+    out+='<div class="hcd'+(l?" on":"")+(ls.length>1?" sp":"")+(ds===ts?" td":"")+(fu?" fu":"")+'"'+
+      (fu?"":' data-hday="'+hb.id+'|'+ds+'"')+'>'+
+      '<b>'+d+'</b>'+(sm?'<i>'+esc(sm)+'</i>':"")+'</div>';}
+  return '<div class="hcalw" style="--hc:'+hcol(hb)+'">'+
+    '<div class="hcalh"><span>日</span><span>一</span><span>二</span><span>三</span>'+
+    '<span>四</span><span>五</span><span>六</span></div><div class="hcal">'+out+'</div></div>';}
+
+/* 记录页顶部的一周条：轻，不抢戏，点某天补签 */
+function hWeek(hb){
+  var s0=startOfWeek(habitWk), ts=todayStr(), out="";
+  for(var i=0;i<7;i++){
+    var d=addDays(s0,i), ds=fmt(d), ls=logsOn(hb.id,ds), fu=(ds>ts);
+    out+='<div class="hwd'+(ds===ts?" td":"")+(fu?" fu":"")+'"'+
+      (fu?"":' data-hday="'+hb.id+'|'+ds+'"')+'>'+
+      '<span>'+WDE[d.getDay()].slice(0,1)+'</span><b>'+d.getDate()+'</b>'+
+      '<em class="hwdd">'+(ls.length?'<i class="on"></i>':'<i></i>')+
+      (ls.length>1?'<i class="on"></i>':"")+'</em></div>';}
+  return '<div class="hwk" style="--hc:'+hcol(hb)+'">'+
+    '<button class="hwn" data-hwk="-1">‹</button>'+
+    '<div class="hwr">'+out+'</div>'+
+    '<button class="hwn" data-hwk="1">›</button></div>';}
+
+function logCard(hb,l){
+  var vs=lvals(l), rows=hfields(hb).filter(function(f){return hasVal(f,vs[f.id])});
+  if(!rows.length)return '<div class="lgrow"><span class="k">已打卡</span></div>';
+  return rows.map(function(f){
+    return '<div class="lgrow"><span class="i">'+FIC[f.type]+'</span>'+
+      '<span class="k">'+esc(f.label)+'</span>'+
+      '<span class="v'+(f.type==="text"?" tx":"")+(f.type==="rating"?" rt":"")+'">'+
+      (f.type==="rating"?fmtField(f,vs[f.id]):esc(fmtField(f,vs[f.id])))+'</span></div>';}).join("");}
+
+function vHabitOne(hb){
+  var h='<div class="hseg"><div class="sw">'+
+    '<button data-hm="log"'+(habitMode==="log"?' class="on"':'')+'>记录</button>'+
+    '<button data-hm="stat"'+(habitMode==="stat"?' class="on"':'')+'>统计</button></div>'+
+    '<button class="pill" data-hedit="'+hb.id+'">编辑</button></div>';
+  if(habitMode==="stat")
+    h+='<div class="hmon"><button class="pill" data-hmn="-1">‹</button>'+
+       '<b>'+monLabel(habitMon)+'</b>'+
+       '<button class="pill" data-hmn="1">›</button></div>';
+
+  var y=habitMon.getFullYear(), m=habitMon.getMonth();
+  var last=new Date(y,m+1,0).getDate(), ts=todayStr();
+  var rows=[];
+  for(var i=last;i>=1;i--){
+    var ds=y+"-"+pad(m+1)+"-"+pad(i);
+    if(ds>ts)continue;
+    var l=logOf(hb.id,ds); if(!l)continue;
+    rows.push({ds:ds,l:l,d:new Date(y,m,i)});}
+  var wrows=[];
+  for(var q=6;q>=0;q--){
+    var wd=addDays(startOfWeek(habitWk),q), wds=fmt(wd);
+    if(wds>ts)continue;
+    var wls=logsOn(hb.id,wds); if(!wls.length)continue;
+    wrows.push({ds:wds,ls:wls,d:wd});}
+
+  if(habitMode==="log"){
+    h+=hWeek(hb);
+    h+= wrows.length
+      ? '<div class="tl">'+wrows.map(function(r){
+          var mf2=mainField(hb), tt=null;
+          if(mf2&&r.ls.length>1){tt=0;r.ls.forEach(function(x){
+            var vv=fVal(mf2,lvals(x)[mf2.id]); if(vv!=null)tt+=vv;});}
+          return '<div class="tli">'+
+            '<div class="tld">'+pad(r.d.getMonth()+1)+'-'+pad(r.d.getDate())+
+              ' <small>'+WDE[r.d.getDay()]+'</small>'+
+              (r.ls.length>1?'<em class="split">分 '+r.ls.length+' 段'+
+                (tt!=null?' · 合计 '+esc(fnum(tt,1)+fUnit(mf2)):"")+'</em>':"")+'</div>'+
+            r.ls.map(function(x){
+              return '<div class="tlc" data-hedid="'+x.id+'">'+
+                (x.start_time?'<span class="tlt">'+esc(x.start_time)+'</span>':"")+
+                logCard(hb,x)+'</div>';}).join("")+'</div>';}).join("")+'</div>'
+      : '<div class="card"><div class="empty">这一周还没有记录</div></div>';
+    return h;}
+  var flat=[];
+  rows.forEach(function(r){logsOn(hb.id,r.ds).forEach(function(x){flat.push({ds:r.ds,l:x,d:r.d});});});
+  return h+hStat(hb,flat,last);}
+
+/* ---- 统计：基础 + 按属性类型 + 打卡趋势 + 本月日历 ---- */
+function sparkPath(vals,w,hh){
+  if(vals.length<2)return "";
+  var mx=Math.max.apply(null,vals), mn=Math.min.apply(null,vals);
+  var rg=(mx-mn)||1;
+  return vals.map(function(v,i){
+    var x=(i/(vals.length-1))*w, yy=hh-((v-mn)/rg)*hh;
+    return (i?"L":"M")+x.toFixed(1)+" "+yy.toFixed(1);}).join(" ");}
+
+function hStat(hb,rows,last){
+  var y=habitMon.getFullYear(), m=habitMon.getMonth(), ts=todayStr();
+  var t0=new Date(); t0.setHours(0,0,0,0);
+  var days=0, tot=0, hits=0, split=0, best=0, run=0, dates=[];
+  for(var j=1;j<=last;j++){
+    if(new Date(y,m,j)>t0)break;
+    days++;
+    var ds=y+"-"+pad(m+1)+"-"+pad(j);
+    var ls=logsOn(hb.id,ds);
+    if(ls.length){tot++;hits+=ls.length;if(ls.length>1)split++;
+      run++;dates.push(j);if(run>best)best=run;} else run=0;}
+  var gap = dates.length>1 ? ((dates[dates.length-1]-dates[0])/(dates.length-1)) : (dates.length?1:0);
+
+  var h='<div class="sec">基础统计</div><div class="stg">'+
+    '<div class="stc"><div class="k">打卡天数</div><div class="v">'+tot+'<small>/'+days+'</small></div></div>'+
+    '<div class="stc"><div class="k">打卡次数</div><div class="v">'+hits+'<small>次</small></div></div>'+
+    '<div class="stc"><div class="k">最长连续</div><div class="v">'+best+'<small>天</small></div></div>'+
+    (isMulti(hb)
+      ? '<div class="stc'+(split?" warn":"")+'"><div class="k">分散天数</div><div class="v">'+split+'<small>天</small></div></div>'
+      : '<div class="stc"><div class="k">平均间隔</div><div class="v">'+(gap?gap.toFixed(1):"—")+'<small>天</small></div></div>')+
+    '</div>'+
+    (isMulti(hb)&&split?'<div class="stnote">有 '+split+' 天分成了多段，作息偏碎</div>':"");
+
+  var fs=hfields(hb);
+  if(fs.length){
+    if(habitTab>=fs.length)habitTab=0;
+    h+='<div class="sec">属性统计</div>';
+    h+='<div class="ftab">'+fs.map(function(f,i){
+      return '<button data-fs="'+i+'"'+(i===habitTab?' class="on"':'')+'>'+esc(f.label)+'</button>';}).join("")+'</div>';
+    var f=fs[habitTab];
+    var vals=[], seq=[], yes=0, no=0, filled=0, cnt={}, rt={1:0,2:0,3:0,4:0,5:0};
+    var sts=[], ens=[];
+    rows.slice().reverse().forEach(function(r){
+      var v=lvals(r.l)[f.id];
+      if(!hasVal(f,v))return;
+      if(f.type==="clock"){var hv=clockHr(v);vals.push(hv);seq.push(hv);sts.push(t2m(v.s));ens.push(t2m(v.e));}
+      else if(f.type==="number"){vals.push(+v);seq.push(+v);}
+      else if(f.type==="rating")rt[+v]=(rt[+v]||0)+1;
+      else if(f.type==="bool"){if(v)yes++;else no++;}
+      else if(f.type==="multi")(v||[]).forEach(function(o){cnt[o]=(cnt[o]||0)+1;});
+      else filled++;});
+
+    h+='<div class="card" style="padding:14px 15px">';
+    h+='<div class="fhd"><span class="i">'+FIC[f.type]+'</span><b>'+esc(f.label)+'</b>'+
+       '<span class="tg">'+FTY[f.type]+'</span></div>';
+    if(f.type==="number"||f.type==="clock"){
+      if(!vals.length)h+='<div class="empty" style="padding:14px 0">这个月还没有数据</div>';
+      else{
+        var sum=vals.reduce(function(a,b){return a+b},0), avg=sum/vals.length;
+        h+='<div class="f4">'+
+          '<div><i>平均</i><b>'+fnum(avg,1)+'</b></div>'+
+          '<div><i>最小</i><b>'+fnum(Math.min.apply(null,vals),f.dec)+'</b></div>'+
+          '<div><i>最大</i><b>'+fnum(Math.max.apply(null,vals),f.dec)+'</b></div>'+
+          '<div><i>总计</i><b>'+fnum(sum,f.dec)+'</b></div></div>'+
+          (fUnit(f)?'<div class="funit">单位：'+esc(fUnit(f))+'</div>':"")+
+          (f.type==="clock"&&sts.length
+            ? '<div class="f4" style="grid-template-columns:1fr 1fr">'+
+              '<div><i>平均'+esc(f.slab||"开始")+'</i><b>'+(avgClock(sts,true)||"—")+'</b></div>'+
+              '<div><i>平均'+esc(f.elab||"结束")+'</i><b>'+(avgClock(ens,false)||"—")+'</b></div></div>'
+            : "");
+        if(seq.length>1)
+          h+='<div class="fchart"><svg viewBox="0 0 300 80" preserveAspectRatio="none">'+
+             '<path d="'+sparkPath(seq,300,72)+'" fill="none" stroke="var(--accent)" stroke-width="2" '+
+             'stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>';}
+    }else if(f.type==="rating"){
+      var rmx=Math.max(rt[1],rt[2],rt[3],rt[4],rt[5])||1;
+      var rn=rt[1]+rt[2]+rt[3]+rt[4]+rt[5];
+      var rsum=1*rt[1]+2*rt[2]+3*rt[3]+4*rt[4]+5*rt[5];
+      h+='<div class="fbig">'+(rn?fnum(rsum/rn,1):"—")+'<small>平均分</small></div>';
+      [5,4,3,2,1].forEach(function(n){
+        h+='<div class="stl"><span class="n">'+"★".repeat(n)+'</span>'+
+           '<span class="b"><i style="width:'+Math.round(rt[n]/rmx*100)+'%"></i></span>'+
+           '<span class="p">'+rt[n]+'</span></div>';});
+    }else if(f.type==="bool"){
+      var bn=yes+no||1;
+      h+='<div class="stl"><span class="n">是</span><span class="b"><i style="width:'+Math.round(yes/bn*100)+'%"></i></span>'+
+         '<span class="p">'+yes+'次 '+Math.round(yes/bn*100)+'%</span></div>'+
+         '<div class="stl"><span class="n">否</span><span class="b"><i style="width:'+Math.round(no/bn*100)+'%"></i></span>'+
+         '<span class="p">'+no+'次 '+Math.round(no/bn*100)+'%</span></div>';
+    }else if(f.type==="multi"){
+      var ks=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
+      if(!ks.length)h+='<div class="empty" style="padding:14px 0">这个月还没有数据</div>';
+      else ks.forEach(function(n){var pc=tot?Math.round(cnt[n]/tot*100):0;
+        h+='<div class="stl"><span class="n">'+esc(n)+'</span>'+
+           '<span class="b"><i style="width:'+pc+'%"></i></span>'+
+           '<span class="p">'+cnt[n]+'次 '+pc+'%</span></div>';});
+    }else{
+      h+='<div class="f4" style="grid-template-columns:1fr 1fr">'+
+         '<div><i>填写次数</i><b>'+filled+'</b></div>'+
+         '<div><i>填写率</i><b>'+(tot?Math.round(filled/tot*100):0)+'%</b></div></div>';}
+    h+='</div>';}
+
+  /* 打卡趋势：本月每天一根 */
+  h+='<div class="sec">打卡趋势</div><div class="card" style="padding:14px 15px">'+
+     '<div class="trend">';
+  for(var k2=1;k2<=last;k2++){
+    var ds2=y+"-"+pad(m+1)+"-"+pad(k2);
+    h+='<i class="'+(logOf(hb.id,ds2)?"on":"")+'"></i>';}
+  h+='</div><div class="trendx"><span>1</span><span>10</span><span>20</span><span>'+last+'</span></div></div>';
+
+  h+='<div class="sec">本月打卡</div><div class="card" style="padding:14px 13px 16px">'+hCal(hb)+'</div>';
+  return h;}
+
 
 /* ---- 记账 ---- */
 var CATS=["餐饮","交通","购物","居住","娱乐","医疗","学习","人情","其他"];
@@ -2634,7 +3717,19 @@ function ico(name,size){
     inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
     plus:'<path d="M12 5v14M5 12h14"/>',
     search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/>',
-    menu:'<path d="M4 7h16M4 12h16M4 17h16"/>'
+    menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+    moon:'<path d="M20.5 14.8A8.6 8.6 0 0 1 9.2 3.5a8.6 8.6 0 1 0 11.3 11.3z"/>',
+    book:'<path d="M12 6.6C10.4 5.1 8.3 4.6 3.5 4.6v12.8c4.8 0 6.9.5 8.5 2 1.6-1.5 3.7-2 8.5-2V4.6c-4.8 0-6.9.5-8.5 2z"/><path d="M12 6.6v12.8"/>',
+    bottle:'<path d="M10 2.8h4v2.6h-4z"/><path d="M8.2 9.4A4 4 0 0 1 12.2 5.4h-.4a4 4 0 0 1 4 4v9.4a2.6 2.6 0 0 1-2.6 2.6h-2.4a2.6 2.6 0 0 1-2.6-2.6z"/><path d="M8.2 13h7.6"/>',
+    droplet:'<path d="M12 3.2c3.4 3.9 5.8 6.9 5.8 9.8a5.8 5.8 0 0 1-11.6 0c0-2.9 2.4-5.9 5.8-9.8z"/>',
+    dumbbell:'<path d="M2.5 12h2M19.5 12h2"/><rect x="4.5" y="8.2" width="3.2" height="7.6" rx="1.2"/><rect x="16.3" y="8.2" width="3.2" height="7.6" rx="1.2"/><path d="M7.7 12h8.6"/>',
+    lotus:'<circle cx="12" cy="5.2" r="2.4"/><path d="M12 9.8c-2.1 0-3.7 1.6-3.7 3.6v1.4l-4.1 2M12 9.8c2.1 0 3.7 1.6 3.7 3.6v1.4l4.1 2"/><path d="M5.8 19.8c1.7-1.5 3.9-2.2 6.2-2.2s4.5.7 6.2 2.2"/>',
+    bowl:'<path d="M3 11.2h18a9 9 0 0 1-9 9 9 9 0 0 1-9-9z"/><path d="M1.8 20.6h20.4"/><path d="M9 7.8c0-1 1-1.5 1-2.6s-1-1.6-1-2.6M14.4 7.8c0-1 1-1.5 1-2.6s-1-1.6-1-2.6"/>',
+    bed:'<path d="M3 16.1v-5.2A2.4 2.4 0 0 1 5.4 8.5H19.6A1.4 1.4 0 0 1 21 9.9v6.2"/><path d="M3 13.1h18M3 16.1v2.4M21 16.1v2.4"/><path d="M6.8 8.5V6.9A1.4 1.4 0 0 1 8.2 5.5h4.2a1.4 1.4 0 0 1 1.4 1.4V8.5"/>',
+    alarm:'<circle cx="12" cy="12" r="5.6"/><path d="M12 8.9V12l2.1 1.3"/>'+
+          '<path d="M4.9 8.9a6.6 6.6 0 0 0 0 6.2"/><path d="M19.1 8.9a6.6 6.6 0 0 1 0 6.2"/>'+
+          '<path d="M2.2 7a10.2 10.2 0 0 0 0 10"/><path d="M21.8 7a10.2 10.2 0 0 1 0 10"/>',
+    briefcase:'<rect x="2.6" y="7.2" width="18.8" height="13" rx="2.6"/><path d="M8.6 7.2V5.6a2 2 0 0 1 2-2h2.8a2 2 0 0 1 2 2v1.6"/><path d="M2.6 12.6h18.8"/>'
   }[name]||"";
   var sz=size||18;
   return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
@@ -2684,7 +3779,7 @@ function openDrawer(){$("dwlist").innerHTML=drawerHTML();bindDrawer();
 function closeDrawer(){$("drawer").classList.remove("on");$("scrim").classList.remove("on");}
 function bindDrawer(){
   document.querySelectorAll("[data-go]").forEach(function(el){
-    el.onclick=function(){tab=el.dataset.go;closeDrawer();window.scrollTo(0,0);setTab();render();};});
+    el.onclick=function(){tab=el.dataset.go;habitOpen=null;closeDrawer();window.scrollTo(0,0);setTab();render();};});
   document.querySelectorAll("[data-act]").forEach(function(el){
     el.onclick=function(){var a=el.dataset.act;closeDrawer();
       setTimeout(function(){
@@ -2906,10 +4001,14 @@ function bind(){
     toggleTodo(el.dataset.tg);render()}});
   document.querySelectorAll("[data-goday]").forEach(function(el){
     el.onclick=function(ev){ev.stopPropagation();
-      cursor=parse(el.dataset.goday);goView("day");window.scrollTo(0,0);render()};});
+      cursor=parse(el.dataset.goday);
+      tab="plan"; viewStack=[]; planView="day";   // 从首页点过来时也要真的切过去
+      setTab();window.scrollTo(0,0);render()};});
   bindDrag();
-  document.querySelectorAll("[data-hl]").forEach(function(el){el.onclick=function(){
-    var a=el.dataset.hl.split("|");toggleLog(a[0],a[1]);render()}});
+  document.querySelectorAll("[data-hl]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.hl.split("|");quickLog(a[0],a[1]);}});
+  document.querySelectorAll("[data-hlog]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var hb=habitById(el.dataset.hlog); if(hb)logSheet(hb,todayStr());}});
   ["todos","habits","subscriptions","birthdays","diary","ledger","countdowns"].forEach(function(tb){
     document.querySelectorAll("[data-del-"+tb+"]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
       dropUndo(tb,el.getAttribute("data-del-"+tb),"Deleted");render()}});});
@@ -2920,6 +4019,7 @@ function bind(){
   var tl=$("todayLed"); if(tl)tl.onclick=ledSheet;
   var ta=$("tdAdd");  if(ta)ta.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
   var ta2=$("tdAdd2");if(ta2)ta2.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
+  var tg2=$("tdGo"); if(tg2)tg2.onclick=function(){goTab("plan")};
   var ea=$("evAdd");  if(ea)ea.onclick=function(){newTodoSheet(todayStr(),null,null,"event")};
   // 首页快捷动作
   var q1=$("qaTask"); if(q1)q1.onclick=capOpen;
@@ -2959,7 +4059,44 @@ function bind(){
   document.querySelectorAll("[data-diary]").forEach(function(el){el.onclick=function(){
     diaryDate=el.dataset.diary;render()}});
   var gd=$("gotoDiary");if(gd)gd.onclick=function(){tab="diary";diaryDate=todayStr();setTab();render()};
-  var ah=$("addHb");if(ah)ah.onclick=function(){habitSheet(null)};
+  var ah=$("addHb");if(ah)ah.onclick=tplSheet;
+  var hbk=$("hBack");if(hbk)hbk.onclick=function(){habitOpen=null;window.scrollTo(0,0);render()};
+  document.querySelectorAll("[data-hopen]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    habitOpen=el.dataset.hopen;habitMode="log";habitMon=new Date();window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-hm]").forEach(function(el){el.onclick=function(){
+    habitMode=el.dataset.hm;habitTab=0;render();}});
+  document.querySelectorAll("[data-fs]").forEach(function(el){el.onclick=function(){
+    habitTab=+el.dataset.fs;render();}});
+  document.querySelectorAll("[data-hwk]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    habitWk=addDays(habitWk, 7*(+el.dataset.hwk));render();}});
+  document.querySelectorAll("[data-hpress]").forEach(function(el){
+    var t=null;
+    function arm(){clearTimeout(t);t=setTimeout(function(){
+      document.querySelectorAll(".hcard.armed").forEach(function(c){if(c!==el)c.classList.remove("armed")});
+      el.classList.add("armed");
+      if(navigator.vibrate)navigator.vibrate(12);},550);}
+    function dis(){clearTimeout(t);}
+    el.addEventListener("touchstart",arm,{passive:true});
+    el.addEventListener("touchend",dis);
+    el.addEventListener("touchmove",dis,{passive:true});
+    el.addEventListener("contextmenu",function(e){e.preventDefault();});});
+  document.querySelectorAll("[data-hdel]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var hb=habitById(el.dataset.hdel); if(!hb)return;
+    var snap=Object.assign({},hb);
+    var logs=D.habit_logs.filter(function(l){return l.habit_id===hb.id}).map(function(l){return Object.assign({},l)});
+    logs.forEach(function(l){drop("habit_logs",l.id)});
+    drop("habits",hb.id); render();
+    toast("已删除 "+hb.name,function(){
+      push("habits",snap);logs.forEach(function(l){push("habit_logs",l)});render();});}});
+  document.querySelectorAll("[data-hmn]").forEach(function(el){el.onclick=function(){
+    habitMon=new Date(habitMon.getFullYear(),habitMon.getMonth()+ +el.dataset.hmn,1);render();}});
+  document.querySelectorAll("[data-hedid]").forEach(function(el){el.onclick=function(){
+    var lg=D.habit_logs.filter(function(x){return x.id===el.dataset.hedid})[0]; if(!lg)return;
+    var hb2=habitById(lg.habit_id); if(hb2)logSheet(hb2,lg.date,lg.id);}});
+  document.querySelectorAll("[data-hday]").forEach(function(el){el.onclick=function(){
+    var a=el.dataset.hday.split("|"), hb4=habitById(a[0]); if(!hb4)return;
+    var ex=logsOn(hb4.id,a[1]);
+    logSheet(hb4,a[1], (isMulti(hb4)||!ex.length)?null:ex[0].id);}});
   document.querySelectorAll("[data-hedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var hb=D.habits.filter(function(x){return x.id===el.dataset.hedit})[0]; if(hb)habitSheet(hb);};});
   var as=$("addSub");if(as)as.onclick=subSheet;
@@ -2996,7 +4133,6 @@ function closeSheet(){$("ov").classList.remove("show");$("sheet").classList.remo
 $("ov").onclick=function(e){if(e.target===$("ov"))closeSheet()};
 
 function newTodoSheet(ds,st,et,md,wk){
-  var COLORS={c0:"#EF4444",c1:"#F59E0B",c2:"#10B981",c3:"#3B82F6",c4:"#8B5CF6",c5:"#EC4899"};
   var REP=[["","Never"],["daily","Daily"],["weekday","Weekdays"],["weekly","Weekly"],["monthly","Monthly"]];
   var TRV=[["","None"],["5","5 min"],["15","15 min"],["30","30 min"],["60","1 hour"]];
   var CK=Object.keys(COLORS);
@@ -3505,21 +4641,23 @@ document.addEventListener("selectstart",function(e){
 document.addEventListener("contextmenu",function(e){
   if(!inEditable(e.target))e.preventDefault();});
 
-/* ---- 抽屉交互：按钮 / 遮罩 / 左缘右滑 ---- */
+/* ---- 抽屉交互：只认按钮和遮罩，不接管任何滑动手势 ---- */
+document.addEventListener("click",function(e){
+  if(!e.target.closest(".hcard.armed"))
+    document.querySelectorAll(".hcard.armed").forEach(function(c){c.classList.remove("armed")});},true);
 $("menuBtn").onclick=openDrawer;
 $("scrim").onclick=closeDrawer;
 (function(){
-  var sx=0,sy=0,edge=false;
+  // 抽屉已经打开时，向左滑仍可关掉（这个不影响正常浏览，保留）
+  var sx=0,sy=0;
   document.addEventListener("touchstart",function(e){
     if(e.touches.length!==1)return;
-    var t=e.touches[0]; sx=t.clientX; sy=t.clientY;
-    edge = sx<26 && !$("drawer").classList.contains("on");},{passive:true});
+    if(!$("drawer").classList.contains("on"))return;
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY;},{passive:true});
   document.addEventListener("touchend",function(e){
+    if(!$("drawer").classList.contains("on"))return;
     var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy;
-    if(edge&&dx>55&&Math.abs(dx)>Math.abs(dy)*1.5)openDrawer();
-    // 抽屉打开时左滑关闭
-    if($("drawer").classList.contains("on")&&dx<-55&&Math.abs(dx)>Math.abs(dy)*1.5)closeDrawer();
-    edge=false;},{passive:true});
+    if(dx<-55&&Math.abs(dx)>Math.abs(dy)*1.5)closeDrawer();},{passive:true});
 })();
 
 /* ---- 快速捕捉 / 搜索 的入口与快捷键 ---- */
@@ -3532,7 +4670,9 @@ function fabAction(){
   if(tab==="money"){ledSheet();return;}
   if(tab==="bday"){bdSheet();return;}
   if(tab==="cdown"){cdSheet();return;}
-  if(tab==="habit"){habitSheet(null);return;}
+  if(tab==="habit"){
+    if(habitOpen){var hb3=habitById(habitOpen); if(hb3){logSheet(hb3,todayStr());return;}}
+    tplSheet();return;}
   if(tab==="subs"){subSheet();return;}
   if(tab==="diary"){diaryDate=todayStr();render();
     setTimeout(function(){var t=$("dtxt"); if(t)t.focus();},120);return;}
@@ -3659,7 +4799,7 @@ var __curTab="today";
 /* 左右滑动切换底栏页面。
    日视图自己有横向翻天，所以那里不接管，避免打架。 */
 (function(){
-  var TABS=["today","plan","cal"];
+  var TABS=["today","plan","habit"];
   var x0=0,y0=0,act=false;
   document.addEventListener("touchstart",function(e){
     if(e.touches.length!==1)return;
@@ -3682,8 +4822,9 @@ var __curTab="today";
 })();
 
 function curTabKey(){
-  if(tab!=="plan")return tab==="habit"?"":tab;      // 抽屉里的页面不高亮底栏
-  return planView==="day" ? "cal" : "plan";}
+  if(tab==="habit")return "habit";
+  if(tab!=="plan")return tab;                      // 抽屉里的页面不高亮底栏
+  return "plan";}                                  // 周 / 日 / 月 / 年 都算 Plan
 function setTab(){
   var k=curTabKey();
   document.querySelectorAll("#tabs button").forEach(function(b){
@@ -3693,11 +4834,12 @@ document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function
 
 /* Plan → 默认周视图；Calendar → 默认当天的日视图 */
 function goTab(t){
-  var ORD=["today","plan","cal"];
+  habitOpen=null;
+  var ORD=["today","plan","habit"];
   var from=ORD.indexOf(curTabKey()), to=ORD.indexOf(t);
   var dir=(from>=0&&to>=0&&from!==to)?(to>from?1:-1):0;
   if(t==="plan"){ tab="plan"; viewStack=[]; planView="week"; }
-  else if(t==="cal"){ tab="plan"; viewStack=[]; planView="day"; cursor=new Date(); }
+  else if(t==="habit"){ tab="habit"; }
   else tab=t;
   __curTab=t;
   scrollWrapTop();
@@ -3705,12 +4847,17 @@ function goTab(t){
   if(dir)slideIn(dir);}
 
 /* 换页时让内容从对应方向滑入，避免"啪"地闪出来 */
+var slideT=null;
 function slideIn(dir){
   var v=$("view"); if(!v)return;
+  clearTimeout(slideT);                   // 连续快切时别让上一次的清理提前拆掉动画
   v.classList.remove("sl","sr");
+  document.body.classList.add("swapping");
   void v.offsetWidth;                     // 强制重排，动画才会重新播放
   v.classList.add(dir>0?"sl":"sr");
-  setTimeout(function(){v.classList.remove("sl","sr")},340);}
+  slideT=setTimeout(function(){
+    v.classList.remove("sl","sr");
+    document.body.classList.remove("swapping");},300);}
 function scrollWrapTop(){ try{window.scrollTo(0,0)}catch(e){} }
 /* 一次性迁移：把改版前遗留的「无日期待办」归入当前这一周。
    跑过一次就打标记，不会重复推送。 */
@@ -3741,6 +4888,36 @@ if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
 /* 网络恢复 → 立刻补传；断网 → 立刻改状态，别让用户干等 */
 window.addEventListener("online", function(){ if(cfg)sync(); else setSync("local"); });
 window.addEventListener("offline",function(){ if(cfg)setSync("offline"); });
+
+/* 一次性迁移：把旧的「主指标类型」模型翻译成属性模型 */
+(function(){
+  try{ if(store.get("rec.hbmig")==="1")return; }catch(e){}
+  var moved=0;
+  D.habits.slice().forEach(function(hb){
+    if(hb.fields)return;                       // 已经是新模型
+    var k=hb.kind||"check", fs=[];
+    if(k==="count")   fs.push({id:"v",label:"数量",type:"number",unit:hb.unit||"",dec:0});
+    if(k==="duration")fs.push({id:"v",label:"时长",type:"number",unit:"分钟",dec:0});
+    if(k==="range")   fs.push({id:"v",label:"时长",type:"number",unit:"小时",dec:1});
+    if(k==="scale")   fs.push({id:"v",label:"评分",type:"rating"});
+    var its=jarr(hb.items);
+    if(its.length)    fs.push({id:"items",label:"子项",type:"multi",opts:its});
+    if(hb.has_scale)  fs.push({id:"scale",label:"状态",type:"rating"});
+    fs.push({id:"note",label:"备注",type:"text"});
+    push("habits",Object.assign({},hb,{fields:JSON.stringify(fs),updated_at:new Date().toISOString()}));
+    D.habit_logs.filter(function(l){return l.habit_id===hb.id&&!l.vals}).forEach(function(l){
+      var v={};
+      if(k==="range"&&l.start_time&&l.end_time){
+        var a=t2m(l.start_time),b=t2m(l.end_time); if(b<=a)b+=1440;
+        v.v=Math.round((b-a)/60*10)/10;
+      }else if(l.value!=null&&l.value!=="")v.v=+l.value;
+      var id2=jarr(l.items_done); if(id2.length)v.items=id2;
+      if(l.scale!=null&&l.scale!=="")v.scale=+l.scale;
+      if(l.note)v.note=l.note;
+      push("habit_logs",Object.assign({},l,{vals:JSON.stringify(v),updated_at:new Date().toISOString()}));});
+    moved++;});
+  try{ store.set("rec.hbmig","1"); }catch(e){}
+})();
 
 $("syncPill").onclick=cfgSheet;
 document.addEventListener("visibilitychange",function(){if(!document.hidden)sync()});
