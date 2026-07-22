@@ -439,7 +439,7 @@
   .ag.live .tx{font-weight:650}
 
   /* 首页 · 指标 */
-  .mets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
+  .mets{margin-bottom:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
   .met{border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px 12px 11px;cursor:pointer}
   .met .v{font-size:19px;font-weight:780;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.15}
   .met .k{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:4px}
@@ -477,7 +477,26 @@
   .mini.ok{color:var(--faint)} .mini.ok i{background:var(--accent)}
   .mini span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dnone{font-size:12.5px;color:var(--faint);padding:6px 0}
-  .hstrip{display:flex;gap:7px;overflow-x:auto;padding:2px 0 1px}
+  /* 首页习惯小卡：一行四个，多了换行 */
+  .hstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:2px 0 1px}
+  .htile{display:flex;flex-direction:column;align-items:center;gap:5px;
+    padding:10px 5px 9px;border-radius:14px;cursor:pointer;min-width:0;
+    background:var(--card);border:1px solid var(--line);box-shadow:var(--sh)}
+  .htile:active{transform:scale(.96)}
+  .htile .e{display:flex;color:var(--faint)}
+  .htile .ht{font-size:11px;font-weight:650;color:var(--sub);max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .htile .hv{font-size:12.5px;font-weight:750;letter-spacing:-.02em;color:var(--faint);
+    font-variant-numeric:tabular-nums;max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .htile .hm{display:flex;gap:2px;height:4px;width:100%;margin-top:1px}
+  .htile .hm i{flex:1;border-radius:1.5px;background:var(--line2)}
+  .htile.on{border-color:color-mix(in srgb,var(--hc) 40%,var(--line));
+    background:color-mix(in srgb,var(--hc) 7%,var(--card))}
+  .htile.on .e{color:var(--hc)}
+  .htile.on .ht{color:var(--ink)}
+  .htile.on .hv{color:var(--hc)}
+  .htile .hm i.on{background:color-mix(in srgb,var(--hc) 55%,transparent)}
   .hchip{flex:none;display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);
     border-radius:999px;padding:7px 13px 7px 10px;cursor:pointer;font-size:13px;font-weight:620;
     letter-spacing:-.01em;transition:.15s}
@@ -797,7 +816,7 @@
   /* ---- 习惯列表卡：与记录卡同款 ---- */
   .hlist{display:flex;flex-direction:column;gap:12px}
   .hcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
-    box-shadow:var(--sh);padding:15px 16px 16px;cursor:pointer}
+    padding:15px 16px 16px;cursor:pointer}
   .hch{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
   .hcn{font-size:16px;font-weight:750;letter-spacing:-.02em;min-width:0;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -943,7 +962,11 @@
 
 
   /* 列表卡：打卡条用习惯自己的颜色 */
-  .hcard{position:relative;overflow:hidden}
+  /* 一行 = 固定容器 + 可滑动的卡片；删除键钉在容器右侧 */
+  .hrw{position:relative;overflow:hidden;border-radius:var(--r);box-shadow:var(--sh)}
+  .hrw .hcard{position:relative;z-index:1;background:var(--card);
+    transition:transform .22s cubic-bezier(.32,.72,0,1)}
+  .hrw.armed .hcard{transform:translateX(-88px)}
   .hdone{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:var(--r2);
     font-size:13.5px;font-weight:650;cursor:pointer;
     background:color-mix(in srgb,var(--hc) 14%,transparent);color:var(--hc)}
@@ -953,13 +976,10 @@
   .hcta:active{background:color-mix(in srgb,var(--hc) 10%,transparent)}
   .hbar i.on{background:color-mix(in srgb,var(--hc) 62%,transparent)}
   .hbar i.td{outline:1.5px solid var(--hc);outline-offset:-1.5px}
-  .hdel{position:absolute;top:0;right:0;bottom:0;width:74px;border:none;cursor:pointer;
-    background:var(--danger);color:#fff;font-size:13.5px;font-weight:700;
-    transform:translateX(100%);transition:transform .18s cubic-bezier(.3,.8,.3,1)}
-  .hcard.armed .hdel{transform:translateX(0)}
-  .hcard.armed{transform:translateX(-74px);transition:transform .18s cubic-bezier(.3,.8,.3,1)}
-  .hcard{transition:transform .18s cubic-bezier(.3,.8,.3,1)}
-
+  .hdel{position:absolute;top:0;right:0;bottom:0;width:88px;border:none;cursor:pointer;
+    background:var(--danger);color:#fff;font-size:14px;font-weight:700;z-index:0;
+    display:flex;align-items:center;justify-content:center;padding:0 6px}
+  .hdel:active{filter:brightness(.9)}
   /* 记录页的一周条 */
   .hwk{display:flex;align-items:center;gap:4px;margin-bottom:14px}
   .hwn{flex:none;width:26px;height:34px;border:none;background:transparent;color:var(--faint);
@@ -1057,6 +1077,62 @@
   .hcd.on{background:color-mix(in srgb,var(--hc) 16%,transparent);color:var(--hc)}
   .hcd.td{border-color:var(--hc)}
   .hcd.fu{opacity:.28;cursor:default}
+  /* 订阅 / 记账用的月历：格子矮一点，配色走强调色 */
+  .scal .hcd{aspect-ratio:1;border-radius:10px}
+  .scal .hcd b{font-size:14px}
+  .scal .hcd i{font-size:9px;font-weight:700}
+  /* 订阅日历：格子里写名字，放不下就截断 */
+  .scal .hcd i.nm{max-width:100%;padding:0 2px;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;font-size:8.5px;font-weight:700;letter-spacing:-.02em}
+  .scal .hcd{gap:1px}
+  .scal .hcd.on{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+  .scal .hcd.td{border-color:var(--accent)}
+  .mcal .hcd.neg.lv1{background:color-mix(in srgb,var(--red) 10%,transparent);color:var(--sub)}
+  .mcal .hcd.neg.lv2{background:color-mix(in srgb,var(--red) 20%,transparent);color:var(--red)}
+  .mcal .hcd.neg.lv3{background:color-mix(in srgb,var(--red) 34%,transparent);color:var(--red)}
+  .mcal .hcd.neg.lv4{background:color-mix(in srgb,var(--red) 50%,transparent);color:var(--red)}
+  .mcal .hcd.pos.lv1{background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--sub)}
+  .mcal .hcd.pos.lv2{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent2)}
+  .mcal .hcd.pos.lv3{background:color-mix(in srgb,var(--accent) 34%,transparent);color:var(--accent2)}
+  .mcal .hcd.pos.lv4{background:color-mix(in srgb,var(--accent) 50%,transparent);color:var(--accent2)}
+  .mcleg{display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-top:10px;
+    font-size:10px;color:var(--faint)}
+  .mcleg i{width:13px;height:13px;border-radius:4px;background:var(--card2)}
+  .mcleg i.neg.lv2{background:color-mix(in srgb,var(--red) 20%,transparent)}
+  .mcleg i.neg.lv4{background:color-mix(in srgb,var(--red) 50%,transparent)}
+  .mcleg i.pos.lv2{background:color-mix(in srgb,var(--accent) 20%,transparent)}
+  .mcleg i.pos.lv4{background:color-mix(in srgb,var(--accent) 50%,transparent)}
+
+  /* 订阅页 */
+  .subhero{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:16px 16px 14px;box-shadow:var(--sh)}
+  .shh{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .shh b{font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .shh span{font-size:11.5px;font-weight:650;color:var(--sub);background:var(--card2);
+    border-radius:999px;padding:4px 11px}
+  .shg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+  .shg i{display:block;font-size:11.5px;color:var(--sub);font-style:normal;margin-bottom:5px}
+  .shg b{font-size:23px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .shg b em{font-size:12px;font-weight:650;font-style:normal;color:var(--sub);margin-left:1px}
+  .sublist{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .subc{position:relative;display:flex;align-items:center;gap:13px;padding:14px 14px;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh)}
+  .subi{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+    font-size:19px;font-weight:800;color:#fff;background:var(--c)}
+  .subm{flex:1;min-width:0}
+  .subm b{display:block;font-size:16px;font-weight:700;letter-spacing:-.01em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .subm i{display:block;font-size:12.5px;color:var(--faint);font-style:normal;margin-top:3px}
+  .subd{flex:none;display:flex;align-items:baseline;gap:2px;padding-right:14px}
+  .subd b{font-size:26px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .subd span{font-size:12px;color:var(--sub);font-weight:650}
+  .subd.off{font-size:12.5px;color:var(--faint);font-weight:650}
+  .subc .x{position:absolute;top:6px;right:6px}
+  .sec .secr{float:right;font-style:normal;font-weight:700;color:var(--ink);
+    letter-spacing:0;text-transform:none;font-size:12px}
+  .sdd{flex:none;width:42px;font-size:11.5px;font-weight:700;color:var(--sub);
+    font-variant-numeric:tabular-nums}
+  .sdd.past{color:var(--faint);opacity:.6}
   .hmon{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   .hmon b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
   .hrec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
@@ -1248,9 +1324,9 @@
 </div>
 
 <nav class="tabs" id="tabs">
-  <button data-t="today"><i data-ti="sun"></i>Today</button>
-  <button data-t="plan"><i data-ti="calendar"></i>Plan</button>
-  <button data-t="habit"><i data-ti="flame"></i>Rituals</button>
+  <button data-t="today"><i data-ti="sun"></i><span data-t9="Today">Today</span></button>
+  <button data-t="plan"><i data-ti="calendar"></i><span data-t9="Plan">Plan</span></button>
+  <button data-t="habit"><i data-ti="flame"></i><span data-t9="Rituals">Rituals</span></button>
 </nav>
 <div class="qswrap" id="qswrap">
   <div class="qshd"><button class="pill" id="qsX">‹</button><h3>ToDo</h3><span style="width:44px"></span></div>
@@ -1639,7 +1715,7 @@ function vReview(){
     return '<div class="rvd '+(worse?"up":"down")+'">'+(p>0?"+":"")+p+"% vs last week</div>";}
   var rate=cur.total?Math.round(cur.done/cur.total*100):0;
   var prate=prev.total?Math.round(prev.done/prev.total*100):0;
-  var h='<div class="sec" style="margin-top:8px">Week of '+MONS[ws.getMonth()]+' '+ws.getDate()+'</div>';
+  var h='<div class="sec" style="margin-top:8px">'+T("Week of")+' '+MONS[ws.getMonth()]+' '+ws.getDate()+'</div>';
   h+='<div class="rvhero">'+
      '<div class="rvc"><div class="rvn">'+rate+'%</div><div class="rvl">Tasks done</div>'+
        '<div class="rvd">'+cur.done+' of '+cur.total+(prate?" · last week "+prate+"%":"")+'</div></div>'+
@@ -1650,11 +1726,11 @@ function vReview(){
      '<div class="rvc"><div class="rvn">'+cur.diary+'</div><div class="rvl">Diary entries</div>'+
        '<div class="rvd">'+(7-cur.diary)+' days unwritten</div></div>'+
      '</div>';
-  h+='<div class="sec">Consistency · last 26 weeks</div><div class="card" style="padding:14px 15px">'+heatmap(null)+'</div>';
+  h+='<div class="sec">'+T("Consistency · last 26 weeks")+'</div><div class="card" style="padding:14px 15px">'+heatmap(null)+'</div>';
   var open=D.todos.filter(function(t){return !t.done&&t.due_date&&t.due_date<todayStr()});
-  h+='<div class="sec">Carried over ('+open.length+')</div>';
+  h+='<div class="sec">'+T("Carried over")+' ('+open.length+')</div>';
   h+='<div class="card">'+(open.length?'<ul class="list">'+open.slice(0,12).map(itemHTML).join("")+'</ul>'
-     :'<div class="empty">Nothing overdue</div>')+'</div>';
+     :'<div class="empty">'+T("Nothing overdue")+'</div>')+'</div>';
   return h;}
 
 /* ---- 全局搜索：待办 / 日记 / 账目 ---- */
@@ -1664,7 +1740,7 @@ function hl(text,q){
 
 function searchRun(){
   var q=$("srin").value.trim(), box=$("srres");
-  if(!q){box.innerHTML='<div class="empty">Search tasks, diary entries and costs</div>';return;}
+  if(!q){box.innerHTML='<div class="empty">'+T("Search tasks, diary entries and costs")+'</div>';return;}
   var ql=q.toLowerCase(), out=[];
   D.todos.forEach(function(t){ if((t.text||"").toLowerCase().indexOf(ql)>=0)
     out.push({tag:"Task",tx:t.text,mt:t.due_date||"ToDo",go:function(){
@@ -1877,7 +1953,7 @@ function render(){
     ttl.innerHTML='<button class="ybtn" id="hBack">‹ '+esc(habitById(habitOpen).name)+'</button>';}
   else{ttl.style.cssText="";
     var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones"}[tab]||"Record";
-    ttl.innerHTML=esc(lbl)+(tab==="today"?wxChip():"");}
+    ttl.innerHTML=esc(T(lbl))+(tab==="today"?wxChip():"");}
   if(typeof setTab==="function")setTab();     // 视图切换时底栏高亮跟着变
   var v=$("view");
   v.innerHTML = tab==="today"?vToday() : tab==="plan"?vPlan() : tab==="money"?vMoney() :
@@ -1947,26 +2023,34 @@ function vToday(){
 
   /* ── 主视觉：问候 / 日期 / 今日完成率 ── */
   var hr=d.getHours();
-  var greet=hr<5?"Late night":hr<12?"Good morning":hr<18?"Good afternoon":"Good evening";
+  var greet=hr<5?T("Late night"):hr<12?T("Good morning"):hr<18?T("Good afternoon"):T("Good evening");
   var totalItems=list.length+hs.length;
   var doneItems=doneL.length+doneH;
   var pct=totalItems?Math.round(doneItems/totalItems*100):0;
   var bits=[];
-  if(openL.length)bits.push(openL.length+" to do");
+  if(openL.length)bits.push(openL.length+" "+T("to do"));
   if(hs.length)bits.push(doneH+"/"+hs.length+" habits");
-  if(over.length)bits.push(over.length+" overdue");
+  if(over.length)bits.push(over.length+" "+T("overdue"));
   var h='<div class="hero"><div class="hl">'+
     '<div class="hgreet">'+greet+'</div>'+
     '<div class="hdate">'+WDE[d.getDay()]+', '+MONS[d.getMonth()]+' '+d.getDate()+'</div>'+
-    '<div class="hsub">'+(bits.length?bits.join("  ·  "):"Nothing on today")+'</div>'+
-    '</div>'+ringSVG(pct)+'</div>';
+    '<div class="hsub">'+(bits.length?bits.join("  ·  "):T("Nothing on today"))+'</div>'+
+    '</div></div>';
+
+  /* ── 一眼概览：紧跟主视觉，不再沉到页底 ── */
+  var st=hs.length?Math.max.apply(null,hs.map(function(hb){return streak(hb.id)})):0;
+  h+='<div class="mets">'+
+     '<div class="met" data-mgo="money"><div class="v">'+money(te)+'</div><div class="k">'+T("Spent today")+'</div></div>'+
+     '<div class="met" data-mgo="habit"><div class="v">'+st+'</div><div class="k">'+T("Streak")+'</div></div>'+
+     '<div class="met" data-mgo="diary"><div class="v">'+(dia&&dia.text?"✓":"—")+'</div><div class="k">'+T("Diary")+'</div></div>'+
+     '</div>';
 
   /* ── 快捷动作 ── */
   h+='<div class="qact">'+
-     '<button class="qa" id="qaTask"><span class="i">✓</span><span class="n">Task</span></button>'+
-     '<button class="qa" id="qaCost"><span class="i">¥</span><span class="n">Cost</span></button>'+
-     '<button class="qa" id="qaDiary"><span class="i">✎</span><span class="n">Diary</span></button>'+
-     '<button class="qa" id="qaPlan"><span class="i">◷</span><span class="n">Plan</span></button>'+
+     '<button class="qa" id="qaTask"><span class="i">✓</span><span class="n">'+T("Task")+'</span></button>'+
+     '<button class="qa" id="qaCost"><span class="i">¥</span><span class="n">'+T("Cost")+'</span></button>'+
+     '<button class="qa" id="qaDiary"><span class="i">✎</span><span class="n">'+T("Diary")+'</span></button>'+
+     '<button class="qa" id="qaPlan"><span class="i">◷</span><span class="n">'+T("Plan")+'</span></button>'+
      '</div>';
 
   /* ── 今日时间线 ── */
@@ -1996,33 +2080,45 @@ function vToday(){
          '<span class="tx">'+esc(t.text)+'<small>'+esc(t.due_time)+'–'+m2t(Math.min(1440,e))+'</small></span></div>';});
     if(!placed)h+='<div class="agnow"><b>'+nowTxt+'</b><i></i></div>';
     h+='</div>';
-  }else h+='<div class="empty" style="padding:22px 8px">No timed events · tap + to plan one</div>';
+  }else h+='<div class="empty" style="padding:22px 8px">'+T("No timed events · tap + to plan one")+'</div>';
   h+='</div>';
 
   /* ── 待办：左边未完成 / 右边已完成 ── */
   var tdOpen=untimed.filter(function(t){return !t.done});
   var tdDone=untimed.filter(function(t){return t.done});
-  h+='<div class="sec"><span class="secgo" id="tdGo">To-do</span>'+
+  h+='<div class="sec"><span class="secgo" id="tdGo">'+T("To-do")+'</span>'+
      '<button class="dadd" id="tdAdd" style="float:right;margin-top:-3px">+</button></div>';
   var tdBox=function(list,empId){
-    if(!list.length)return '<div class="tdempty"'+(empId?' id="'+empId+'"':"")+'>'+(empId?"All clear":"—")+'</div>';
+    if(!list.length)return '<div class="tdempty"'+(empId?' id="'+empId+'"':"")+'>'+(empId?T("All clear"):"—")+'</div>';
     return '<div class="tdwrap"><ul class="list tdlist">'+
       list.map(function(t){return itemHTML(t,true)}).join("")+'</ul></div>';};
   h+='<div class="tdsplit">'+
-     '<div class="tdcol"><div class="tdh">To-do'+(tdOpen.length?' <b>'+tdOpen.length+'</b>':"")+'</div>'+
+     '<div class="tdcol"><div class="tdh">'+T("To-do")+''+(tdOpen.length?' <b>'+tdOpen.length+'</b>':"")+'</div>'+
        tdBox(tdOpen,"tdAdd2")+'</div>'+
-     '<div class="tdcol done"><div class="tdh">Done'+(tdDone.length?' <b>'+tdDone.length+'</b>':"")+'</div>'+
+     '<div class="tdcol done"><div class="tdh">'+T("Done")+''+(tdDone.length?' <b>'+tdDone.length+'</b>':"")+'</div>'+
        tdBox(tdDone,"")+'</div>'+
      '</div>';
 
   /* ── 打卡 ── */
   if(hs.length){
-    h+='<div class="sec"><span class="secgo" data-mgo="habit">Habit · '+doneH+'/'+hs.length+'</span></div><div class="hstrip">';
-    h+=hs.map(function(hb){var lg=logOf(hb.id,ds), on=!!lg;
-      var mf=mainField(hb), mv=mf?lvals(lg)[mf.id]:null;
-      return '<button class="hchip'+(on?" on":"")+'" data-hl="'+hb.id+'|'+ds+'">'+
-        '<span class="e">'+hicon(hb,15)+'</span>'+esc(hb.name)+
-        (mv!=null&&mv!==""?'<b class="hv">'+esc(fnum(mv,mf.dec)+(mf.unit||""))+'</b>':"")+'</button>';}).join("");
+    h+='<div class="sec"><span class="secgo" data-mgo="habit">'+T("Habit")+' · '+doneH+'/'+hs.length+'</span></div><div class="hstrip">';
+    h+=hs.map(function(hb){
+      var ls=logsOn(hb.id,ds), on=ls.length>0, mf=mainField(hb), c=hcol(hb);
+      var tot=null;
+      if(mf)ls.forEach(function(x){var q=fVal(mf,lvals(x)[mf.id]); if(q!=null)tot=(tot||0)+q;});
+      var sub = tot!=null ? fnum(tot,1)+fUnit(mf)
+              : on ? (ls.length>1?ls.length+" 次":T("done"))
+              : "—";
+      /* 底部一条近 7 天的迷你条，让卡片有内容 */
+      var mini="";
+      for(var i=6;i>=0;i--){
+        var dd=fmt(addDays(new Date(),-i));
+        mini+='<i class="'+(logsOn(hb.id,dd).length?"on":"")+'"></i>';}
+      return '<button class="htile'+(on?" on":"")+'" data-hl="'+hb.id+'|'+ds+'" style="--hc:'+c+'">'+
+        '<span class="e">'+hicon(hb,18)+'</span>'+
+        '<span class="ht">'+esc(hb.name)+'</span>'+
+        '<span class="hv">'+esc(sub)+'</span>'+
+        '<span class="hm">'+mini+'</span></button>';}).join("");
     h+='</div>';}
 
   /* ── 置顶倒计时 + 临近生日（同一排） ── */
@@ -2043,19 +2139,11 @@ function vToday(){
 
   cards.sort(function(a,b){return a.sort-b.sort});
   if(cards.length){
-    h+='<div class="sec"><span class="secgo" data-mgo="cdown">Countdown</span></div><div class="cdstrip">'+cards.map(function(x){
+    h+='<div class="sec"><span class="secgo" data-mgo="cdown">'+T("Countdown")+'</span></div><div class="cdstrip">'+cards.map(function(x){
       return '<div class="cdcard'+(x.go==="bday"?" bd":"")+'" data-mgo="'+x.go+'">'+
         '<div class="tag">'+(x.go==="bday"?"Birthday":"Countdown")+'</div>'+
         '<div class="n">'+esc(x.name)+'</div>'+
         '<div class="v">'+x.big+'</div><div class="u">'+x.unit+'</div></div>';}).join("")+'</div>';}
-
-  /* ── 指标 ── */
-  var st=hs.length?Math.max.apply(null,hs.map(function(hb){return streak(hb.id)})):0;
-  h+='<div class="sec">At a glance</div><div class="mets">'+
-     '<div class="met" data-mgo="money"><div class="v">'+money(te)+'</div><div class="k">Spent today</div></div>'+
-     '<div class="met" data-mgo="habit"><div class="v">'+st+'d</div><div class="k">Best streak</div></div>'+
-     '<div class="met" data-mgo="diary"><div class="v">'+(dia&&dia.text?"✓":"—")+'</div><div class="k">Diary</div></div>'+
-     '</div>';
 
   return h;}
 
@@ -2092,7 +2180,7 @@ function gWeek(){
     '<button class="pill" id="toWeekNow">'+(s.getMonth()+1)+'.'+s.getDate()+' ~ '+(e.getMonth()+1)+'.'+e.getDate()+'</button>'+
     '<button class="pill" data-nav="1">Next ›</button></div>';
   h+='<div class="focus"><div class="lbl">WEEKLY FOCUS</div>'+
-    '<textarea id="wf" data-k="'+k+'" placeholder="What matters most this week?">'+esc(getFocus(k))+'</textarea></div>';
+    '<textarea id="wf" data-k="'+k+'" placeholder="'+T("What matters most this week?")+'">'+esc(getFocus(k))+'</textarea></div>';
   h+='<div class="grid"><div class="cell" data-drop="" data-week="'+k+'"><div class="ch"><div class="cd">ToDo <small>'+ib.length+'</small></div>'+
      '<button class="cadd" data-newwk="'+k+'">+</button></div><div class="citems">'+
      doneLast(ib).map(ciHTML).join("")+'</div></div>';
@@ -2519,7 +2607,7 @@ function daySheet(ds){
   var d=parse(ds),list=todosOn(ds);
   openSheet('<h2>'+MONS[d.getMonth()]+' '+d.getDate()+' <span class="muted" style="font-size:14px;font-weight:500">'+WDE[d.getDay()]+'</span></h2>'+
     '<div class="card" style="margin-bottom:12px">'+(list.length?'<ul class="list">'+list.map(itemHTML).join("")+'</ul>'
-      :'<div class="empty" style="padding:26px"><span class="e">📄</span>Nothing scheduled</div>')+'</div>'+
+      :'<div class="empty" style="padding:26px"><span class="e">📄</span>'+T("Nothing scheduled")+'</div>')+'</div>'+
     '<div class="row"><button class="btn" id="dsAdd" style="flex:1">+ Add task</button>'+
     '<button class="btn g" id="dsGo">Open day</button></div>');
   bind();
@@ -2585,10 +2673,10 @@ function vDiary(){
   h+='<div class="card" style="padding:13px">'+
      '<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:10px">'+MOODS.map(function(m){
        return '<button class="pill'+(cur.mood===m?" ok":"")+'" data-mood="'+m+'" style="font-size:16px;padding:5px 9px">'+m+'</button>';}).join("")+'</div>'+
-     '<textarea class="inp" id="dtxt" placeholder="What happened today?">'+esc(cur.text)+'</textarea>'+
+     '<textarea class="inp" id="dtxt" placeholder="'+T("What happened today?")+'">'+esc(cur.text)+'</textarea>'+
      '<div class="muted" style="font-size:11.5px;margin-top:8px" id="dsave">Auto-saved</div></div>';
   var past=D.diary.filter(function(x){return x.text}).sort(function(a,b){return b.id.localeCompare(a.id)}).slice(0,30);
-  if(past.length){h+='<div class="sec">Past entries ('+past.length+')</div><div class="card">'+past.map(function(p){
+  if(past.length){h+='<div class="sec">'+T("Past entries")+' ('+past.length+')</div><div class="card">'+past.map(function(p){
     return '<div class="kv" data-diary="'+p.id+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+esc(p.id)+' '+esc(p.mood||"")+'</div>'+
     '<div class="kvs" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw">'+esc(p.text.slice(0,60))+'</div></div>'+
     '<button class="x" data-del-diary="'+p.id+'">×</button></div>';}).join("")+'</div>';}
@@ -2600,9 +2688,9 @@ function vDiary(){
    属性类型：number 数字 / rating 评分 / bool 开关 / multi 多选 / text 文本
    打卡 = 当天存在一条记录；属性值统一存在 habit_logs.vals（JSON 对象）
    —— 这样睡眠可以同时有「时长 + 睡眠质量 + 入睡困难 + 备注」四个维度 */
-var FTY={clock:"时段",number:"数字",rating:"评分",bool:"开关",multi:"多选",text:"文本"};
+var FTY={clock:"Range",number:"Number",rating:"Rating",bool:"Switch",multi:"Multi",text:"Text"};
 var FIC={clock:"◷",number:"#",rating:"☆",bool:"◉",multi:"☑",text:"T"};
-var FTYL=[["clock","时段"],["number","数字"],["rating","评分"],["bool","开关"],["multi","多选"],["text","文本"]];
+var FTYL=[["clock","Range"],["number","Number"],["rating","Rating"],["bool","Switch"],["multi","Multi"],["text","Text"]];
 
 function jarr(v){try{var a=JSON.parse(v||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
 function jobj(v){try{var o=JSON.parse(v||"{}");return (o&&typeof o==="object"&&!Array.isArray(o))?o:{}}catch(e){return {}}}
@@ -2824,58 +2912,177 @@ function bindDial(sMin,eMin,onChange){
 
 /* ---- 模板：每个模板自带一套属性 ---- */
 var HTPL=[
-  {n:"睡眠", e:"moon", c:"h7", multi:true, f:[
-    {id:"dur",  label:"时段",     type:"clock", slab:"就寝", elab:"起床", req:true},
-    {id:"qual", label:"睡眠质量", type:"rating"},
-    {id:"hard", label:"入睡困难", type:"bool"},
-    {id:"note", label:"备注",     type:"text"}]},
-  {n:"阅读", e:"book", c:"h7", f:[
-    {id:"dur",  label:"时长",   type:"number", unit:"分钟"},
-    {id:"book", label:"书名",   type:"text"},
-    {id:"note", label:"备注",   type:"text"}]},
-  {n:"护肤", e:"bottle", c:"h10", f:[
-    {id:"step", label:"护肤步骤", type:"multi",
-      opts:["洁面","爽肤水","精华","乳液/面霜","面膜","身体乳","其他"]},
-    {id:"skin", label:"皮肤状态", type:"rating"},
-    {id:"sun",  label:"防晒",     type:"bool"},
-    {id:"note", label:"备注",     type:"text"}]},
-  {n:"喝水", e:"droplet", c:"h6", f:[
-    {id:"cup",  label:"杯数", type:"number", unit:"杯"},
-    {id:"note", label:"备注", type:"text"}]},
+  {n:"Sleep", e:"moon", c:"h8", f:[
+    {id:"dur",  label:"Duration", type:"clock", slab:"Bedtime", elab:"Wake", req:true},
+    {id:"qual", label:"Sleep quality", type:"rating"},
+    {id:"hard", label:"Hard to fall asleep", type:"bool"},
+    {id:"note", label:"Note", type:"text"}]},
+  {n:"Reading", e:"book", c:"h7", f:[
+    {id:"dur",  label:"Duration", type:"number", unit:"minutes"},
+    {id:"book", label:"Book", type:"text"},
+    {id:"note", label:"Note", type:"text"}]},
+  {n:"Skincare", e:"bottle", c:"h10", f:[
+    {id:"step", label:"Steps", type:"multi",
+      opts:["Cleanser","Toner","Serum","Cream","Mask","Body lotion","Other"]},
+    {id:"skin", label:"Skin", type:"rating"},
+    {id:"sun",  label:"Sunscreen", type:"bool"},
+    {id:"note", label:"Note", type:"text"}]},
+  {n:"Water", e:"droplet", c:"h6", f:[
+    {id:"cup",  label:"Cups", type:"number", unit:"cups"},
+    {id:"note", label:"Note", type:"text"}]},
   null,
-  {n:"运动", e:"dumbbell", c:"h0", f:[
-    {id:"dur",  label:"时长",     type:"number", unit:"分钟"},
-    {id:"kind", label:"运动类型", type:"multi", opts:["跑步","力量","瑜伽","游泳","骑行","球类"]},
-    {id:"hard", label:"强度",     type:"rating"},
-    {id:"note", label:"备注",     type:"text"}]},
-  {n:"冥想", e:"lotus", c:"h9", f:[
-    {id:"dur",  label:"时长", type:"number", unit:"分钟"},
-    {id:"note", label:"备注", type:"text"}]},
-  {n:"吃饭", e:"bowl", c:"h2", f:[
-    {id:"meal", label:"餐次",   type:"multi", opts:["早餐","午餐","晚餐","加餐"]},
-    {id:"home", label:"在家做", type:"bool"},
-    {id:"note", label:"备注",   type:"text"}]},
-  {n:"工作", e:"briefcase", c:"h5", f:[
-    {id:"dur",  label:"时段",   type:"clock", slab:"上班", elab:"下班"},
-    {id:"focus",label:"专注度", type:"rating"},
-    {id:"note", label:"备注",   type:"text"}]}
+  {n:"Exercise", e:"dumbbell", c:"h0", f:[
+    {id:"dur",  label:"Duration", type:"number", unit:"minutes"},
+    {id:"kind", label:"Sport", type:"multi", opts:["Running","Strength","Yoga","Swimming","Cycling","Ball games"]},
+    {id:"hard", label:"Intensity", type:"rating"},
+    {id:"note", label:"Note", type:"text"}]},
+  {n:"Meditate", e:"lotus", c:"h9", f:[
+    {id:"dur",  label:"Duration", type:"number", unit:"minutes"},
+    {id:"note", label:"Note", type:"text"}]},
+  {n:"Meals", e:"bowl", c:"h2", f:[
+    {id:"meal", label:"Meal", type:"multi", opts:["Breakfast","Lunch","Dinner","Snack"]},
+    {id:"home", label:"Cooked at home", type:"bool"},
+    {id:"note", label:"Note", type:"text"}]},
+  {n:"Study", e:"pencil", c:"h5", f:[
+    {id:"dur",  label:"Duration", type:"clock", slab:"Start", elab:"End"},
+    {id:"subj", label:"Subject", type:"multi", opts:["Major","English","Certification","Reading","Other"]},
+    {id:"focus",label:"Focus", type:"rating"},
+    {id:"note", label:"Note", type:"text"}]}
 ];
+/* 用模板建习惯时，按当前语言把文案落成数据 */
+function tplLocal(t){
+  return {n:T(t.n), e:t.e, c:t.c, f:(t.f||[]).map(function(f){
+    var o=Object.assign({},f);
+    o.label=T(f.label);
+    if(f.unit)o.unit=T(f.unit);
+    if(f.slab)o.slab=T(f.slab);
+    if(f.elab)o.elab=T(f.elab);
+    if(f.opts)o.opts=f.opts.map(function(x){return T(x)});
+    return o;})};}
+
 
 function tplSheet(){
-  openSheet('<div class="lgh"><span class="lght">新建习惯</span>'+
-    '<span class="lghm">选一个模板，或自己配</span></div>'+
+  openSheet('<div class="lgh"><span class="lght">'+T("New habit")+'</span>'+
+    '<span class="lghm">'+T("Pick a template, or build your own")+'</span></div>'+
     '<div class="tplg">'+HTPL.map(function(t,i){
       if(!t)return '<button class="tpl other" data-tp="-1"><span class="e">'+ico("plus",21)+'</span>'+
-        '<b>其他</b></button>';
+        '<b>'+T("Other")+'</b></button>';
       return '<button class="tpl" data-tp="'+i+'"><span class="e">'+ico(t.e,21)+'</span>'+
-        '<b>'+t.n+'</b></button>';}).join("")+'</div>');
+        '<b>'+esc(T(t.n))+'</b></button>';}).join("")+'</div>');
   $("sheet").querySelectorAll("[data-tp]").forEach(function(el){el.onclick=function(){
     var i=+el.dataset.tp;
     closeSheet();
-    setTimeout(function(){habitSheet(null, i<0?null:HTPL[i]);},120);};});}
+    setTimeout(function(){habitSheet(null, i<0?null:tplLocal(HTPL[i]));},120);};});}
 
 /* ---- 习惯定义：属性做成可点开的行，照参考版 ---- */
 var hbDraft=null;
+
+/* ============ 多语言 ============
+   源码一律写英文，中文挂在 ZH 词典里；默认英文。
+   注意：账单分类正则、自然语言解析的关键词属于逻辑不是文案，不进词典。 */
+var LANG=(function(){try{return store.get("rec.lang")||"en"}catch(e){return "en"}})();
+var ZH={
+  /* 通用 */
+  "Save":"保存","Cancel":"取消","Delete":"删除","Confirm delete":"确认删除","Edit":"编辑",
+  "Deleted":"已删除","Optional":"可留空","Untitled":"未命名","Other":"其他","Yes":"是","No":"否",
+  "Record":"记录","Type":"类型","Note":"备注","Required":"必填","Add":"添加",
+  /* 习惯 */
+  "New habit":"新建习惯","Edit habit":"编辑习惯","Delete this habit":"删除这个习惯",
+  "Check in":"打卡","Edit entry":"编辑记录","Delete this entry":"删除这条记录",
+  "Add attribute":"添加属性","Edit attribute":"编辑属性","Delete this attribute":"删除这个属性",
+  "Check-in attributes":"打卡属性","Attribute name":"属性名","Unit":"单位",
+  "Options (comma separated)":"选项（逗号分隔）","Sub-items":"子项",
+  "Check-in color":"打卡颜色","No attributes yet · check-in only":"还没有属性，只记打卡也可以",
+  "Number":"数字","Rating":"评分","Switch":"开关","Multi":"多选","Text":"文本","Range":"时段",
+  "Start":"开始","End":"结束","Start label":"开始叫什么","End label":"结束叫什么",
+  "Bedtime":"就寝","Wake":"起床",
+  "Missing required:":"还差必填项：","Make-up entry":"补签",
+  "Today's records":"今天的记录","done":"已记","times":"次","segments":"段",
+  "＋ Check in":"＋ 打卡","Check in again":"再记一次","Checked in today":"今天已打卡",
+  "Last 28 days":"近 28 天","Last 7 days":"近 7 天","avg":"平均","total":"合计",
+  "Streak":"连续天数","Days checked":"打卡天数","This month":"本月天数",
+  "Longest streak":"最长连续","Check-ins":"打卡次数","Split days":"分散天数",
+  "Avg gap":"平均间隔","Basic stats":"基础统计","Attribute stats":"属性统计",
+  "Check-in trend":"打卡趋势","This month's check-ins":"本月打卡",
+  "No habits yet · tap + to create":"还没有习惯，点右下角 + 新建",
+  "No records this month":"这个月还没有记录","No records this week":"这一周还没有记录",
+  "Pick a template, or build your own":"选一个模板，或自己配",
+  /* 习惯模板 */
+  "Sleep":"睡眠","Reading":"阅读","Skincare":"护肤","Water":"喝水","Exercise":"运动",
+  "Meditate":"冥想","Meals":"吃饭","Study":"学习",
+  "Duration":"时长","Sleep quality":"睡眠质量","Hard to fall asleep":"入睡困难",
+  "Book":"书名","Steps":"护肤步骤","Skin":"皮肤状态","Sunscreen":"防晒",
+  "Cups":"杯数","Sport":"运动类型","Intensity":"强度","Meal":"餐次","Cooked at home":"在家做",
+  "Subject":"科目","Focus":"专注度",
+  "Cleanser":"洁面","Toner":"爽肤水","Serum":"精华","Cream":"乳液/面霜","Mask":"面膜","Body lotion":"身体乳",
+  "Breakfast":"早餐","Lunch":"午餐","Dinner":"晚餐","Snack":"加餐",
+  "Running":"跑步","Strength":"力量","Yoga":"瑜伽","Swimming":"游泳","Cycling":"骑行","Ball games":"球类",
+  "Major":"专业课","English":"英语","Certification":"考证",
+  "hours":"小时","minutes":"分钟","cups":"杯",
+  /* 订阅 */
+  "My subscriptions":"我的订阅","Total spent":"总消费","Spent this month":"本月支出",
+  "Subscriptions":"订阅数量","Daily cost":"每日成本","left":"还有","Ended":"已结束",
+  "No subscriptions yet":"还没有订阅","Add subscription":"添加订阅","Edit subscription":"编辑订阅",
+  "Delete this subscription":"删除这个订阅",
+  "Name":"名称","Amount":"金额","Currency":"币种","Cycle":"周期",
+  "Start date":"开始日期","End date":"结束日期","Charge date":"扣费日期",
+  "Monthly":"每月","Quarterly":"每季","Yearly":"每年","Weekly":"每周","Fixed date (one-off)":"固定日期",
+  "Charged once on that day, then marked as ended":"只在这一天扣一次，之后自动标记为已结束",
+  "Repeats on the same day each cycle as the start date":"按开始日期那天推算，比如 15 号开始就每期 15 号扣",
+  /* 记账 */
+  "New entry":"新增记录","Expense":"支出","Income":"收入","Category":"分类","Date":"日期",
+  "Import":"导入",
+  /* 属性类型 */
+  "Range":"时段","Number":"数字","Rating":"评分","Switch":"开关","Multi":"多选","Text":"文本",
+  /* 统计 */
+  "Avg":"平均","Min":"最小","Max":"最大","Sum":"总计","Filled":"填写次数","Fill rate":"填写率",
+  "Avg score":"平均分","Unit:":"单位：","No data this month":"这个月还没有数据",
+  "Checked in":"已打卡","Total":"合计","seg":"段","Streak:":"连续",
+  "days split into multiple segments":"天分成了多段，作息偏碎","There are":"有",
+  "entries today, this is #":"条记录，这是第",
+  /* 占位符 */
+  "Sleep / Reading / Skincare":"睡眠 / 阅读 / 护肤",
+  "Duration / Quality / Note":"时长 / 睡眠质量 / 备注",
+  "hours / minutes / cups":"小时 / 分钟 / 杯",
+  "Cleanser, Toner, Serum":"洁面，爽肤水，精华",
+  "Enter":"请输入","Bedtime":"就寝","Wake":"起床",
+  /* 日历表头 */
+  "wd0":"日","wd1":"一","wd2":"二","wd3":"三","wd4":"四","wd5":"五","wd6":"六",
+  /* 底栏与菜单 */
+  "Today":"今天","Plan":"计划","Rituals":"习惯","Menu":"菜单","Settings":"设置",
+  "Schedule":"日程","Journal":"日记","Spending":"记账","Recurring":"订阅",
+  "Occasions":"生日","Milestones":"倒计时","Insights":"回顾","Habit":"习惯",
+  "Appearance":"外观","Sync":"同步","Export Backup":"导出备份","Restore Backup":"恢复备份",
+  "Export Calendar":"导出日历","Import Bills":"导入账单",
+  /* 首页 */
+  "To-do":"待办","Done":"已完成","All clear":"都清空了","Countdown":"倒计时",
+  "Spent today":"今日支出","Diary":"日记","Task":"任务","Cost":"记账",
+  "No timed events · tap + to plan one":"今天没有安排 · 点 + 添加",
+  "Late night":"深夜","Good morning":"早上好","Good afternoon":"下午好","Good evening":"晚上好",
+  "Nothing on today":"今天没有安排","to do":"件待办","habits":"个习惯","overdue":"件逾期",
+  /* 计划 */
+  "Week of":"本周","Carried over":"顺延","Nothing scheduled":"没有安排",
+  "Nothing overdue":"没有逾期","Undated":"无日期","Overdue":"已逾期",
+  /* 记账 */
+  "By category":"分类占比","transactions":"笔记录",
+  /* 其他页 */
+  "Counting down":"倒数","Counting up":"正数","Passed":"已过","Past entries":"过往记录",
+  "Consistency · last 26 weeks":"坚持度 · 近 26 周",
+  "No birthdays":"还没有生日","No countdowns":"还没有倒计时",
+  "Search tasks, diary entries and costs":"搜索待办、日记和账目",
+  "What matters most this week?":"这周最重要的是什么？",
+  "What happened today?":"今天发生了什么？",
+  /* 通用 */
+  "Add":"添加","Close":"关闭","Search":"搜索","Time":"时间","Location":"地点","Notes":"备注",
+  "Title":"标题","What":"什么事","New event":"新建日程","More":"更多","Temperature":"温度",
+  /* 设置 */
+  "Language":"语言"
+};
+function calHead(){
+  return '<div class="hcalh">'+[0,1,2,3,4,5,6].map(function(i){
+    return '<span>'+(LANG==="zh"?ZH["wd"+i]:["S","M","T","W","T","F","S"][i])+'</span>';}).join("")+'</div>';}
+function T(k){return (LANG==="zh"&&ZH[k])?ZH[k]:k;}
+function setLang(v){LANG=v;try{store.set("rec.lang",v)}catch(e){}render();}
 /* 待办和习惯共用同一套标记色 */
 /* 待办的标记色：必须和 CSS 里的 .c0~.c5 保持一致 */
 var COLORS={c0:"#EF4444",c1:"#F59E0B",c2:"#10B981",c3:"#3B82F6",c4:"#8B5CF6",c5:"#EC4899"};
@@ -2897,23 +3104,23 @@ function habitSheet(hb,tpl,resume){
       emoji:(hb&&hb.emoji)||(tpl&&tpl.e)||"check",
       color:(hb&&hb.color)||(tpl&&tpl.c)||HCDEF,
       fields:(hb?hfields(hb):((tpl&&tpl.f)||[])).map(function(f){return Object.assign({},f)}),
-      title: hb?"编辑习惯":(tpl?(tpl.n+"记录"):"新建习惯")};}
+      title: hb?T("Edit habit"):(tpl?esc(tpl.n):T("New habit"))};}
   var d=hbDraft;
 
   openSheet('<h2>'+esc(d.title)+'</h2>'+
     '<label class="fl">名称</label>'+
-    '<input class="inp" id="hn" maxlength="40" value="'+esc(d.name)+'" placeholder="睡眠 / 阅读 / 护肤">'+
-    '<label class="fl">打卡颜色</label><div class="cpal" id="hcp">'+
+    '<input class="inp" id="hn" maxlength="40" value="'+esc(d.name)+'" placeholder="'+T("Sleep / Reading / Skincare")+'">'+
+    '<label class="fl">'+T("Check-in color")+'</label><div class="cpal" id="hcp">'+
       '<label class="cpcus'+(/^#/.test(d.color)?" on":"")+'" id="hcw" style="--cc:'+hcol(d)+'">'+
       '<input type="color" id="hcx" value="'+esc(/^#/.test(d.color)?d.color:hcol(d))+'"></label>'+
       Object.keys(HCOLORS).map(function(k){
         return '<button data-cl="'+k+'"'+(k===d.color?' class="on"':'')+
           ' style="background:'+HCOLORS[k]+'"></button>';}).join("")+'</div>'+
-    '<div class="fldh"><span>打卡属性</span><button class="fldadd" id="hfadd">添加</button></div>'+
+    '<div class="fldh"><span>'+T("Check-in attributes")+'</span><button class="fldadd" id="hfadd">'+T("Add")+'</button></div>'+
     '<div class="fldl" id="hfl"></div>'+
-    '<div class="row" style="margin-top:16px"><button class="btn" id="hv" style="flex:1">保存</button>'+
-    '<button class="btn g" id="hx">取消</button></div>'+
-    (d.hb?'<button class="btn g" id="hdel" style="width:100%;margin-top:10px;color:var(--danger)">删除这个习惯</button>':""));
+    '<div class="row" style="margin-top:16px"><button class="btn" id="hv" style="flex:1">'+T("Save")+'</button>'+
+    '<button class="btn g" id="hx">'+T("Cancel")+'</button></div>'+
+    (d.hb?'<button class="btn g" id="hdel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this habit")+'</button>':""));
 
   function sync(){d.name=$("hn").value;}
   $("hn").oninput=sync;
@@ -2929,12 +3136,12 @@ function habitSheet(hb,tpl,resume){
 
   function drawFields(){
     if(!d.fields.length){
-      $("hfl").innerHTML='<div class="fldz">还没有属性 · 只记打卡也可以</div>';return;}
+      $("hfl").innerHTML='<div class="fldz">'+T("No attributes yet · check-in only")+'</div>';return;}
     $("hfl").innerHTML=d.fields.map(function(f,i){
       return '<div class="fld" data-fe="'+i+'">'+
         '<span class="fldic">'+FIC[f.type]+'</span>'+
-        '<span class="fldb"><b>'+esc(f.label||"未命名")+
-          (f.req?'<em class="req">必填</em>':"")+'</b>'+
+        '<span class="fldb"><b>'+esc(f.label||T("Untitled"))+
+          (f.req?'<em class="req">'+T("Required")+'</em>':"")+'</b>'+
           '<i>'+FTY[f.type]+'类型'+(f.type==="number"&&f.unit?' · '+esc(f.unit):"")+'</i></span>'+
         '<span class="fldc">›</span></div>';}).join("");
     $("hfl").querySelectorAll("[data-fe]").forEach(function(el){
@@ -2952,7 +3159,7 @@ function habitSheet(hb,tpl,resume){
     logs.forEach(function(l){drop("habit_logs",l.id)});
     drop("habits",h0.id);
     hbDraft=null;habitOpen=null;closeSheet();render();
-    toast("已删除 "+h0.name,function(){
+    toast(T("Deleted")+" "+h0.name,function(){
       push("habits",snap);
       logs.forEach(function(l){push("habit_logs",l)});
       render();});};
@@ -2975,29 +3182,29 @@ function fieldSheet(idx){
   function back(){habitSheet(hbDraft.hb,null,true);}
 
   function draw(){
-    openSheet('<h2>'+(isNew?"添加属性":"编辑属性")+'</h2>'+
+    openSheet('<h2>'+(isNew?T("Add attribute"):T("Edit attribute"))+'</h2>'+
       '<label class="fl">属性名</label>'+
-      '<input class="inp" id="fn" maxlength="20" value="'+esc(f.label||"")+'" placeholder="时长 / 睡眠质量 / 备注">'+
-      '<label class="fl">类型</label><div class="ftyg" id="fty">'+FTYL.map(function(r){
+      '<input class="inp" id="fn" maxlength="20" value="'+esc(f.label||"")+'" placeholder="'+T("Duration / Quality / Note")+'">'+
+      '<label class="fl">'+T("Type")+'</label><div class="ftyg" id="fty">'+FTYL.map(function(r){
         return '<button data-fv="'+r[0]+'"'+(r[0]===f.type?' class="on"':'')+'>'+
           '<span>'+FIC[r[0]]+'</span>'+r[1]+'</button>';}).join("")+'</div>'+
       (f.type==="number"
-        ? '<label class="fl">单位</label><input class="inp" id="fu" maxlength="10" value="'+esc(f.unit||"")+'" placeholder="小时 / 分钟 / 杯">'
+        ? '<label class="fl">'+T("Unit")+'</label><input class="inp" id="fu" maxlength="10" value="'+esc(f.unit||"")+'" placeholder="'+T("hours / minutes / cups")+'">'
         : "")+
       (f.type==="multi"
-        ? '<label class="fl">选项（逗号分隔）</label><input class="inp" id="fo" maxlength="200" value="'+esc((f.opts||[]).join("，"))+'" placeholder="洁面，爽肤水，精华">'
+        ? '<label class="fl">'+T("Options (comma separated)")+'</label><input class="inp" id="fo" maxlength="200" value="'+esc((f.opts||[]).join("，"))+'" placeholder="'+T("Cleanser, Toner, Serum")+'">'
         : "")+
       (f.type==="clock"
-        ? '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">开始叫什么</label>'+
-          '<input class="inp" id="fsl" maxlength="8" value="'+esc(f.slab||"")+'" placeholder="就寝"></div>'+
-          '<div style="flex:1"><label class="fl">结束叫什么</label>'+
-          '<input class="inp" id="fel" maxlength="8" value="'+esc(f.elab||"")+'" placeholder="起床"></div></div>'
+        ? '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">'+T("Start label")+'</label>'+
+          '<input class="inp" id="fsl" maxlength="8" value="'+esc(f.slab||"")+'" placeholder="'+T("Bedtime")+'"></div>'+
+          '<div style="flex:1"><label class="fl">'+T("End label")+'</label>'+
+          '<input class="inp" id="fel" maxlength="8" value="'+esc(f.elab||"")+'" placeholder="'+T("Wake")+'"></div></div>'
         : "")+
-      '<div class="lgbl" style="margin-top:16px"><span>必填</span>'+
+      '<div class="lgbl" style="margin-top:16px"><span>'+T("Required")+'</span>'+
         '<button class="atog'+(f.req?" on":"")+'" id="fq"></button></div>'+
-      '<div class="row" style="margin-top:18px"><button class="btn" id="fok" style="flex:1">保存</button>'+
-      '<button class="btn g" id="fx">取消</button></div>'+
-      (isNew?"":'<button class="btn g" id="fdel" style="width:100%;margin-top:10px;color:var(--danger)">删除这个属性</button>'));
+      '<div class="row" style="margin-top:18px"><button class="btn" id="fok" style="flex:1">'+T("Save")+'</button>'+
+      '<button class="btn g" id="fx">'+T("Cancel")+'</button></div>'+
+      (isNew?"":'<button class="btn g" id="fdel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this attribute")+'</button>'));
 
     $("fn").oninput=function(){f.label=$("fn").value;};
     $("fty").querySelectorAll("[data-fv]").forEach(function(el){el.onclick=function(){
@@ -3069,7 +3276,7 @@ function logSheet(hb,ds,logId){
         '<div class="kdur" id="kdur">—</div></div>';}
     if(f.type==="number")
       return lab+'<input class="inp" id="fv_'+f.id+'" type="number" inputmode="decimal" step="any" '+
-        'placeholder="请输入'+esc(f.label)+'" value="'+(v==null?"":esc(v))+'">';
+        'placeholder="'+T("Enter")+esc(f.label)+'" value="'+(v==null?"":esc(v))+'">';
     if(f.type==="rating")
       return lab+'<div class="stars" data-fr="'+f.id+'">'+[1,2,3,4,5].map(function(n){
         return '<button data-rv="'+n+'" class="'+(v&&n<=v?"on":"")+'">★</button>';}).join("")+'</div>';
@@ -3079,21 +3286,21 @@ function logSheet(hb,ds,logId){
     if(f.type==="multi")
       return lab+'<div class="lgit" data-fm="'+f.id+'">'+(f.opts||[]).map(function(o){
         return '<button data-mv="'+esc(o)+'"'+(v.indexOf(o)>=0?' class="on"':'')+'>'+esc(o)+'</button>';}).join("")+'</div>';
-    return lab+'<textarea class="lgn" id="fv_'+f.id+'" maxlength="500" placeholder="请输入'+esc(f.label)+'">'+
+    return lab+'<textarea class="lgn" id="fv_'+f.id+'" maxlength="500" placeholder="'+T("Enter")+esc(f.label)+'">'+
       esc(v==null?"":v)+'</textarea>';}
 
   var same=logsOn(hb.id,ds).filter(function(x){return !l||x.id!==l.id});
-  openSheet('<div class="lgttl"><b>'+(exists?"编辑记录":"打卡")+'</b>'+
+  openSheet('<div class="lgttl"><b>'+(exists?T("Edit entry"):T("Check in"))+'</b>'+
     '<i>'+hicon(hb,13)+esc(hb.name)+'</i></div>'+
     (same.length?'<div class="lgnote">这天已经有 '+same.length+' 条记录，这是第 '+(same.length+1)+' 条</div>':"")+
     (ds!==todayStr()?'<div class="lgback">补签 · '+
       esc((parse(ds).getMonth()+1)+"月"+parse(ds).getDate()+"日")+'</div>':"")+
-    (fs.length?fs.map(fieldHTML).join(""):'<div class="hdone" style="margin-top:16px">'+ckSVG(true)+'<span>打卡</span></div>')+
+    (fs.length?fs.map(fieldHTML).join(""):'<div class="hdone" style="margin-top:16px">'+ckSVG(true)+'<span>'+T("Check in")+'</span></div>')+
     '<div class="lgerr" id="lgerr"></div>'+
     '<div class="row" style="margin-top:18px">'+
-    '<button class="btn g" id="lgx" style="flex:1">取消</button>'+
-    '<button class="btn" id="lgok" style="flex:1">保存</button></div>'+
-    (exists?'<button class="btn g" id="lgdel" style="width:100%;margin-top:10px;color:var(--danger)">删除这条记录</button>':''));
+    '<button class="btn g" id="lgx" style="flex:1">'+T("Cancel")+'</button>'+
+    '<button class="btn" id="lgok" style="flex:1">'+T("Save")+'</button></div>'+
+    (exists?'<button class="btn g" id="lgdel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this entry")+'</button>':''));
 
   fs.forEach(function(f){
     if(f.type!=="clock")return;
@@ -3135,7 +3342,7 @@ function logSheet(hb,ds,logId){
       if(v!=null)out[f.id]=v;
       else if(f.req)miss.push(f.label);});
     if(miss.length){
-      $("lgerr").textContent="还差必填项："+miss.join("、");
+      $("lgerr").textContent=T("Missing required:")+miss.join("、");
       $("lgerr").classList.add("on");return;}
     var st = hasClock ? ((out[(fs.filter(function(f){return f.type==="clock"})[0]||{}).id]||{}).s || tm) : tm;
     var id = l ? l.id : (hb.id+"_"+ds+(logsOn(hb.id,ds).length?"_"+Math.random().toString(36).slice(2,7):""));
@@ -3171,27 +3378,28 @@ function barStrip(hb){
 function vHabit(){
   if(habitOpen){var hx=habitById(habitOpen); if(hx)return vHabitOne(hx); habitOpen=null;}
   var hs=D.habits.filter(function(h){return !h.archived}).sort(function(a,b){return a.sort-b.sort});
-  if(!hs.length)return '<div class="card"><div class="empty"><span class="e">🌱</span>还没有习惯，点右下角 + 新建</div></div>';
+  if(!hs.length)return '<div class="card"><div class="empty"><span class="e">🌱</span>'+T("No habits yet · tap + to create")+'</div></div>';
   var ts=todayStr();
   return '<div class="hlist">'+hs.map(function(hb){
     var ls=logsOn(hb.id,ts), l=ls[ls.length-1], st=streak(hb.id), sm=logSummary(hb,l), c=hcol(hb);
     var mf=mainField(hb), tot=null;
     if(mf&&ls.length>1){tot=0;ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]);if(vv!=null)tot+=vv;});}
-    return '<div class="hcard" data-hopen="'+hb.id+'" data-hpress="'+hb.id+'" style="--hc:'+c+'">'+
+    return '<div class="hrw" data-hpress="'+hb.id+'">'+
       '<button class="hdel" data-hdel="'+hb.id+'">删除</button>'+
+      '<div class="hcard" data-hopen="'+hb.id+'" style="--hc:'+c+'">'+
       '<div class="hch"><span class="hcn">'+hicon(hb,18)+esc(hb.name)+'</span>'+
       '<span class="hcm">连续 '+st+' 天</span></div>'+
       '<div class="'+(l?"hdone":"hcta")+'" data-hl="'+hb.id+'|'+ts+'">'+
-        (l?ckSVG(true)+'<span>今天已打卡'+(ls.length>1?' · '+ls.length+' 段':'')+'</span>':'＋ 打卡')+
-        (isMulti(hb)&&l?'<em class="hadd">再记一次</em>':"")+'</div>'+
+        (l?ckSVG(true)+'<span>'+T("Checked in today")+''+(ls.length>1?' · '+ls.length+' 段':'')+'</span>':T("＋ Check in"))+
+        (isMulti(hb)&&l?'<em class="hadd">'+T("Check in again")+'</em>':"")+'</div>'+
       (tot!=null?'<div class="hcsum">合计 '+esc(fnum(tot,1)+fUnit(mf))+
         '<em class="'+(mf&&mf.type==="clock"?"warn":"cnt")+'">'+ls.length+' 段</em></div>'
         :(sm?'<div class="hcsum">'+esc(sm)+'</div>':""))+
       (function(){var bs=barStrip(hb), mf2=mainField(hb);
-        return '<div class="hcs">近 28 天'+
+        return '<div class="hcs">'+T("Last 28 days")+''+
           (bs.avg!=null?'<em>平均 '+esc(fnum(bs.avg,1)+fUnit(mf2))+'</em>':"")+'</div>'+
           '<div class="hbar'+(bs.chart?" chart":"")+'">'+bs.html+'</div>';})()+
-    '</div>';}).join("")+'</div>';}
+    '</div></div>';}).join("")+'</div>';}
 
 /* ---- 详情 ---- */
 /* 平均时刻：跨午夜的先补一天再平均，否则会算成中午 */
@@ -3221,8 +3429,7 @@ function hCal(hb){
       (fu?"":' data-hday="'+hb.id+'|'+ds+'"')+'>'+
       '<b>'+d+'</b>'+(sm?'<i>'+esc(sm)+'</i>':"")+'</div>';}
   return '<div class="hcalw" style="--hc:'+hcol(hb)+'">'+
-    '<div class="hcalh"><span>日</span><span>一</span><span>二</span><span>三</span>'+
-    '<span>四</span><span>五</span><span>六</span></div><div class="hcal">'+out+'</div></div>';}
+    calHead()+'<div class="hcal">'+out+'</div></div>';}
 
 /* 记录页顶部的一周条：轻，不抢戏，点某天补签 */
 function hWeek(hb){
@@ -3241,7 +3448,7 @@ function hWeek(hb){
 
 function logCard(hb,l){
   var vs=lvals(l), rows=hfields(hb).filter(function(f){return hasVal(f,vs[f.id])});
-  if(!rows.length)return '<div class="lgrow"><span class="k">已打卡</span></div>';
+  if(!rows.length)return '<div class="lgrow"><span class="k">'+T("Checked in")+'</span></div>';
   return rows.map(function(f){
     return '<div class="lgrow"><span class="i">'+FIC[f.type]+'</span>'+
       '<span class="k">'+esc(f.label)+'</span>'+
@@ -3252,7 +3459,7 @@ function vHabitOne(hb){
   var h='<div class="hseg"><div class="sw">'+
     '<button data-hm="log"'+(habitMode==="log"?' class="on"':'')+'>记录</button>'+
     '<button data-hm="stat"'+(habitMode==="stat"?' class="on"':'')+'>统计</button></div>'+
-    '<button class="pill" data-hedit="'+hb.id+'">编辑</button></div>';
+    '<button class="pill" data-hedit="'+hb.id+'">'+T("Edit")+'</button></div>';
   if(habitMode==="stat")
     h+='<div class="hmon"><button class="pill" data-hmn="-1">‹</button>'+
        '<b>'+monLabel(habitMon)+'</b>'+
@@ -3289,7 +3496,7 @@ function vHabitOne(hb){
               return '<div class="tlc" data-hedid="'+x.id+'">'+
                 (x.start_time?'<span class="tlt">'+esc(x.start_time)+'</span>':"")+
                 logCard(hb,x)+'</div>';}).join("")+'</div>';}).join("")+'</div>'
-      : '<div class="card"><div class="empty">这一周还没有记录</div></div>';
+      : '<div class="card"><div class="empty">'+T("No records this week")+'</div></div>';
     return h;}
   var flat=[];
   rows.forEach(function(r){logsOn(hb.id,r.ds).forEach(function(x){flat.push({ds:r.ds,l:x,d:r.d});});});
@@ -3318,20 +3525,20 @@ function hStat(hb,rows,last){
       run++;dates.push(j);if(run>best)best=run;} else run=0;}
   var gap = dates.length>1 ? ((dates[dates.length-1]-dates[0])/(dates.length-1)) : (dates.length?1:0);
 
-  var h='<div class="sec">基础统计</div><div class="stg">'+
-    '<div class="stc"><div class="k">打卡天数</div><div class="v">'+tot+'<small>/'+days+'</small></div></div>'+
-    '<div class="stc"><div class="k">打卡次数</div><div class="v">'+hits+'<small>次</small></div></div>'+
-    '<div class="stc"><div class="k">最长连续</div><div class="v">'+best+'<small>天</small></div></div>'+
+  var h='<div class="sec">'+T("Basic stats")+'</div><div class="stg">'+
+    '<div class="stc"><div class="k">'+T("Days checked")+'</div><div class="v">'+tot+'<small>/'+days+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Check-ins")+'</div><div class="v">'+hits+'<small>次</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Longest streak")+'</div><div class="v">'+best+'<small>天</small></div></div>'+
     (hasClockF
-      ? '<div class="stc'+(split?" warn":"")+'"><div class="k">分散天数</div><div class="v">'+split+'<small>天</small></div></div>'
-      : '<div class="stc"><div class="k">平均间隔</div><div class="v">'+(gap?gap.toFixed(1):"—")+'<small>天</small></div></div>')+
+      ? '<div class="stc'+(split?" warn":"")+'"><div class="k">'+T("Split days")+'</div><div class="v">'+split+'<small>天</small></div></div>'
+      : '<div class="stc"><div class="k">'+T("Avg gap")+'</div><div class="v">'+(gap?gap.toFixed(1):"—")+'<small>天</small></div></div>')+
     '</div>'+
     (hasClockF&&split?'<div class="stnote">有 '+split+' 天分成了多段，作息偏碎</div>':"");
 
   var fs=hfields(hb);
   if(fs.length){
     if(habitTab>=fs.length)habitTab=0;
-    h+='<div class="sec">属性统计</div>';
+    h+='<div class="sec">'+T("Attribute stats")+'</div>';
     h+='<div class="ftab">'+fs.map(function(f,i){
       return '<button data-fs="'+i+'"'+(i===habitTab?' class="on"':'')+'>'+esc(f.label)+'</button>';}).join("")+'</div>';
     var f=fs[habitTab];
@@ -3351,19 +3558,19 @@ function hStat(hb,rows,last){
     h+='<div class="fhd"><span class="i">'+FIC[f.type]+'</span><b>'+esc(f.label)+'</b>'+
        '<span class="tg">'+FTY[f.type]+'</span></div>';
     if(f.type==="number"||f.type==="clock"){
-      if(!vals.length)h+='<div class="empty" style="padding:14px 0">这个月还没有数据</div>';
+      if(!vals.length)h+='<div class="empty" style="padding:14px 0">'+T("No data this month")+'</div>';
       else{
         var sum=vals.reduce(function(a,b){return a+b},0), avg=sum/vals.length;
         h+='<div class="f4">'+
-          '<div><i>平均</i><b>'+fnum(avg,1)+'</b></div>'+
-          '<div><i>最小</i><b>'+fnum(Math.min.apply(null,vals),f.dec)+'</b></div>'+
-          '<div><i>最大</i><b>'+fnum(Math.max.apply(null,vals),f.dec)+'</b></div>'+
-          '<div><i>总计</i><b>'+fnum(sum,f.dec)+'</b></div></div>'+
-          (fUnit(f)?'<div class="funit">单位：'+esc(fUnit(f))+'</div>':"")+
+          '<div><i>'+T("Avg")+'</i><b>'+fnum(avg,1)+'</b></div>'+
+          '<div><i>'+T("Min")+'</i><b>'+fnum(Math.min.apply(null,vals),f.dec)+'</b></div>'+
+          '<div><i>'+T("Max")+'</i><b>'+fnum(Math.max.apply(null,vals),f.dec)+'</b></div>'+
+          '<div><i>'+T("Sum")+'</i><b>'+fnum(sum,f.dec)+'</b></div></div>'+
+          (fUnit(f)?'<div class="funit">'+T("Unit:")+esc(fUnit(f))+'</div>':"")+
           (f.type==="clock"&&sts.length
             ? '<div class="f4" style="grid-template-columns:1fr 1fr">'+
-              '<div><i>平均'+esc(f.slab||"开始")+'</i><b>'+(avgClock(sts,true)||"—")+'</b></div>'+
-              '<div><i>平均'+esc(f.elab||"结束")+'</i><b>'+(avgClock(ens,false)||"—")+'</b></div></div>'
+              '<div><i>'+T("Avg")+" "+esc(f.slab||T("Start"))+'</i><b>'+(avgClock(sts,true)||"—")+'</b></div>'+
+              '<div><i>'+T("Avg")+" "+esc(f.elab||T("End"))+'</i><b>'+(avgClock(ens,false)||"—")+'</b></div></div>'
             : "");
         if(seq.length>1)
           h+='<div class="fchart"><svg viewBox="0 0 300 80" preserveAspectRatio="none">'+
@@ -3373,7 +3580,7 @@ function hStat(hb,rows,last){
       var rmx=Math.max(rt[1],rt[2],rt[3],rt[4],rt[5])||1;
       var rn=rt[1]+rt[2]+rt[3]+rt[4]+rt[5];
       var rsum=1*rt[1]+2*rt[2]+3*rt[3]+4*rt[4]+5*rt[5];
-      h+='<div class="fbig">'+(rn?fnum(rsum/rn,1):"—")+'<small>平均分</small></div>';
+      h+='<div class="fbig">'+(rn?fnum(rsum/rn,1):"—")+'<small>'+T("Avg score")+'</small></div>';
       [5,4,3,2,1].forEach(function(n){
         h+='<div class="stl"><span class="n">'+"★".repeat(n)+'</span>'+
            '<span class="b"><i style="width:'+Math.round(rt[n]/rmx*100)+'%"></i></span>'+
@@ -3386,26 +3593,26 @@ function hStat(hb,rows,last){
          '<span class="p">'+no+'次 '+Math.round(no/bn*100)+'%</span></div>';
     }else if(f.type==="multi"){
       var ks=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
-      if(!ks.length)h+='<div class="empty" style="padding:14px 0">这个月还没有数据</div>';
+      if(!ks.length)h+='<div class="empty" style="padding:14px 0">'+T("No data this month")+'</div>';
       else ks.forEach(function(n){var pc=tot?Math.round(cnt[n]/tot*100):0;
         h+='<div class="stl"><span class="n">'+esc(n)+'</span>'+
            '<span class="b"><i style="width:'+pc+'%"></i></span>'+
            '<span class="p">'+cnt[n]+'次 '+pc+'%</span></div>';});
     }else{
       h+='<div class="f4" style="grid-template-columns:1fr 1fr">'+
-         '<div><i>填写次数</i><b>'+filled+'</b></div>'+
-         '<div><i>填写率</i><b>'+(tot?Math.round(filled/tot*100):0)+'%</b></div></div>';}
+         '<div><i>'+T("Filled")+'</i><b>'+filled+'</b></div>'+
+         '<div><i>'+T("Fill rate")+'</i><b>'+(tot?Math.round(filled/tot*100):0)+'%</b></div></div>';}
     h+='</div>';}
 
   /* 打卡趋势：本月每天一根 */
-  h+='<div class="sec">打卡趋势</div><div class="card" style="padding:14px 15px">'+
+  h+='<div class="sec">'+T("Check-in trend")+'</div><div class="card" style="padding:14px 15px">'+
      '<div class="trend">';
   for(var k2=1;k2<=last;k2++){
     var ds2=y+"-"+pad(m+1)+"-"+pad(k2);
     h+='<i class="'+(logOf(hb.id,ds2)?"on":"")+'"></i>';}
   h+='</div><div class="trendx"><span>1</span><span>10</span><span>20</span><span>'+last+'</span></div></div>';
 
-  h+='<div class="sec">本月打卡</div><div class="card" style="padding:14px 13px 16px">'+hCal(hb)+'</div>';
+  h+='<div class="sec">'+T("This month's check-ins")+'</div><div class="card" style="padding:14px 13px 16px">'+hCal(hb)+'</div>';
   return h;}
 
 
@@ -3424,23 +3631,48 @@ function vMoney(){
   var exp=rows.filter(function(r){return r.kind==="expense"}).reduce(function(a,r){return a+(+r.amount||0)},0);
   var inc=rows.filter(function(r){return r.kind==="income"}).reduce(function(a,r){return a+(+r.amount||0)},0);
 
-  var h='<div class="row" style="justify-content:space-between;margin-bottom:10px">'+
-    '<button class="pill" data-mnav="-1">‹</button><div style="font-weight:700;font-size:15px">'+MONS[ledMonth.getMonth()]+' '+ledMonth.getFullYear()+'</div>'+
-    '<button class="pill" data-mnav="1">›</button></div>';
+  var h='<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px">'+
+    '<div class="row" style="gap:6px;align-items:center">'+
+      '<button class="pill" data-mnav="-1">‹</button>'+
+      '<div style="font-weight:700;font-size:15px;min-width:104px;text-align:center">'+
+        MONS[ledMonth.getMonth()]+' '+ledMonth.getFullYear()+'</div>'+
+      '<button class="pill" data-mnav="1">›</button></div>'+
+    '<button class="pill" id="impLed">'+T("Import")+'</button></div>';
 
   h+='<div class="card" style="padding:14px;margin-bottom:10px"><div class="row" style="justify-content:space-between">'+
      '<div><div class="kvs">Expense</div><div style="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums">'+money(exp)+'</div></div>'+
      '<div style="text-align:right"><div class="kvs">Income</div><div style="font-size:15px;font-weight:700;color:var(--accent2)">'+money(inc)+'</div>'+
      '<div class="kvs" style="margin-top:3px">Balance '+money(inc-exp)+'</div></div></div></div>';
 
-  h+='<div class="row" style="gap:8px;margin-bottom:12px"><button class="btn" id="addLed" style="flex:1">+ Add Entry</button>'+
-     '<button class="btn g" id="impLed" style="flex:1">📥 Import Bills</button></div>';
+  /* 月历：一眼看出哪天花得多 */
+  (function(){
+    var y=ledMonth.getFullYear(), m=ledMonth.getMonth();
+    var last=new Date(y,m+1,0).getDate(), lead=new Date(y,m,1).getDay(), ts=todayStr();
+    /* 每天算净额：支出多为红，收入多为绿，深浅按金额 */
+    var net={}, mx=0;
+    rows.forEach(function(r){
+      var d=+String(r.date).slice(8,10), a=+r.amount||0;
+      net[d]=(net[d]||0)+(r.kind==="income"?a:-a);});
+    Object.keys(net).forEach(function(k){if(Math.abs(net[k])>mx)mx=Math.abs(net[k]);});
+    var out="";
+    for(var i=0;i<lead;i++)out+='<div class="hcz"></div>';
+    for(var d2=1;d2<=last;d2++){
+      var ds2=y+"-"+pad(m+1)+"-"+pad(d2), v=net[d2]||0, av=Math.abs(v);
+      var lv=av?Math.max(1,Math.ceil(av/mx*4)):0;
+      var tone=v<0?"neg":(v>0?"pos":"");
+      out+='<div class="hcd '+tone+' lv'+lv+(ds2===ts?" td":"")+'" data-mday="'+ds2+'">'+
+        '<b>'+d2+'</b>'+(av?'<i>'+(v>0?"+":"−")+(av>=1000?(Math.round(av/100)/10)+"k":Math.round(av))+'</i>':"")+'</div>';}
+    h+='<div class="card" style="padding:12px 12px 14px;margin-bottom:12px">'+
+       calHead()+
+       '<div class="hcal scal mcal">'+out+'</div>'+
+       '<div class="mcleg"><span>支出</span><i class="neg lv4"></i><i class="neg lv2"></i>'+
+       '<i class="lv0"></i><i class="pos lv2"></i><i class="pos lv4"></i><span>收入</span></div></div>';})();
 
   // 分类占比
   var byCat={};
   rows.filter(function(r){return r.kind==="expense"}).forEach(function(r){byCat[r.category]=(byCat[r.category]||0)+(+r.amount||0)});
   var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
-  if(cats.length){h+='<div class="sec">By category</div><div class="card" style="padding:12px 13px">'+cats.map(function(c){
+  if(cats.length){h+='<div class="sec">'+T("By category")+'</div><div class="card" style="padding:12px 13px">'+cats.map(function(c){
     var pct=exp?byCat[c]/exp*100:0;
     return '<div style="margin-bottom:9px"><div class="row" style="justify-content:space-between;font-size:13px;margin-bottom:4px">'+
       '<span style="font-weight:600">'+esc(catL(c))+'</span><span class="muted" style="font-variant-numeric:tabular-nums">'+money(byCat[c])+' · '+pct.toFixed(0)+'%</span></div>'+
@@ -3451,14 +3683,14 @@ function vMoney(){
   var byDay={};
   rows.forEach(function(r){(byDay[r.date]=byDay[r.date]||[]).push(r)});
   var days=Object.keys(byDay).sort(function(a,b){return b.localeCompare(a)});
-  h+='<div class="sec">'+rows.length+' transactions</div>';
+  h+='<div class="sec">'+rows.length+''+" "+T("transactions")+'</div>';
   if(!days.length)return h+'<div class="card"><div class="empty"><span class="e">🧾</span>No records this month</div></div>';
   h+=days.map(function(ds){
     var day=byDay[ds], de=day.filter(function(r){return r.kind==="expense"}).reduce(function(a,r){return a+(+r.amount||0)},0);
     return '<div class="row" style="justify-content:space-between;margin:12px 4px 5px"><span style="font-size:12px;font-weight:700;color:var(--sub)">'+esc(ds.slice(5))+'</span>'+
       '<span style="font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums">'+money(de)+'</span></div>'+
       '<div class="card">'+day.map(function(r){
-        return '<div class="kv"><div style="min-width:0"><div class="kvn">'+esc(r.note||r.category)+'</div>'+
+        return '<div class="kv" data-ledit="'+r.id+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+esc(r.note||r.category)+'</div>'+
           '<div class="kvs">'+esc(catL(r.category))+(r.source&&r.source!=="manual"?' · '+esc(r.source==="alipay"?"Alipay":"WeChat"):"")+'</div></div>'+
           '<div class="kvr"><div class="kvp" style="color:'+(r.kind==="income"?"var(--accent2)":"var(--ink)")+'">'+
           (r.kind==="income"?"+":"-")+'¥'+(+r.amount).toFixed(2)+'</div></div>'+
@@ -3466,26 +3698,36 @@ function vMoney(){
   }).join("");
   return h;}
 
-function ledSheet(){
-  openSheet('<h2>Add Entry</h2>'+
-    '<div class="seg" id="lkind" style="margin-bottom:10px"><button data-k="expense" class="on">Expense</button><button data-k="income">Income</button></div>'+
-    '<label class="fl">Amount</label><input class="inp" id="la" type="number" step="0.01" inputmode="decimal" placeholder="0.00" style="font-size:22px;font-weight:700">'+
-    '<label class="fl">Category</label><div class="row" id="lcats" style="flex-wrap:wrap;gap:6px"></div>'+
-    '<label class="fl">Note</label><input class="inp" id="ln" placeholder="optional">'+
-    '<label class="fl">Date</label><input class="inp" id="ld" type="date" value="'+todayStr()+'">'+
-    '<div class="row" style="margin-top:14px"><button class="btn" id="lv" style="flex:1">Save</button><button class="btn g" id="lx">Cancel</button></div>');
-  var kind="expense", cat="餐饮";
+function ledSheet(rec,defDate){
+  var ed=rec||null;
+  openSheet('<h2>'+(ed?T("Edit entry"):T("New entry"))+'</h2>'+
+    '<div class="seg" id="lkind" style="margin-bottom:10px">'+
+      '<button data-k="expense"'+(!ed||ed.kind!=="income"?' class="on"':'')+'>'+T("Expense")+'</button>'+
+      '<button data-k="income"'+(ed&&ed.kind==="income"?' class="on"':'')+'>'+T("Income")+'</button></div>'+
+    '<label class="fl">'+T("Amount")+'</label><input class="inp" id="la" type="number" step="0.01" inputmode="decimal" placeholder="0.00" value="'+(ed?esc((+ed.amount).toFixed(2)):"")+'" style="font-size:22px;font-weight:700">'+
+    '<label class="fl">'+T("Category")+'</label><div class="row" id="lcats" style="flex-wrap:wrap;gap:6px"></div>'+
+    '<label class="fl">'+T("Note")+'</label><input class="inp" id="ln" placeholder=T("Optional") value="'+(ed?esc(ed.note||""):"")+'">'+
+    '<label class="fl">'+T("Date")+'</label><input class="inp" id="ld" type="date" value="'+esc(ed?ed.date:(defDate||todayStr()))+'">'+
+    '<div class="row" style="margin-top:14px"><button class="btn" id="lv" style="flex:1">'+T("Save")+'</button><button class="btn g" id="lx">'+T("Cancel")+'</button></div>'+
+    (ed?'<button class="btn g" id="ldel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this entry")+'</button>':""));
+  var kind=(ed&&ed.kind)||"expense", cat=(ed&&ed.category)||"餐饮";
   function drawCats(){var arr=kind==="expense"?CATS:INCAT; if(arr.indexOf(cat)<0)cat=arr[0];
     $("lcats").innerHTML=arr.map(function(c){return '<button class="pill'+(c===cat?" ok":"")+'" data-c="'+c+'">'+catL(c)+'</button>'}).join("");
     $("lcats").querySelectorAll("[data-c]").forEach(function(el){el.onclick=function(){cat=el.dataset.c;drawCats()}});}
   drawCats();
   $("lkind").querySelectorAll("[data-k]").forEach(function(el){el.onclick=function(){
     kind=el.dataset.k;$("lkind").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b===el)});drawCats()}});
-  setTimeout(function(){$("la").focus()},80);
+  if(!ed)setTimeout(function(){$("la").focus()},80);
   $("lx").onclick=closeSheet;
+  var ld2=$("ldel");
+  if(ld2)ld2.onclick=function(){
+    var snap=Object.assign({},ed);
+    drop("ledger",ed.id);closeSheet();render();
+    toast(T("Deleted"),function(){push("ledger",snap);render();});};
   $("lv").onclick=function(){var amt=parseFloat($("la").value);if(!amt||amt<=0)return;
-    push("ledger",{id:uid(),date:$("ld").value||todayStr(),amount:Math.abs(amt),kind:kind,category:cat,
-      note:$("ln").value||null,source:"manual",updated_at:new Date().toISOString()});
+    var row={id:ed?ed.id:uid(),date:$("ld").value||todayStr(),amount:Math.abs(amt),kind:kind,category:cat,
+      note:$("ln").value||null,source:(ed&&ed.source)||"manual",updated_at:new Date().toISOString()};
+    push("ledger",row);
     closeSheet();render();};
   $("la").onkeydown=function(e){if(e.key==="Enter")$("lv").click()};}
 
@@ -3587,23 +3829,148 @@ function mapCat(raw,note,kind){
   return "其他";}
 
 /* ---- 其他：订阅 + 生日 ---- */
-var CYC={weekly:"Weekly",monthly:"Monthly",quarterly:"Quarterly",yearly:"Yearly"};
+var CYC={weekly:"Weekly",monthly:"Monthly",quarterly:"Quarterly",yearly:"Yearly",once:"Fixed date (one-off)"};
+var CYCU={weekly:"周",monthly:"月",quarterly:"季",yearly:"年"};
 function monthly(s){var p=+s.price||0;
   return s.cycle==="yearly"?p/12:s.cycle==="quarterly"?p/3:s.cycle==="weekly"?p*52/12:p;}
-function expired(s){return s.end_date && s.end_date < todayStr()}
+function expired(s){
+  if(s.cycle==="once")return s.start_date && s.start_date < todayStr();
+  return s.end_date && s.end_date < todayStr();}
+
+/* 价格的中文说法：每月100元 / 固定日期 100元 */
+function cycTxt(s){
+  var cur=(s.currency==="USD"?"$":"");
+  var amt=cur+(+s.price||0).toFixed((+s.price||0)%1?2:0)+(s.currency==="USD"?"":"元");
+  return s.cycle==="once" ? (esc(s.start_date||"")+" "+amt) : (CYC[s.cycle]+amt);}
+
+/* 下一次扣费日；已结束返回 null */
+function nextCharge(s){
+  if(!s.start_date)return null;
+  var ts=todayStr();
+  if(s.cycle==="once")return s.start_date>=ts?parse(s.start_date):null;
+  var end=s.end_date?parse(s.end_date):null;
+  var d=new Date(); d.setHours(0,0,0,0);
+  for(var k=0;k<800;k++){
+    var y=d.getFullYear(), m=d.getMonth();
+    /* 严格晚于今天：办卡当天那笔算已付，下一次才是"还有几天" */
+    var hit=subDaysIn(s,y,m).filter(function(x){return new Date(y,m,x)>d;});
+    if(hit.length){var r=new Date(y,m,hit[0]); if(end&&r>end)return null; return r;}
+    d=new Date(y,m+1,1);
+    if(end&&d>end)return null;}
+  return null;}
+function daysToNext(s){
+  var n=nextCharge(s); if(!n)return null;
+  var t=new Date(); t.setHours(0,0,0,0);
+  return Math.round((n-t)/86400000);}
+
+/* 从开始到今天，这个订阅一共花了多少 */
+function spentSoFar(s){
+  if(!s.start_date)return 0;
+  var st=parse(s.start_date), now=new Date(); now.setHours(0,0,0,0);
+  if(s.cycle==="once")return st<=now?(+s.price||0):0;
+  var n=0, d=new Date(st.getFullYear(),st.getMonth(),1);
+  while(d<=now&&n<4000){
+    var y=d.getFullYear(), m=d.getMonth();
+    subDaysIn(s,y,m).forEach(function(x){if(new Date(y,m,x)<=now)n++;});
+    d=new Date(y,m+1,1);}
+  return n*(+s.price||0);}
+
+/* 名字首字 + 稳定色，当作图标 */
+function subTile(s){
+  var ks=Object.keys(HCOLORS);
+  var hsh=0, nm=String(s.name||"?");
+  for(var i=0;i<nm.length;i++)hsh=(hsh*31+nm.charCodeAt(i))>>>0;
+  var c=HCOLORS[ks[hsh%ks.length]];
+  return '<span class="stile" style="--sc:'+c+'">'+esc(nm.slice(0,1).toUpperCase())+'</span>';}
+
+/* 某个订阅在 y 年 m 月（m 从 0 起）会在哪几天扣费 */
+function subDaysIn(s,y,m){
+  if(!s.start_date)return [];
+  var st=parse(s.start_date), last=new Date(y,m+1,0).getDate(), out=[];
+  var end=s.end_date?parse(s.end_date):null;
+  function ok(d){
+    var dt=new Date(y,m,d);
+    if(dt<st)return false;
+    if(end&&dt>end)return false;
+    return true;}
+  if(s.cycle==="weekly"){
+    for(var d=1;d<=last;d++)
+      if(new Date(y,m,d).getDay()===st.getDay()&&ok(d))out.push(d);
+  }else if(s.cycle==="monthly"){
+    var dd=Math.min(st.getDate(),last);
+    if(ok(dd))out.push(dd);
+  }else if(s.cycle==="quarterly"){
+    var diff=(y-st.getFullYear())*12+(m-st.getMonth());
+    if(diff>=0&&diff%3===0){var q=Math.min(st.getDate(),last); if(ok(q))out.push(q);}
+  }else if(s.cycle==="once"){
+    if(st.getFullYear()===y&&st.getMonth()===m)out.push(st.getDate());
+  }else{ /* yearly */
+    if(m===st.getMonth()){var q2=Math.min(st.getDate(),last); if(ok(q2))out.push(q2);}}
+  return out;}
+var subMonth=new Date();
+/* 没有图标就用名字首字，配色按名字哈希，保证同一个订阅永远同一个颜色 */
+function subTile(s){
+  var ks=Object.keys(HCOLORS), n=String(s.name||"?");
+  var hsum=0; for(var i=0;i<n.length;i++)hsum=(hsum*31+n.charCodeAt(i))>>>0;
+  var c=HCOLORS[ks[hsum%ks.length]];
+  return '<span class="subi" style="--c:'+c+'">'+esc(n.slice(0,1).toUpperCase())+'</span>';}
+
 function vSubs(){
-  var subs=D.subscriptions.slice().sort(function(a,b){return monthly(b)-monthly(a)});
+  var subs=D.subscriptions.slice();
   var act=subs.filter(function(s){return !expired(s)});
-  var tot=act.reduce(function(a,s){return a+monthly(s)},0);
-  var h='<div class="total"><span>Monthly total</span><span>¥ '+tot.toFixed(2)+'</span></div>';
-  h+='<button class="btn" id="addSub" style="width:100%;margin-bottom:10px">+ Add Subscription</button>';
-  h+='<div class="card">'+(subs.length?subs.map(function(s){
-      return '<div class="kv"><div style="min-width:0"><div class="kvn">'+esc(s.name)+(expired(s)?' <span class="badge off">ended</span>':"")+'</div>'+
-        '<div class="kvs">'+CYC[s.cycle]+' · '+esc(s.start_date||"—")+(s.end_date?" – "+esc(s.end_date):"")+'</div></div>'+
-        '<div class="kvr"><div class="kvp">'+(s.currency==="USD"?"$":"¥")+(+s.price).toFixed(2)+'</div>'+
-        '<div class="kvs">≈¥'+monthly(s).toFixed(1)+'/mo</div></div>'+
-        '<button class="x" data-del-subscriptions="'+s.id+'">×</button></div>';}).join("")
-    :'<div class="empty"><span class="e">💳</span>No subscriptions</div>')+'</div>';
+  var moAvg=act.reduce(function(a,s){return a+monthly(s)},0);
+  var allSpent=subs.reduce(function(a,s){return a+spentSoFar(s)},0);
+  var y=subMonth.getFullYear(), m=subMonth.getMonth();
+  var last=new Date(y,m+1,0).getDate(), lead=new Date(y,m,1).getDay(), ts=todayStr();
+
+  var byDay={}, monTot=0;
+  act.forEach(function(s){
+    subDaysIn(s,y,m).forEach(function(d){
+      (byDay[d]=byDay[d]||[]).push(s);
+      monTot+=(+s.price||0);});});
+
+  /* ── 顶部概览 ── */
+  var h='<div class="subhero">'+
+    '<div class="shh"><b>'+T("My subscriptions")+'</b><span>'+T("Total spent")+' '+Math.round(allSpent)+' 元</span></div>'+
+    '<div class="shg">'+
+      '<div><i>'+T("Spent this month")+'</i><b>'+Math.round(monTot)+'<em>元</em></b></div>'+
+      '<div><i>'+T("Subscriptions")+'</i><b>'+act.length+'</b></div>'+
+      '<div><i>'+T("Daily cost")+'</i><b>'+(moAvg*12/365).toFixed(2)+'<em>元</em></b></div>'+
+    '</div></div>';
+
+  /* ── 扣费日历 ── */
+  h+='<div class="row" style="justify-content:space-between;align-items:center;margin:14px 0 8px">'+
+    '<button class="pill" data-snav="-1">‹</button>'+
+    '<div style="font-weight:700;font-size:14px">'+MONS[m]+' '+y+'</div>'+
+    '<button class="pill" data-snav="1">›</button></div>';
+  h+='<div class="card" style="padding:12px 12px 14px">'+
+     calHead()+'<div class="hcal scal">';
+  for(var i=0;i<lead;i++)h+='<div class="hcz"></div>';
+  for(var d=1;d<=last;d++){
+    var ds=y+"-"+pad(m+1)+"-"+pad(d), hit=byDay[d];
+    var nm="";
+    if(hit)nm=esc(hit[0].name)+(hit.length>1?" +"+(hit.length-1):"");
+    h+='<div class="hcd'+(hit?" on":"")+(ds===ts?" td":"")+'" data-sday="'+ds+'">'+
+      '<b>'+d+'</b>'+(hit?'<i class="nm">'+nm+'</i>':"")+'</div>';}
+  h+='</div></div>';
+
+  /* ── 订阅列表：还有几天扣费 ── */
+  if(!subs.length)
+    return h+'<div class="card" style="margin-top:12px"><div class="empty"><span class="e">💳</span>'+T("No subscriptions yet")+'</div></div>';
+  var withD=subs.map(function(s){return {s:s,d:daysToNext(s)}});
+  withD.sort(function(a,b){
+    if(a.d==null&&b.d==null)return 0;
+    if(a.d==null)return 1; if(b.d==null)return -1;
+    return a.d-b.d;});
+  h+='<div class="sublist">'+withD.map(function(x){
+    var s=x.s, dd=x.d;
+    return '<div class="subc" data-sedit="'+s.id+'" style="cursor:pointer">'+subTile(s)+
+      '<div class="subm"><b>'+esc(s.name)+(dd!=null?" "+T("left"):"")+'</b>'+
+      '<i>'+cycTxt(s)+'</i></div>'+
+      (dd==null
+        ? '<div class="subd off">'+T("Ended")+'</div>'
+        : '<div class="subd"><b>'+dd+'</b><span>天</span></div>')+
+      '<button class="x" data-del-subscriptions="'+s.id+'">×</button></div>';}).join("")+'</div>';
   return h;}
 
 function vBday(){
@@ -3628,7 +3995,7 @@ function vBday(){
   var groups=keys.map(function(k){
     return {k:k, items:gmap[k].sort(function(a,b){return byName(a.b,b.b)})};});
 
-  if(!groups.length)return h+'<div class="card"><div class="empty"><span class="e">🎂</span>No birthdays</div></div>';
+  if(!groups.length)return h+'<div class="card"><div class="empty"><span class="e">🎂</span>'+T("No birthdays")+'</div></div>';
 
   // 最近要过的几个，单独放一段，不用去字母表里翻
   var near=bs.slice(0,3);
@@ -3691,7 +4058,7 @@ function vCountdown(){
       '<div class="big"><b>'+(x.d===0?"🎉":x.d)+'</b><span>'+
         (x.d===0?"today":(x.d===1?"day left":"days left"))+'</span></div></div>';});
   var h=carHTML("",slides);
-  if(!all.length)return h+'<div class="card"><div class="empty"><span class="e">⏳</span>No countdowns</div></div>';
+  if(!all.length)return h+'<div class="card"><div class="empty"><span class="e">⏳</span>'+T("No countdowns")+'</div></div>';
 
   // 头图：优先展示最近的倒数；没有则展示最久的正数
   var hero=ups[0]||sinces[0];
@@ -3707,9 +4074,9 @@ function vCountdown(){
        'font-variant-numeric:tabular-nums;line-height:1">'+big+'</div>'+
        '<div class="rvl" style="margin-top:2px">'+unit+'</div></div></div>';}
 
-  if(ups.length)   h+='<div class="sec">Counting down</div><div class="card">'+ups.map(cdRow).join("")+'</div>';
-  if(sinces.length)h+='<div class="sec">Counting up</div><div class="card">'+sinces.map(cdRow).join("")+'</div>';
-  if(past.length)  h+='<div class="sec">Passed</div><div class="card">'+past.map(cdRow).join("")+'</div>';
+  if(ups.length)   h+='<div class="sec">'+T("Counting down")+'</div><div class="card">'+ups.map(cdRow).join("")+'</div>';
+  if(sinces.length)h+='<div class="sec">'+T("Counting up")+'</div><div class="card">'+sinces.map(cdRow).join("")+'</div>';
+  if(past.length)  h+='<div class="sec">'+T("Passed")+'</div><div class="card">'+past.map(cdRow).join("")+'</div>';
   return h;}
 
 function cdSheet(rec){
@@ -3794,6 +4161,7 @@ function ico(name,size){
     dumbbell:'<path d="M2.5 12h2M19.5 12h2"/><rect x="4.5" y="8.2" width="3.2" height="7.6" rx="1.2"/><rect x="16.3" y="8.2" width="3.2" height="7.6" rx="1.2"/><path d="M7.7 12h8.6"/>',
     lotus:'<circle cx="12" cy="5.2" r="2.4"/><path d="M12 9.8c-2.1 0-3.7 1.6-3.7 3.6v1.4l-4.1 2M12 9.8c2.1 0 3.7 1.6 3.7 3.6v1.4l4.1 2"/><path d="M5.8 19.8c1.7-1.5 3.9-2.2 6.2-2.2s4.5.7 6.2 2.2"/>',
     bowl:'<path d="M3 11.2h18a9 9 0 0 1-9 9 9 9 0 0 1-9-9z"/><path d="M1.8 20.6h20.4"/><path d="M9 7.8c0-1 1-1.5 1-2.6s-1-1.6-1-2.6M14.4 7.8c0-1 1-1.5 1-2.6s-1-1.6-1-2.6"/>',
+    pencil:'<path d="M4.6 19.4h4L20.1 7.9a2.1 2.1 0 0 0-3-3L5.6 16.4v3z"/><path d="M15.1 6.4l2.5 2.5"/><path d="M4.6 19.4l1-3"/>',
     bed:'<path d="M3 16.1v-5.2A2.4 2.4 0 0 1 5.4 8.5H19.6A1.4 1.4 0 0 1 21 9.9v6.2"/><path d="M3 13.1h18M3 16.1v2.4M21 16.1v2.4"/><path d="M6.8 8.5V6.9A1.4 1.4 0 0 1 8.2 5.5h4.2a1.4 1.4 0 0 1 1.4 1.4V8.5"/>',
     alarm:'<circle cx="12" cy="12" r="5.6"/><path d="M12 8.9V12l2.1 1.3"/>'+
           '<path d="M4.9 8.9a6.6 6.6 0 0 0 0 6.2"/><path d="M19.1 8.9a6.6 6.6 0 0 1 0 6.2"/>'+
@@ -3822,6 +4190,7 @@ var MENU=[
 ].sort(function(a,b){return a.n.localeCompare(b.n)});
 
 var SETTINGS=[
+  {a:"lang",  ic:"contrast",  n:"Language"},
   {a:"theme", ic:"contrast",  n:"Appearance"},
   {a:"exp",   ic:"download",  n:"Export Backup"},
   {a:"ics",   ic:"calexport", n:"Export Calendar"},
@@ -3831,16 +4200,16 @@ var SETTINGS=[
 ].sort(function(a,b){return a.n.localeCompare(b.n)});
 
 function drawerHTML(){
-  var h='<div class="dwsec">Menu</div>';
+  var h='<div class="dwsec">'+T("Menu")+'</div>';
   h+=MENU.map(function(m){
     var rt="";
     if(m.k==="subs")rt=D.subscriptions.length||"";
 
     return '<div class="dwi'+(tab===m.k?" on":"")+'" data-go="'+m.k+'">'+
       '<span class="ic">'+ico(m.ic)+'</span>'+m.n+(rt?'<span class="rt">'+rt+'</span>':"")+'</div>';}).join("");
-  h+='<div class="dwsec">Settings</div>';
+  h+='<div class="dwsec">'+T("Settings")+'</div>';
   h+=SETTINGS.map(function(m){
-    return '<div class="dwi" data-act="'+m.a+'"><span class="ic">'+ico(m.ic)+'</span>'+m.n+'</div>';}).join("");
+    return '<div class="dwi" data-act="'+m.a+'"><span class="ic">'+ico(m.ic)+'</span>'+T(m.n)+'</div>';}).join("");
   return h;}
 
 function openDrawer(){$("dwlist").innerHTML=drawerHTML();bindDrawer();
@@ -3852,7 +4221,8 @@ function bindDrawer(){
   document.querySelectorAll("[data-act]").forEach(function(el){
     el.onclick=function(){var a=el.dataset.act;closeDrawer();
       setTimeout(function(){
-        if(a==="theme")moreSheet();
+        if(a==="lang")langSheet();
+        else if(a==="theme")moreSheet();
         else if(a==="ics")exportICS();
         else if(a==="bill")impSheet();
         else if(a==="cfg")cfgSheet();
@@ -4081,9 +4451,22 @@ function bind(){
   ["todos","habits","subscriptions","birthdays","diary","ledger","countdowns"].forEach(function(tb){
     document.querySelectorAll("[data-del-"+tb+"]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
       dropUndo(tb,el.getAttribute("data-del-"+tb),"Deleted");render()}});});
+  document.querySelectorAll("[data-mday]").forEach(function(el){el.onclick=function(){
+    ledSheet(null, el.dataset.mday);}});
+  document.querySelectorAll("[data-sday]").forEach(function(el){el.onclick=function(){
+    subSheet(null, el.dataset.sday);}});
+  document.querySelectorAll("[data-ledit]").forEach(function(el){el.onclick=function(ev){
+    if(ev.target.closest(".x"))return;
+    var r=D.ledger.filter(function(x){return x.id===el.dataset.ledit})[0];
+    if(r)ledSheet(r);}});
+  document.querySelectorAll("[data-sedit]").forEach(function(el){el.onclick=function(ev){
+    if(ev.target.closest(".x"))return;
+    var r=D.subscriptions.filter(function(x){return x.id===el.dataset.sedit})[0];
+    if(r)subSheet(r);}});
+  document.querySelectorAll("[data-snav]").forEach(function(el){el.onclick=function(){
+    subMonth=new Date(subMonth.getFullYear(),subMonth.getMonth()+ +el.dataset.snav,1);render();}});
   document.querySelectorAll("[data-mnav]").forEach(function(el){el.onclick=function(){
     ledMonth=new Date(ledMonth.getFullYear(),ledMonth.getMonth()+ +el.dataset.mnav,1);render()}});
-  var al=$("addLed"); if(al)al.onclick=ledSheet;
   var il=$("impLed"); if(il)il.onclick=impSheet;
   var tl=$("todayLed"); if(tl)tl.onclick=ledSheet;
   var ta=$("tdAdd");  if(ta)ta.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
@@ -4140,11 +4523,11 @@ function bind(){
     habitWk=addDays(habitWk, 7*(+el.dataset.hwk));render();}});
   /* 左滑露出删除，再点一次确认 —— iOS 列表那套 */
   function closeCards(except){
-    document.querySelectorAll(".hcard.armed").forEach(function(c){
+    document.querySelectorAll(".hrw.armed").forEach(function(c){
       if(c===except)return;
       c.classList.remove("armed");
       var b=c.querySelector("[data-hdel]");
-      if(b){b.dataset.armed="0";b.textContent="删除";}});}
+      if(b){b.dataset.armed="0";b.textContent=T("Delete");}});}
   document.querySelectorAll("[data-hpress]").forEach(function(el){
     var x0=0,y0=0,moved=false;
     el.addEventListener("touchstart",function(e){
@@ -4163,7 +4546,7 @@ function bind(){
     el.dataset.armed="0";
     el.onclick=function(ev){ev.stopPropagation();
       if(el.dataset.armed!=="1"){
-        el.dataset.armed="1"; el.textContent="确认删除";
+        el.dataset.armed="1"; el.textContent=T("Confirm delete");
         if(navigator.vibrate)try{navigator.vibrate(8)}catch(err){}
         return;}
       var hb=habitById(el.dataset.hdel); if(!hb)return;
@@ -4171,7 +4554,7 @@ function bind(){
       var logs=D.habit_logs.filter(function(l){return l.habit_id===hb.id}).map(function(l){return Object.assign({},l)});
       logs.forEach(function(l){drop("habit_logs",l.id)});
       drop("habits",hb.id); render();
-      toast("已删除 "+hb.name,function(){
+      toast(T("Deleted")+" "+hb.name,function(){
         push("habits",snap);logs.forEach(function(l){push("habit_logs",l)});render();});};});
   document.querySelectorAll("[data-hmn]").forEach(function(el){el.onclick=function(){
     habitMon=new Date(habitMon.getFullYear(),habitMon.getMonth()+ +el.dataset.hmn,1);render();}});
@@ -4184,7 +4567,6 @@ function bind(){
     logSheet(hb4,a[1], (isMulti(hb4)||!ex.length)?null:ex[0].id);}});
   document.querySelectorAll("[data-hedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var hb=D.habits.filter(function(x){return x.id===el.dataset.hedit})[0]; if(hb)habitSheet(hb);};});
-  var as=$("addSub");if(as)as.onclick=subSheet;
   if(tab==="plan"&&planView==="day")bindDayGrid();   // 时间轴手势
   // 顶部轮播启动（页面里有才启动）
   var car=$("hcarT");
@@ -4346,18 +4728,42 @@ function newTodoSheet(ds,st,et,md,wk){
   $("nt").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();
     if(mode==="event")$("nloc").focus(); else save();}};}
 
-function subSheet(){
-  openSheet('<h2>Add Subscription</h2><label class="fl">Name</label><input class="inp" id="sn" placeholder="Netflix / iCloud">'+
-    '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">Price</label><input class="inp" id="sp" type="number" step="0.01" placeholder="0.00"></div>'+
-    '<div style="flex:1"><label class="fl">Currency</label><select class="inp" id="sc"><option value="CNY">¥ CNY</option><option value="USD">$ 美元</option></select></div></div>'+
-    '<label class="fl">Cycle</label><select class="inp" id="sy"><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="quarterly">Quarterly</option><option value="weekly">Weekly</option></select>'+
-    '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">Start date</label><input class="inp" id="ss" type="date" value="'+todayStr()+'"></div>'+
-    '<div style="flex:1"><label class="fl">End date</label><input class="inp" id="se" type="date"></div></div>'+
-    '<div class="row" style="margin-top:14px"><button class="btn" id="sv" style="flex:1">Save</button><button class="btn g" id="sx">Cancel</button></div>');
+function subSheet(rec,defDate){
+  var ed=rec||null;
+  openSheet('<h2>'+(ed?T("Edit subscription"):T("Add subscription"))+'</h2><label class="fl">名称</label><input class="inp" id="sn" placeholder="Netflix / iCloud" value="'+(ed?esc(ed.name):"")+'">'+
+    '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">'+T("Amount")+'</label><input class="inp" id="sp" type="number" step="0.01" placeholder="0.00" value="'+(ed?esc(ed.price):"")+'"></div>'+
+    '<div style="flex:1"><label class="fl">'+T("Currency")+'</label><select class="inp" id="sc"><option value="CNY">¥ CNY</option><option value="USD">$ USD</option></select></div></div>'+
+    '<label class="fl">'+T("Cycle")+'</label><select class="inp" id="sy">'+
+      '<option value="monthly">'+T("Monthly")+'</option><option value="quarterly">'+T("Quarterly")+'</option>'+
+      '<option value="yearly">'+T("Yearly")+'</option><option value="weekly">'+T("Weekly")+'</option>'+
+      '<option value="once">'+T("Fixed date (one-off)")+'</option></select>'+
+    '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl" id="ssl">'+T("Start date")+'</label>'+
+      '<input class="inp" id="ss" type="date" value="'+esc(ed&&ed.start_date?ed.start_date:(defDate||todayStr()))+'"></div>'+
+    '<div style="flex:1" id="sew"><label class="fl">'+T("End date")+'</label>'+
+      '<input class="inp" id="se" type="date" value="'+(ed&&ed.end_date?esc(ed.end_date):"")+'"></div></div>'+
+    '<div class="note" id="scn" style="margin:6px 0 0"></div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn" id="sv" style="flex:1">'+T("Save")+'</button><button class="btn g" id="sx">'+T("Cancel")+'</button></div>'+
+    (ed?'<button class="btn g" id="sdel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this subscription")+'</button>':""));
+  if(ed){$("sc").value=ed.currency||"CNY"; $("sy").value=ed.cycle||"monthly";}
+  function syncCyc(){
+    var once=$("sy").value==="once";
+    $("ssl").textContent = once?T("Charge date"):"开始日期";
+    $("sew").style.display = once?"none":"";
+    $("scn").textContent = once?T("Charged once on that day, then marked as ended")
+      :T("Repeats on the same day each cycle as the start date");}
+  $("sy").onchange=syncCyc; syncCyc();
   $("sx").onclick=closeSheet;
+  var sd=$("sdel");
+  if(sd)sd.onclick=function(){
+    var snap=Object.assign({},ed);
+    drop("subscriptions",ed.id);closeSheet();render();
+    toast(T("Deleted")+" "+ed.name,function(){push("subscriptions",snap);render();});};
   $("sv").onclick=function(){var n=$("sn").value.trim();if(!n)return;
-    push("subscriptions",{id:uid(),name:n,price:+$("sp").value||0,currency:$("sc").value,cycle:$("sy").value,
-      start_date:$("ss").value||null,end_date:$("se").value||null,note:null,updated_at:new Date().toISOString()});
+    var cy=$("sy").value;
+    push("subscriptions",Object.assign({},ed||{},{
+      id:ed?ed.id:uid(),name:n,price:+$("sp").value||0,currency:$("sc").value,cycle:cy,
+      start_date:$("ss").value||null,end_date:(cy==="once"?null:($("se").value||null)),
+      updated_at:new Date().toISOString()}));
     closeSheet();render();};}
 
 /* ---- 生日：姓名 + 空格 + YYYYMMDD ---- */
@@ -4596,6 +5002,19 @@ function bdSheet(rec){
   $("bv").onclick=save;}
 
 /* ---- 更多菜单：设置 + 导出日历 ---- */
+function langSheet(){
+  openSheet('<h2>Language</h2>'+
+    '<div class="seg" id="lgSeg">'+
+      [["en","English"],["zh","中文"]].map(function(r){
+        return '<button data-lg="'+r[0]+'" class="'+(LANG===r[0]?"on":"")+'">'+r[1]+'</button>';}).join("")+
+    '</div>'+
+    '<div class="note" style="margin:12px 0 0">Habit names and attribute labels you already created stay as typed.</div>'+
+    '<div class="row" style="margin-top:16px"><button class="btn" id="lgx" style="flex:1">Done</button></div>');
+  $("lgSeg").querySelectorAll("[data-lg]").forEach(function(el){el.onclick=function(){
+    $("lgSeg").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b===el)});
+    setLang(el.dataset.lg);};});
+  $("lgx").onclick=closeSheet;}
+
 function moreSheet(){
   openSheet('<h2>More</h2>'+
     '<label class="fl">Appearance</label>'+
@@ -4728,11 +5147,11 @@ document.addEventListener("contextmenu",function(e){
 
 /* ---- 抽屉交互：只认按钮和遮罩，不接管任何滑动手势 ---- */
 document.addEventListener("click",function(e){
-  if(e.target.closest(".hcard.armed"))return;
-  document.querySelectorAll(".hcard.armed").forEach(function(c){
+  if(e.target.closest(".hrw.armed"))return;
+  document.querySelectorAll(".hrw.armed").forEach(function(c){
     c.classList.remove("armed");
     var b=c.querySelector("[data-hdel]");
-    if(b){b.dataset.armed="0";b.textContent="删除";}});},true);
+    if(b){b.dataset.armed="0";b.textContent=T("Delete");}});},true);
 $("menuBtn").onclick=openDrawer;
 $("scrim").onclick=closeDrawer;
 (function(){
@@ -4891,10 +5310,10 @@ var __curTab="today";
   var x0=0,y0=0,act=false;
   document.addEventListener("touchstart",function(e){
     if(e.touches.length!==1)return;
-    if(document.querySelector(".sheet.on,.qswrap.on,.drawer.on"))return;  // 弹层打开时不响应
+    if(document.querySelector(".ov.show,.qswrap.on,.drawer.on"))return;   // 弹层打开时不响应
     if(tab==="plan"&&planView==="day")return;                            // 日视图交给它自己
     var t=e.target;
-    if(t.closest&&t.closest(".cdstrip,.hcar,.tlscroll,.dtrack,.hcard,input,textarea"))return;
+    if(t.closest&&t.closest(".cdstrip,.hcar,.hstrip,.tlscroll,.dtrack,.hrw,.cpal,.ftab,.tplg,.kdial,input,textarea"))return;
     var X=e.touches[0].clientX, W=window.innerWidth;
     if(X<24||X>W-24)return;              // 贴边不接管，留给系统返回手势
     x0=X; y0=e.touches[0].clientY; act=true;},{passive:true});
