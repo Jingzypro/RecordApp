@@ -885,9 +885,9 @@
   .ftyg button.on{background:var(--soft);border-color:var(--accent);color:var(--accent2)}
 
   /* 打卡页 */
-  .lgttl{text-align:center;margin-bottom:14px}
-  .lgttl b{display:block;font-size:19px;font-weight:750;letter-spacing:-.02em}
-  .lgttl i{display:block;font-size:12.5px;color:var(--faint);font-style:normal;margin-top:3px}
+  .lgttl{display:flex;align-items:baseline;justify-content:center;gap:8px;margin-bottom:12px}
+  .lgttl b{font-size:15px;font-weight:750;letter-spacing:-.02em}
+  .lgttl i{font-size:12px;color:var(--faint);font-style:normal;display:flex;align-items:center;gap:4px}
   .lglab{font-size:12.5px;font-weight:650;color:var(--sub);margin:13px 0 6px}
   .lglab em{font-style:normal;color:var(--danger);margin-left:3px}
   .lglab small{font-size:11px;color:var(--faint);font-weight:500}
@@ -1002,6 +1002,12 @@
     stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
   .kh .kico{fill:none;stroke:var(--kknb);stroke-width:2.5;
     stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+  .kh.bump .kico{animation:kbump .11s ease-out}
+  @keyframes kbump{0%{opacity:.45}100%{opacity:1}}
+  /* 外圈棘齿：平时几乎看不见，拖到哪亮到哪 */
+  .kdet{stroke:var(--kknb);stroke-width:1;opacity:0;transition:opacity .12s}
+  .kdial.act .kdet{opacity:.16}
+  .kdial.act .kdet.lit{opacity:1;stroke-width:1.8}
   .kdur{text-align:center;margin-top:8px;font-size:16px;font-weight:750;
     letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
   .kdur.pulse{animation:dpul .13s ease-out}
@@ -1010,6 +1016,7 @@
   .lgnote{font-size:12px;color:var(--amber);margin:-10px 0 14px;font-weight:600}
   .hadd{margin-left:auto;font-style:normal;font-size:11.5px;opacity:.75;font-weight:600}
   .hcsum .warn{font-style:normal;color:var(--amber);font-weight:650;margin-left:8px}
+  .hcsum .cnt{font-style:normal;color:var(--faint);font-weight:600;margin-left:8px}
   .stc.warn .v{color:var(--amber)}
   .stnote{font-size:12px;color:var(--amber);margin:-4px 0 12px;font-weight:600}
   .split{font-style:normal;font-size:10.5px;font-weight:650;color:var(--amber);
@@ -2666,7 +2673,7 @@ function fUnit(f){return f&&f.type==="clock" ? "小时" : ((f&&f.unit)||"");}
 function logsOn(hid,ds){
   return D.habit_logs.filter(function(l){return l.habit_id===hid&&l.date===ds})
     .sort(function(a,b){return String(a.start_time||"").localeCompare(String(b.start_time||""))});}
-function isMulti(hb){return !!(hb&&hb.multi);}
+function isMulti(hb){return true;}   /* 一天多次是默认行为，没有哪件事只能干一次 */
 
 /* ---- 时段属性：24 小时表盘 ---- */
 var DR=95, DC=120;
@@ -2724,8 +2731,15 @@ function dialSVG(s,e,col,sIco,eIco){
       '" text-anchor="middle" class="klab'+(hh%6===0?" big":"")+'">'+hh+'</text>';}
   var mn=ico("moon",22).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
   var sn=ico("sun",22).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+  /* 外圈棘齿：5 分钟一格，正好等于吸附步长，拖过一格亮一格 */
+  var det="";
+  for(var q=0;q<1440;q+=5){
+    var d1=dpt(DR+KTRK/2-2.5,q), d2=dpt(DR+KTRK/2-6,q);
+    det+='<line data-dt="'+q+'" x1="'+d1[0].toFixed(1)+'" y1="'+d1[1].toFixed(1)+
+      '" x2="'+d2[0].toFixed(1)+'" y2="'+d2[1].toFixed(1)+'" class="kdet"/>';}
   return '<svg viewBox="0 0 240 240" class="kdial" id="kdial">'+
     '<circle cx="120" cy="120" r="'+DR+'" class="ktrack"/>'+
+    '<g id="kdet">'+det+'</g>'+
     '<circle cx="120" cy="120" r="'+KFACE+'" class="kface"/>'+
     '<path id="karc" d="'+darc(DR,s,e)+'" class="karc"/>'+
     '<g id="kridge">'+karcRidge(s,e)+'</g>'+
@@ -2734,6 +2748,19 @@ function dialSVG(s,e,col,sIco,eIco){
     '<g class="kmoon" transform="translate(120,88) scale(.6) translate(-12,-12)">'+mn+'</g>'+
     '<g class="ksun" transform="translate(120,152) scale(.6) translate(-12,-12)">'+sn+'</g>'+
     '</svg>';}
+
+/* iOS Safari 不开放震动 API，但 17.4+ 的 <input type=checkbox switch>
+   在切换时会给一次系统触感，拿它当兜底。不支持的浏览器只是白切一下，无副作用。 */
+var _hapEl=null;
+function haptic(){
+  if(navigator.vibrate){try{navigator.vibrate(4);return;}catch(e){}}
+  if(!_hapEl){
+    _hapEl=document.createElement("input");
+    _hapEl.type="checkbox";
+    _hapEl.setAttribute("switch","");
+    _hapEl.style.cssText="position:fixed;left:-9999px;width:1px;height:1px;opacity:0";
+    document.body.appendChild(_hapEl);}
+  try{_hapEl.checked=!_hapEl.checked;}catch(e){}}
 
 function bindDial(sMin,eMin,onChange){
   var svg=$("kdial"); if(!svg)return function(){return null};
@@ -2760,10 +2787,17 @@ function bindDial(sMin,eMin,onChange){
     return (Math.round(a/(2*Math.PI)*1440/5)*5)%1440;}
   function near(m,x){var d=Math.abs(m-x);return Math.min(d,1440-d);}
   /* 每跨过一格给一次轻震动，模拟拨盘的段落感 */
+  var dets=$("kdet");
   function tick(m){
     if(st.last===m)return;
     st.last=m;
-    if(navigator.vibrate){try{navigator.vibrate(4)}catch(e){}}
+    haptic();
+    /* 点亮刚跨过的那一格棘齿 */
+    if(dets){
+      var lit=dets.querySelector(".lit"); if(lit)lit.classList.remove("lit");
+      var n=dets.querySelector('[data-dt="'+m+'"]'); if(n)n.classList.add("lit");}
+    var g=(st.drag==="s"?gs:ge);
+    g.classList.remove("bump"); void g.getBoundingClientRect().width; g.classList.add("bump");
     cu.classList.remove("pulse"); void cu.offsetWidth; cu.classList.add("pulse");}
   function grab(ev){
     ev.preventDefault();
@@ -2779,7 +2813,10 @@ function bindDial(sMin,eMin,onChange){
     var m=toMin(local(ev));
     if(m===st[st.drag])return;
     st[st.drag]=m; tick(m); paint();});
-  function end(){st.drag=null; st.last=null; svg.classList.remove("act");}
+  function end(){
+    st.drag=null; st.last=null; svg.classList.remove("act");
+    if(dets){var l2=dets.querySelector(".lit"); if(l2)l2.classList.remove("lit");}
+    gs.classList.remove("bump"); ge.classList.remove("bump");}
   svg.addEventListener("pointerup",end);
   svg.addEventListener("pointercancel",end);
   paint();
@@ -2859,7 +2896,6 @@ function habitSheet(hb,tpl,resume){
       name: hb?hb.name:((tpl&&tpl.n)||""),
       emoji:(hb&&hb.emoji)||(tpl&&tpl.e)||"check",
       color:(hb&&hb.color)||(tpl&&tpl.c)||HCDEF,
-      multi:hb?!!hb.multi:!!(tpl&&tpl.multi),
       fields:(hb?hfields(hb):((tpl&&tpl.f)||[])).map(function(f){return Object.assign({},f)}),
       title: hb?"编辑习惯":(tpl?(tpl.n+"记录"):"新建习惯")};}
   var d=hbDraft;
@@ -2873,8 +2909,6 @@ function habitSheet(hb,tpl,resume){
       Object.keys(HCOLORS).map(function(k){
         return '<button data-cl="'+k+'"'+(k===d.color?' class="on"':'')+
           ' style="background:'+HCOLORS[k]+'"></button>';}).join("")+'</div>'+
-    '<div class="lgbl" style="margin-top:16px"><span>一天可以打卡多次</span>'+
-      '<button class="atog'+(d.multi?" on":"")+'" id="hmul"></button></div>'+
     '<div class="fldh"><span>打卡属性</span><button class="fldadd" id="hfadd">添加</button></div>'+
     '<div class="fldl" id="hfl"></div>'+
     '<div class="row" style="margin-top:16px"><button class="btn" id="hv" style="flex:1">保存</button>'+
@@ -2883,7 +2917,6 @@ function habitSheet(hb,tpl,resume){
 
   function sync(){d.name=$("hn").value;}
   $("hn").oninput=sync;
-  $("hmul").onclick=function(){d.multi=!d.multi;$("hmul").classList.toggle("on",d.multi);};
   function pickColor(v,customEl){
     d.color=v;
     $("hcp").querySelectorAll("button").forEach(function(b){
@@ -2928,7 +2961,7 @@ function habitSheet(hb,tpl,resume){
     sync();
     var v=(d.name||"").trim(); if(!v){$("hn").focus();return;}
     var fs=d.fields.filter(function(f){return (f.label||"").trim()});
-    var base={name:v,emoji:d.emoji,color:d.color,multi:d.multi,
+    var base={name:v,emoji:d.emoji,color:d.color,multi:true,
       fields:JSON.stringify(fs),updated_at:new Date().toISOString()};
     if(d.hb)push("habits",Object.assign({},d.hb,base));
     else push("habits",Object.assign({id:uid(),sort:Date.now(),archived:false},base));
@@ -2995,14 +3028,14 @@ function ckSVG(on){
 
 function quickLog(hid,ds){
   var hb=habitById(hid); if(!hb)return;
-  if(!hfields(hb).length&&!isMulti(hb)){
-    var id=hid+"_"+ds, l=logOf(hid,ds);
-    if(l)drop("habit_logs",id);
-    else push("habit_logs",{id:id,habit_id:hid,date:ds,vals:"{}",
+  if(!hfields(hb).length){                       /* 没有属性 → 一点就加一条 */
+    var n=logsOn(hid,ds).length;
+    push("habit_logs",{id:hid+"_"+ds+(n?"_"+Math.random().toString(36).slice(2,7):""),
+      habit_id:hid,date:ds,vals:"{}",
       start_time:m2t(new Date().getHours()*60+new Date().getMinutes()),
       updated_at:new Date().toISOString()});
     render();return;}
-  logSheet(hb,ds,isMulti(hb)?null:((logOf(hid,ds)||{}).id||null));}
+  logSheet(hb,ds,null);}
 
 /* logId 为空 = 新建一条；多次打卡的习惯每次都是新的一条 */
 function logSheet(hb,ds,logId){
@@ -3050,7 +3083,8 @@ function logSheet(hb,ds,logId){
       esc(v==null?"":v)+'</textarea>';}
 
   var same=logsOn(hb.id,ds).filter(function(x){return !l||x.id!==l.id});
-  openSheet('<div class="lgttl"><b>'+(exists?"编辑记录":"打卡")+'</b><i>'+hicon(hb,14)+esc(hb.name)+'</i></div>'+
+  openSheet('<div class="lgttl"><b>'+(exists?"编辑记录":"打卡")+'</b>'+
+    '<i>'+hicon(hb,13)+esc(hb.name)+'</i></div>'+
     (same.length?'<div class="lgnote">这天已经有 '+same.length+' 条记录，这是第 '+(same.length+1)+' 条</div>':"")+
     (ds!==todayStr()?'<div class="lgback">补签 · '+
       esc((parse(ds).getMonth()+1)+"月"+parse(ds).getDate()+"日")+'</div>':"")+
@@ -3151,7 +3185,8 @@ function vHabit(){
         (l?ckSVG(true)+'<span>今天已打卡'+(ls.length>1?' · '+ls.length+' 段':'')+'</span>':'＋ 打卡')+
         (isMulti(hb)&&l?'<em class="hadd">再记一次</em>':"")+'</div>'+
       (tot!=null?'<div class="hcsum">合计 '+esc(fnum(tot,1)+fUnit(mf))+
-        '<em class="warn">分 '+ls.length+' 段</em></div>':(sm?'<div class="hcsum">'+esc(sm)+'</div>':""))+
+        '<em class="'+(mf&&mf.type==="clock"?"warn":"cnt")+'">'+ls.length+' 段</em></div>'
+        :(sm?'<div class="hcsum">'+esc(sm)+'</div>':""))+
       (function(){var bs=barStrip(hb), mf2=mainField(hb);
         return '<div class="hcs">近 28 天'+
           (bs.avg!=null?'<em>平均 '+esc(fnum(bs.avg,1)+fUnit(mf2))+'</em>':"")+'</div>'+
@@ -3270,6 +3305,7 @@ function sparkPath(vals,w,hh){
     return (i?"L":"M")+x.toFixed(1)+" "+yy.toFixed(1);}).join(" ");}
 
 function hStat(hb,rows,last){
+  var hasClockF=hfields(hb).some(function(f){return f.type==="clock"});
   var y=habitMon.getFullYear(), m=habitMon.getMonth(), ts=todayStr();
   var t0=new Date(); t0.setHours(0,0,0,0);
   var days=0, tot=0, hits=0, split=0, best=0, run=0, dates=[];
@@ -3286,11 +3322,11 @@ function hStat(hb,rows,last){
     '<div class="stc"><div class="k">打卡天数</div><div class="v">'+tot+'<small>/'+days+'</small></div></div>'+
     '<div class="stc"><div class="k">打卡次数</div><div class="v">'+hits+'<small>次</small></div></div>'+
     '<div class="stc"><div class="k">最长连续</div><div class="v">'+best+'<small>天</small></div></div>'+
-    (isMulti(hb)
+    (hasClockF
       ? '<div class="stc'+(split?" warn":"")+'"><div class="k">分散天数</div><div class="v">'+split+'<small>天</small></div></div>'
       : '<div class="stc"><div class="k">平均间隔</div><div class="v">'+(gap?gap.toFixed(1):"—")+'<small>天</small></div></div>')+
     '</div>'+
-    (isMulti(hb)&&split?'<div class="stnote">有 '+split+' 天分成了多段，作息偏碎</div>':"");
+    (hasClockF&&split?'<div class="stnote">有 '+split+' 天分成了多段，作息偏碎</div>':"");
 
   var fs=hfields(hb);
   if(fs.length){
