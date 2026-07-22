@@ -1088,6 +1088,27 @@
   .plt b{display:block;font-size:15px;font-weight:650;letter-spacing:-.01em}
   .plt i{display:block;font-size:11.5px;color:var(--faint);font-style:normal;margin-top:3px}
   .plr.done .plt b{color:var(--faint)}
+  /* 二级子项 */
+  .plr{position:relative}
+  .plpg{flex:none;min-width:34px;height:26px;padding:0 7px;border-radius:8px;
+    display:grid;place-items:center;font-size:11px;font-weight:750;
+    background:var(--card2);color:var(--sub);font-variant-numeric:tabular-nums}
+  .plpg.on{background:color-mix(in srgb,var(--hc) 16%,transparent);color:var(--hc)}
+  .plexp{flex:none;min-width:26px;height:26px;border:none;background:transparent;cursor:pointer;
+    color:var(--faint);font-size:11px;font-weight:700;display:flex;align-items:center;gap:2px}
+  .plexp span{display:inline-block;font-size:15px;transition:transform .18s}
+  .plexp.on span{transform:rotate(90deg)}
+  .plsub{margin:-2px 0 0 0;padding:4px 0 8px 30px;display:flex;flex-direction:column;gap:6px;
+    border-left:2px solid var(--line2);margin-left:26px}
+  .plsr{display:flex;align-items:center;gap:10px;padding:10px 12px;
+    background:var(--card2);border-radius:12px}
+  .plsr .plt b{font-size:14px;font-weight:600}
+  .plsr.done .plt b{color:var(--faint);text-decoration:line-through}
+  .plck.sm{width:22px;height:22px;border-radius:7px}
+  .plck.sm svg{width:13px;height:13px}
+  .plsadd{border:1px dashed var(--line);background:transparent;color:var(--sub);
+    border-radius:10px;padding:8px;font-size:12.5px;font-weight:650;cursor:pointer}
+  .plsadd:active{background:var(--soft)}
   .plig{display:flex;flex-wrap:wrap;gap:8px}
   .plig button{width:42px;height:42px;border-radius:12px;cursor:pointer;
     border:1px solid var(--line);background:var(--card2);color:var(--sub);
@@ -3128,6 +3149,7 @@ var ZH={
   "No plans yet · tap + to create":"还没有计划，点右下角 + 新建",
   "Left":"还有","items":"个","Icon":"图标","Color":"颜色",
   "Travel / Reading list":"旅行 / 书单",
+  "Add sub-item":"添加子项","Completion follows its sub-items":"完成状态由子项自动推导",
   /* 设置 */
   "Language":"语言"
 };
@@ -3672,12 +3694,26 @@ function hStat(hb,rows,last){
 
 /* ============ 长期计划 ============
    一张表 plans，条目用 JSON 存在 items 里：
-   [{id, text, done, done_at}]  —— 条目不需要单独同步，省一张表 */
-var planOpen=null;
+   [{id, text, done, done_at, kids:[{id,text,done,done_at}]}]
+   最多两层：有子项的父项不再自己打勾，完成与否由子项推导。 */
+var planOpen=null, planExp={};
 function pitems(p){return jarr(p&&p.items);}
+function pkids(it){return (it&&Array.isArray(it.kids))?it.kids:[];}
 function planById(id){return D.plans.filter(function(x){return x.id===id})[0]||null;}
+
+/* 一条的完成状态：有子项就看子项全不全 */
+function itemDone(it){
+  var k=pkids(it);
+  if(!k.length)return !!it.done;
+  return k.every(function(x){return x.done});}
+function itemWhen(it){
+  var k=pkids(it);
+  if(!k.length)return it.done_at||"";
+  if(!itemDone(it))return "";
+  return k.map(function(x){return x.done_at||""}).sort().pop()||"";}
+
 function planStat(p){
-  var it=pitems(p), dn=it.filter(function(x){return x.done}).length;
+  var it=pitems(p), dn=it.filter(itemDone).length;
   return {n:it.length, done:dn, left:it.length-dn};}
 
 function vPlans(){
@@ -3706,22 +3742,41 @@ function vPlanOne(p){
       '<i>'+(p.note?esc(p.note):T("Long-term plan"))+'</i></div>'+
     '<span class="plic">'+hicon(p,42)+'</span></div>';
 
-  h+= it.length
-    ? '<div class="hlist" style="margin-top:12px">'+it.map(function(x){
-        return '<div class="plr'+(x.done?" done":"")+'" style="--hc:'+c+'">'+
-          '<button class="plck'+(x.done?" on":"")+'" data-ptog="'+p.id+'|'+x.id+'">'+
-            (x.done?ckSVG(true):"")+'</button>'+
-          '<div class="plt" data-pedit="'+p.id+'|'+x.id+'"><b>'+esc(x.text)+'</b>'+
-            (x.done&&x.done_at?'<i>'+T("Completed")+' '+esc(x.done_at)+'</i>':"")+'</div>'+
-          '<button class="x" data-pdrop="'+p.id+'|'+x.id+'">×</button></div>';}).join("")+'</div>'
-    : '<div class="card" style="margin-top:12px"><div class="empty">'+T("No items yet")+'</div></div>';
+  if(!it.length)
+    return h+'<div class="card" style="margin-top:12px"><div class="empty">'+T("No items yet")+'</div></div>'+
+      planFoot();
 
-  h+='<div class="row" style="margin-top:16px;gap:8px">'+
-     '<button class="btn g" id="plAdd" style="flex:1">'+T("Add item")+'</button>'+
-     '<button class="btn" id="plEdit" style="flex:1">'+T("Edit")+'</button></div>';
-  return h;}
+  h+='<div class="hlist" style="margin-top:12px">'+it.map(function(x){
+    var kids=pkids(x), dn=itemDone(x), open=!!planExp[x.id];
+    var kdone=kids.filter(function(k){return k.done}).length;
+    var when=itemWhen(x);
+    var lead = kids.length
+      ? '<span class="plpg'+(dn?" on":"")+'">'+kdone+'/'+kids.length+'</span>'
+      : '<button class="plck'+(dn?" on":"")+'" data-ptog="'+p.id+'|'+x.id+'">'+(dn?ckSVG(true):"")+'</button>';
+    var row='<div class="plr'+(dn?" done":"")+'" style="--hc:'+c+'">'+lead+
+      '<div class="plt" data-pedit="'+p.id+'|'+x.id+'"><b>'+esc(x.text)+'</b>'+
+        (dn&&when?'<i>'+T("Completed")+' '+esc(when)+'</i>':"")+'</div>'+
+      '<button class="plexp'+(open?" on":"")+'" data-pexp="'+x.id+'">'+
+        (kids.length?kids.length:"")+'<span>›</span></button>'+
+      '<button class="x" data-pdrop="'+p.id+'|'+x.id+'">×</button></div>';
+    if(open){
+      row+='<div class="plsub">'+kids.map(function(k){
+        return '<div class="plsr'+(k.done?" done":"")+'" style="--hc:'+c+'">'+
+          '<button class="plck sm'+(k.done?" on":"")+'" data-pktog="'+p.id+'|'+x.id+'|'+k.id+'">'+
+            (k.done?ckSVG(true):"")+'</button>'+
+          '<div class="plt" data-pkedit="'+p.id+'|'+x.id+'|'+k.id+'"><b>'+esc(k.text)+'</b>'+
+            (k.done&&k.done_at?'<i>'+T("Completed")+' '+esc(k.done_at)+'</i>':"")+'</div>'+
+          '<button class="x" data-pkdrop="'+p.id+'|'+x.id+'|'+k.id+'">×</button></div>';}).join("")+
+        '<button class="plsadd" data-pkadd="'+p.id+'|'+x.id+'">＋ '+T("Add sub-item")+'</button></div>';}
+    return row;}).join("")+'</div>';
+  return h+planFoot();}
 
-/* 计划本身：名称 / 图标 / 颜色 / 说明 */
+function planFoot(){
+  return '<div class="row" style="margin-top:16px;gap:8px">'+
+    '<button class="btn g" id="plAdd" style="flex:1">'+T("Add item")+'</button>'+
+    '<button class="btn" id="plEdit" style="flex:1">'+T("Edit")+'</button></div>';}
+
+/* ---- 计划本身 ---- */
 var PLICO=["flag","briefcase","book","dumbbell","droplet","moon","pencil","gift","chart","bowl","lotus","bottle"];
 function planSheet(rec){
   var ed=rec||null;
@@ -3774,31 +3829,47 @@ function planSheet(rec){
       updated_at:new Date().toISOString()}));
     closeSheet();render();};}
 
-/* 单条计划项 */
-function pitemSheet(planId,itemId){
+/* ---- 条目：parentId 为空是一级，否则是某个父项下的二级 ---- */
+function pitemSheet(planId,itemId,parentId){
   var p=planById(planId); if(!p)return;
-  var it=pitems(p), cur=itemId?it.filter(function(x){return x.id===itemId})[0]:null;
+  var arr=pitems(p);
+  var host = parentId ? pkids(arr.filter(function(x){return x.id===parentId})[0]) : arr;
+  var cur = itemId ? host.filter(function(x){return x.id===itemId})[0] : null;
   var done=!!(cur&&cur.done);
-  openSheet('<h2>'+(cur?T("Edit item"):T("Add item"))+'</h2>'+
+  var hasKids = cur && !parentId && pkids(cur).length>0;
+  openSheet('<h2>'+(cur?T("Edit item"):(parentId?T("Add sub-item"):T("Add item")))+'</h2>'+
     '<label class="fl">'+T("Item name")+'</label>'+
     '<input class="inp" id="pin" maxlength="60" value="'+(cur?esc(cur.text):"")+'" placeholder="'+T("Enter a name")+'">'+
-    '<div class="lgbl" style="margin-top:16px"><span>'+T("Completed")+'</span>'+
-      '<button class="atog'+(done?" on":"")+'" id="pid"></button></div>'+
+    (hasKids
+      ? '<div class="note" style="margin:14px 0 0">'+T("Completion follows its sub-items")+'</div>'
+      : '<div class="lgbl" style="margin-top:16px"><span>'+T("Completed")+'</span>'+
+        '<button class="atog'+(done?" on":"")+'" id="pid"></button></div>')+
     '<div class="row" style="margin-top:16px"><button class="btn" id="piv" style="flex:1">'+T("Save")+'</button>'+
     '<button class="btn g" id="pix">'+T("Cancel")+'</button></div>');
-  $("pid").onclick=function(){done=!done;$("pid").classList.toggle("on",done);};
+  var tg=$("pid");
+  if(tg)tg.onclick=function(){done=!done;tg.classList.toggle("on",done);};
   $("pix").onclick=closeSheet;
   setTimeout(function(){if(!cur)$("pin").focus()},80);
   $("piv").onclick=function(){
     var v=$("pin").value.trim(); if(!v){$("pin").focus();return;}
-    var arr=pitems(planById(planId));
-    if(cur){
-      arr=arr.map(function(x){
+    var list=pitems(planById(planId));
+    function upsert(coll){
+      if(cur)return coll.map(function(x){
         if(x.id!==itemId)return x;
-        return {id:x.id,text:v,done:done,done_at:done?(x.done_at||nowStamp()):null};});
-    }else{
-      arr.push({id:"p"+Date.now().toString(36),text:v,done:done,done_at:done?nowStamp():null});}
-    savePlanItems(planId,arr);
+        var o={id:x.id,text:v,done:hasKids?x.done:done,
+               done_at:(hasKids?x.done_at:(done?(x.done_at||nowStamp()):null))};
+        if(x.kids)o.kids=x.kids;
+        return o;});
+      coll.push({id:"p"+Date.now().toString(36)+Math.floor(Math.random()*1e3),
+                 text:v,done:done,done_at:done?nowStamp():null});
+      return coll;}
+    if(parentId){
+      list=list.map(function(x){
+        if(x.id!==parentId)return x;
+        var o=Object.assign({},x); o.kids=upsert(pkids(x).slice()); return o;});
+    }else list=upsert(list);
+    savePlanItems(planId,list);
+    if(parentId)planExp[parentId]=true;
     closeSheet();render();};}
 
 function nowStamp(){
@@ -3810,10 +3881,32 @@ function savePlanItems(planId,arr){
   push("plans",Object.assign({},p,{items:JSON.stringify(arr),updated_at:new Date().toISOString()}));}
 function togglePItem(planId,itemId){
   var arr=pitems(planById(planId)).map(function(x){
-    if(x.id!==itemId)return x;
+    if(x.id!==itemId||pkids(x).length)return x;      /* 有子项的不允许直接勾 */
     var nd=!x.done;
-    return {id:x.id,text:x.text,done:nd,done_at:nd?nowStamp():null};});
+    var o={id:x.id,text:x.text,done:nd,done_at:nd?nowStamp():null};
+    if(x.kids)o.kids=x.kids;
+    return o;});
   savePlanItems(planId,arr);render();}
+function togglePKid(planId,parentId,kidId){
+  var arr=pitems(planById(planId)).map(function(x){
+    if(x.id!==parentId)return x;
+    var o=Object.assign({},x);
+    o.kids=pkids(x).map(function(k){
+      if(k.id!==kidId)return k;
+      var nd=!k.done;
+      return {id:k.id,text:k.text,done:nd,done_at:nd?nowStamp():null};});
+    return o;});
+  savePlanItems(planId,arr);render();}
+function dropPKid(planId,parentId,kidId){
+  var gone=null;
+  var arr=pitems(planById(planId)).map(function(x){
+    if(x.id!==parentId)return x;
+    var o=Object.assign({},x);
+    o.kids=pkids(x).filter(function(k){
+      if(k.id===kidId){gone=k;return false;} return true;});
+    return o;});
+  savePlanItems(planId,arr);render();
+  return gone;}
 
 /* ---- 记账 ---- */
 var CATS=["餐饮","交通","购物","居住","娱乐","医疗","学习","人情","其他"];
@@ -4654,14 +4747,30 @@ function bind(){
     document.querySelectorAll("[data-del-"+tb+"]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
       dropUndo(tb,el.getAttribute("data-del-"+tb),"Deleted");render()}});});
   var pbk=$("pBack"); if(pbk)pbk.onclick=function(){planOpen=null;window.scrollTo(0,0);render()};
-  var pa=$("plAdd");  if(pa)pa.onclick=function(){pitemSheet(planOpen,null)};
+  var pa=$("plAdd");  if(pa)pa.onclick=function(){pitemSheet(planOpen,null,null)};
   var pe=$("plEdit"); if(pe)pe.onclick=function(){var pp=planById(planOpen); if(pp)planSheet(pp)};
   document.querySelectorAll("[data-popen]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     planOpen=el.dataset.popen;window.scrollTo(0,0);render();}});
   document.querySelectorAll("[data-ptog]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var a=el.dataset.ptog.split("|");togglePItem(a[0],a[1]);}});
   document.querySelectorAll("[data-pedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
-    var a=el.dataset.pedit.split("|");pitemSheet(a[0],a[1]);}});
+    var a=el.dataset.pedit.split("|");pitemSheet(a[0],a[1],null);}});
+  document.querySelectorAll("[data-pexp]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var k=el.dataset.pexp; planExp[k]=!planExp[k]; render();}});
+  document.querySelectorAll("[data-pktog]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pktog.split("|");togglePKid(a[0],a[1],a[2]);}});
+  document.querySelectorAll("[data-pkedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pkedit.split("|");pitemSheet(a[0],a[2],a[1]);}});
+  document.querySelectorAll("[data-pkadd]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pkadd.split("|");pitemSheet(a[0],null,a[1]);}});
+  document.querySelectorAll("[data-pkdrop]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pkdrop.split("|");
+    var gone=dropPKid(a[0],a[1],a[2]);
+    if(gone)toast(T("Deleted")+" "+gone.text,function(){
+      var arr=pitems(planById(a[0])).map(function(x){
+        if(x.id!==a[1])return x;
+        var o=Object.assign({},x); o.kids=pkids(x).concat([gone]); return o;});
+      savePlanItems(a[0],arr);render();});}});
   document.querySelectorAll("[data-pdrop]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var a=el.dataset.pdrop.split("|"), pp=planById(a[0]); if(!pp)return;
     var arr=pitems(pp), gone=arr.filter(function(x){return x.id===a[1]})[0];
@@ -5427,7 +5536,7 @@ function fabAction(){
     tplSheet();return;}
   if(tab==="subs"){subSheet();return;}
   if(tab==="plans"){
-    if(planOpen){pitemSheet(planOpen,null);return;}
+    if(planOpen){pitemSheet(planOpen,null,null);return;}
     planSheet();return;}
   if(tab==="diary"){diaryDate=todayStr();render();
     setTimeout(function(){var t=$("dtxt"); if(t)t.focus();},120);return;}
