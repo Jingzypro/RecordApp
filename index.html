@@ -964,9 +964,11 @@
   /* 列表卡：打卡条用习惯自己的颜色 */
   /* 一行 = 固定容器 + 可滑动的卡片；删除键钉在容器右侧 */
   .hrw{position:relative;overflow:hidden;border-radius:var(--r);box-shadow:var(--sh)}
-  .hrw .hcard{position:relative;z-index:1;background:var(--card);
+  /* 卡片在容器里滑动，删除键钉在容器边缘 */
+  .hrw>.hcard,.hrw>.plc{position:relative;z-index:1;background:var(--card);
     transition:transform .22s cubic-bezier(.32,.72,0,1)}
-  .hrw.armed .hcard{transform:translateX(-88px)}
+  .hrw.armed>.hcard,.hrw.armed>.plc{transform:translateX(-88px)}
+  .hrw.armL>.hcard,.hrw.armL>.plc{transform:translateX(88px)}
   .hdone{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:var(--r2);
     font-size:13.5px;font-weight:650;cursor:pointer;
     background:color-mix(in srgb,var(--hc) 14%,transparent);color:var(--hc)}
@@ -979,6 +981,7 @@
   .hdel{position:absolute;top:0;right:0;bottom:0;width:88px;border:none;cursor:pointer;
     background:var(--danger);color:#fff;font-size:14px;font-weight:700;z-index:0;
     display:flex;align-items:center;justify-content:center;padding:0 6px}
+  .hrw.armL .hdel{right:auto;left:0}
   .hdel:active{filter:brightness(.9)}
   /* 记录页的一周条 */
   .hwk{display:flex;align-items:center;gap:4px;margin-bottom:14px}
@@ -1050,6 +1053,46 @@
   .hwdd i.on{background:var(--hc)}
   .tlc{position:relative}
   .tlc+.tlc{margin-top:7px}
+
+  /* ---- 长期计划 ---- */
+  .plc{display:flex;align-items:center;gap:13px;padding:15px 15px;cursor:pointer;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+  .pli{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+    color:var(--hc);background:color-mix(in srgb,var(--hc) 12%,transparent)}
+  .plm{flex:1;min-width:0}
+  .plm b{display:block;font-size:16px;font-weight:700;letter-spacing:-.01em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .plm i{display:block;font-size:12.5px;color:var(--faint);font-style:normal;margin-top:3px}
+  .pln{flex:none;display:flex;align-items:baseline;gap:3px;padding-right:12px}
+  .pln b{font-size:24px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .pln span{font-size:11.5px;color:var(--sub);font-weight:650}
+
+  .plhero{display:flex;align-items:center;gap:14px;padding:20px 18px;border-radius:18px;
+    background:var(--card);border:1px solid var(--line);box-shadow:var(--sh)}
+  .plhero>div{flex:1;min-width:0}
+  .plhero b{font-size:19px;font-weight:800;letter-spacing:-.02em}
+  .plbig{font-size:30px;font-weight:800;letter-spacing:-.035em;margin:6px 0 4px;
+    font-variant-numeric:tabular-nums}
+  .plbig em{font-size:12px;font-weight:650;font-style:normal;color:var(--sub);margin-left:3px}
+  .plhero i{font-size:12px;color:var(--faint);font-style:normal}
+  .plic{flex:none;color:var(--hc);opacity:.9}
+
+  .plr{display:flex;align-items:center;gap:12px;padding:14px 14px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+  .plck{flex:none;width:26px;height:26px;border-radius:8px;cursor:pointer;padding:0;
+    border:1.8px solid var(--line2);background:transparent;color:#fff;
+    display:grid;place-items:center}
+  .plck.on{background:var(--hc);border-color:var(--hc)}
+  .plck svg{width:16px;height:16px}
+  .plt{flex:1;min-width:0;cursor:pointer}
+  .plt b{display:block;font-size:15px;font-weight:650;letter-spacing:-.01em}
+  .plt i{display:block;font-size:11.5px;color:var(--faint);font-style:normal;margin-top:3px}
+  .plr.done .plt b{color:var(--faint)}
+  .plig{display:flex;flex-wrap:wrap;gap:8px}
+  .plig button{width:42px;height:42px;border-radius:12px;cursor:pointer;
+    border:1px solid var(--line);background:var(--card2);color:var(--sub);
+    display:grid;place-items:center}
+  .plig button.on{background:var(--soft);border-color:var(--accent);color:var(--accent2)}
 
   /* ---- 习惯详情 ---- */
   .hseg{display:flex;align-items:center;gap:8px;margin-bottom:12px}
@@ -1489,8 +1532,8 @@ function setTheme(t){theme=t;try{store.set(LS.theme,t)}catch(e){}applyTheme();}
 applyTheme();
 try{window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(theme==="system")applyTheme()});}catch(e){}
 
-var TABLES=["todos","weekly_focus","diary","habits","habit_logs","subscriptions","birthdays","ledger","countdowns"];
-var D={todos:[],weekly_focus:[],diary:[],habits:[],habit_logs:[],subscriptions:[],birthdays:[],ledger:[],countdowns:[]};
+var TABLES=["todos","weekly_focus","diary","habits","habit_logs","subscriptions","birthdays","ledger","countdowns","plans"];
+var D={todos:[],weekly_focus:[],diary:[],habits:[],habit_logs:[],subscriptions:[],birthdays:[],ledger:[],countdowns:[],plans:[]};
 var outbox=[],cfg=null,tab="today",syncing=false;
 var planView="week", cursor=new Date(), diaryDate=todayStr(), ledMonth=new Date();
 /* 视图历史：记住是从哪一层进来的，返回时原路回去 */
@@ -1948,17 +1991,21 @@ function getFocus(k){var f=D.weekly_focus.filter(function(x){return x.id===k})[0
 function render(){
   var ttl=$("pageTitle");
   if(tab==="plan"){ttl.innerHTML=planHeader();ttl.style.cssText="margin:0";}
+  else if(tab==="plans"&&planOpen&&planById(planOpen)){
+    ttl.style.cssText="margin:0";
+    ttl.innerHTML='<button class="ybtn" id="pBack">‹ '+esc(planById(planOpen).name)+'</button>';}
   else if(tab==="habit"&&habitOpen&&habitById(habitOpen)){
     ttl.style.cssText="margin:0";
     ttl.innerHTML='<button class="ybtn" id="hBack">‹ '+esc(habitById(habitOpen).name)+'</button>';}
   else{ttl.style.cssText="";
-    var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones"}[tab]||"Record";
+    var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones",plans:"Long-term"}[tab]||"Record";
     ttl.innerHTML=esc(T(lbl))+(tab==="today"?wxChip():"");}
   if(typeof setTab==="function")setTab();     // 视图切换时底栏高亮跟着变
   var v=$("view");
   v.innerHTML = tab==="today"?vToday() : tab==="plan"?vPlan() : tab==="money"?vMoney() :
     tab==="diary"?vDiary() : tab==="habit"?vHabit() : tab==="subs"?vSubs() :
-    tab==="review"?vReview() : tab==="cdown"?vCountdown() : vBday();
+    tab==="review"?vReview() : tab==="cdown"?vCountdown() :
+    tab==="plans"?vPlans() : vBday();
   var old=document.getElementById("todayFab"); if(old)old.remove();
   if(tab==="plan"&&(planView==="month"||planView==="year"||planView==="day")){
     var fab=document.createElement("button");fab.id="todayFab";fab.className="todaybtn";fab.textContent="Today";
@@ -2694,12 +2741,11 @@ var FTYL=[["clock","Range"],["number","Number"],["rating","Rating"],["bool","Swi
 
 function jarr(v){try{var a=JSON.parse(v||"[]");return Array.isArray(a)?a:[]}catch(e){return []}}
 function jobj(v){try{var o=JSON.parse(v||"{}");return (o&&typeof o==="object"&&!Array.isArray(o))?o:{}}catch(e){return {}}}
-var HICO={moon:1,book:1,bottle:1,droplet:1,dumbbell:1,lotus:1,bowl:1,briefcase:1,
-  check:1,flame:1,sun:1,flag:1,gift:1,chart:1,wallet:1,journal:1,calendar:1,repeat:1};
-/* 习惯图标：新数据存图标名，老数据存 emoji，两种都认 */
+/* 习惯图标：新数据存图标名（查图标表），老数据存 emoji（原样显示）。
+   白名单直接问 ICONS，加新图标不用再改第二处。 */
 function hicon(hb,size){
   var e=(hb&&hb.emoji)||"check";
-  return HICO[e] ? ico(e,size||17) : '<span class="hemj">'+esc(e)+'</span>';}
+  return ICONS[e] ? ico(e,size||17) : '<span class="hemj">'+esc(e)+'</span>';}
 
 function habitById(id){return D.habits.filter(function(h){return h.id===id})[0]||null;}
 function hfields(hb){return jarr(hb&&hb.fields);}
@@ -3075,6 +3121,13 @@ var ZH={
   /* 通用 */
   "Add":"添加","Close":"关闭","Search":"搜索","Time":"时间","Location":"地点","Notes":"备注",
   "Title":"标题","What":"什么事","New event":"新建日程","More":"更多","Temperature":"温度",
+  /* 长期计划 */
+  "Long-term":"长期计划","Long-term plan":"长期计划","New plan":"新建计划","Edit plan":"编辑计划",
+  "Delete this plan":"删除这个计划","Add item":"添加条目","Edit item":"编辑条目",
+  "Item name":"条目名称","Enter a name":"请输入名称","Completed":"完成于","No items yet":"还没有条目",
+  "No plans yet · tap + to create":"还没有计划，点右下角 + 新建",
+  "Left":"还有","items":"个","Icon":"图标","Color":"颜色",
+  "Travel / Reading list":"旅行 / 书单",
   /* 设置 */
   "Language":"语言"
 };
@@ -3616,6 +3669,152 @@ function hStat(hb,rows,last){
   return h;}
 
 
+
+/* ============ 长期计划 ============
+   一张表 plans，条目用 JSON 存在 items 里：
+   [{id, text, done, done_at}]  —— 条目不需要单独同步，省一张表 */
+var planOpen=null;
+function pitems(p){return jarr(p&&p.items);}
+function planById(id){return D.plans.filter(function(x){return x.id===id})[0]||null;}
+function planStat(p){
+  var it=pitems(p), dn=it.filter(function(x){return x.done}).length;
+  return {n:it.length, done:dn, left:it.length-dn};}
+
+function vPlans(){
+  if(planOpen){var po=planById(planOpen); if(po)return vPlanOne(po); planOpen=null;}
+  var ps=D.plans.filter(function(x){return !x.archived})
+                .sort(function(a,b){return (a.sort||0)-(b.sort||0)});
+  if(!ps.length)
+    return '<div class="card"><div class="empty"><span class="e">🧭</span>'+
+      T("No plans yet · tap + to create")+'</div></div>';
+  return '<div class="hlist">'+ps.map(function(p){
+    var st=planStat(p), c=hcol(p);
+    return '<div class="hrw" data-ppress="'+p.id+'">'+
+      '<button class="hdel" data-pdel="'+p.id+'">'+T("Delete")+'</button>'+
+      '<div class="plc" data-popen="'+p.id+'" style="--hc:'+c+'">'+
+        '<span class="pli">'+hicon(p,22)+'</span>'+
+        '<div class="plm"><b>'+esc(p.name)+'</b>'+
+          '<i>'+T("Left")+' '+st.left+' · '+T("Done")+' '+st.done+'</i></div>'+
+        '<div class="pln"><b>'+st.n+'</b><span>'+T("items")+'</span></div>'+
+      '</div></div>';}).join("")+'</div>';}
+
+function vPlanOne(p){
+  var st=planStat(p), c=hcol(p), it=pitems(p);
+  var h='<div class="plhero" style="--hc:'+c+'">'+
+    '<div><b>'+esc(p.name)+'</b>'+
+      '<div class="plbig">'+st.n+'<em>'+T("items")+'</em></div>'+
+      '<i>'+(p.note?esc(p.note):T("Long-term plan"))+'</i></div>'+
+    '<span class="plic">'+hicon(p,42)+'</span></div>';
+
+  h+= it.length
+    ? '<div class="hlist" style="margin-top:12px">'+it.map(function(x){
+        return '<div class="plr'+(x.done?" done":"")+'" style="--hc:'+c+'">'+
+          '<button class="plck'+(x.done?" on":"")+'" data-ptog="'+p.id+'|'+x.id+'">'+
+            (x.done?ckSVG(true):"")+'</button>'+
+          '<div class="plt" data-pedit="'+p.id+'|'+x.id+'"><b>'+esc(x.text)+'</b>'+
+            (x.done&&x.done_at?'<i>'+T("Completed")+' '+esc(x.done_at)+'</i>':"")+'</div>'+
+          '<button class="x" data-pdrop="'+p.id+'|'+x.id+'">×</button></div>';}).join("")+'</div>'
+    : '<div class="card" style="margin-top:12px"><div class="empty">'+T("No items yet")+'</div></div>';
+
+  h+='<div class="row" style="margin-top:16px;gap:8px">'+
+     '<button class="btn g" id="plAdd" style="flex:1">'+T("Add item")+'</button>'+
+     '<button class="btn" id="plEdit" style="flex:1">'+T("Edit")+'</button></div>';
+  return h;}
+
+/* 计划本身：名称 / 图标 / 颜色 / 说明 */
+var PLICO=["flag","briefcase","book","dumbbell","droplet","moon","pencil","gift","chart","bowl","lotus","bottle"];
+function planSheet(rec){
+  var ed=rec||null;
+  var pick=(ed&&ed.emoji)||"flag", col=(ed&&ed.color)||HCDEF;
+  openSheet('<h2>'+(ed?T("Edit plan"):T("New plan"))+'</h2>'+
+    '<label class="fl">'+T("Name")+'</label>'+
+    '<input class="inp" id="pn" maxlength="40" value="'+(ed?esc(ed.name):"")+'" placeholder="'+T("Travel / Reading list")+'">'+
+    '<label class="fl">'+T("Note")+'</label>'+
+    '<input class="inp" id="pnote" maxlength="60" value="'+(ed&&ed.note?esc(ed.note):"")+'" placeholder="'+T("Optional")+'">'+
+    '<label class="fl">'+T("Icon")+'</label><div class="plig" id="pig"></div>'+
+    '<label class="fl">'+T("Color")+'</label><div class="cpal" id="pcp">'+
+      '<label class="cpcus'+(/^#/.test(col)?" on":"")+'" id="pcw" style="--cc:'+hcol({color:col})+'">'+
+      '<input type="color" id="pcx" value="'+esc(/^#/.test(col)?col:hcol({color:col}))+'"></label>'+
+      Object.keys(HCOLORS).map(function(k){
+        return '<button data-pc="'+k+'"'+(k===col?' class="on"':'')+
+          ' style="background:'+HCOLORS[k]+'"></button>';}).join("")+'</div>'+
+    '<div class="row" style="margin-top:16px"><button class="btn" id="pv" style="flex:1">'+T("Save")+'</button>'+
+    '<button class="btn g" id="px">'+T("Cancel")+'</button></div>'+
+    (ed?'<button class="btn g" id="pdel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this plan")+'</button>':""));
+
+  function drawIco(){
+    $("pig").innerHTML=PLICO.map(function(n){
+      return '<button class="'+(n===pick?"on":"")+'" data-pi="'+n+'">'+ico(n,20)+'</button>';}).join("");
+    $("pig").querySelectorAll("[data-pi]").forEach(function(el){
+      el.onclick=function(){pick=el.dataset.pi;drawIco();};});}
+  drawIco();
+  function setCol(v,custom){
+    col=v;
+    $("pcp").querySelectorAll("button[data-pc]").forEach(function(b){
+      b.classList.toggle("on",!custom&&b.dataset.pc===v);});
+    $("pcw").classList.toggle("on",!!custom);
+    $("pcw").style.setProperty("--cc",hcol({color:col}));}
+  $("pcp").querySelectorAll("[data-pc]").forEach(function(el){
+    el.onclick=function(){setCol(el.dataset.pc,false);};});
+  $("pcx").oninput=function(){setCol($("pcx").value,true);};
+
+  $("px").onclick=closeSheet;
+  var pd=$("pdel");
+  if(pd)pd.onclick=function(){
+    var snap=Object.assign({},ed);
+    drop("plans",ed.id); planOpen=null; closeSheet(); render();
+    toast(T("Deleted")+" "+ed.name,function(){push("plans",snap);render();});};
+  $("pv").onclick=function(){
+    var v=$("pn").value.trim(); if(!v){$("pn").focus();return;}
+    push("plans",Object.assign({},ed||{},{
+      id:ed?ed.id:uid(), name:v, emoji:pick, color:col,
+      note:$("pnote").value.trim()||null,
+      items:ed?ed.items:"[]",
+      sort:ed?ed.sort:Date.now(), archived:false,
+      updated_at:new Date().toISOString()}));
+    closeSheet();render();};}
+
+/* 单条计划项 */
+function pitemSheet(planId,itemId){
+  var p=planById(planId); if(!p)return;
+  var it=pitems(p), cur=itemId?it.filter(function(x){return x.id===itemId})[0]:null;
+  var done=!!(cur&&cur.done);
+  openSheet('<h2>'+(cur?T("Edit item"):T("Add item"))+'</h2>'+
+    '<label class="fl">'+T("Item name")+'</label>'+
+    '<input class="inp" id="pin" maxlength="60" value="'+(cur?esc(cur.text):"")+'" placeholder="'+T("Enter a name")+'">'+
+    '<div class="lgbl" style="margin-top:16px"><span>'+T("Completed")+'</span>'+
+      '<button class="atog'+(done?" on":"")+'" id="pid"></button></div>'+
+    '<div class="row" style="margin-top:16px"><button class="btn" id="piv" style="flex:1">'+T("Save")+'</button>'+
+    '<button class="btn g" id="pix">'+T("Cancel")+'</button></div>');
+  $("pid").onclick=function(){done=!done;$("pid").classList.toggle("on",done);};
+  $("pix").onclick=closeSheet;
+  setTimeout(function(){if(!cur)$("pin").focus()},80);
+  $("piv").onclick=function(){
+    var v=$("pin").value.trim(); if(!v){$("pin").focus();return;}
+    var arr=pitems(planById(planId));
+    if(cur){
+      arr=arr.map(function(x){
+        if(x.id!==itemId)return x;
+        return {id:x.id,text:v,done:done,done_at:done?(x.done_at||nowStamp()):null};});
+    }else{
+      arr.push({id:"p"+Date.now().toString(36),text:v,done:done,done_at:done?nowStamp():null});}
+    savePlanItems(planId,arr);
+    closeSheet();render();};}
+
+function nowStamp(){
+  var d=new Date();
+  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+
+         pad(d.getHours())+":"+pad(d.getMinutes());}
+function savePlanItems(planId,arr){
+  var p=planById(planId); if(!p)return;
+  push("plans",Object.assign({},p,{items:JSON.stringify(arr),updated_at:new Date().toISOString()}));}
+function togglePItem(planId,itemId){
+  var arr=pitems(planById(planId)).map(function(x){
+    if(x.id!==itemId)return x;
+    var nd=!x.done;
+    return {id:x.id,text:x.text,done:nd,done_at:nd?nowStamp():null};});
+  savePlanItems(planId,arr);render();}
+
 /* ---- 记账 ---- */
 var CATS=["餐饮","交通","购物","居住","娱乐","医疗","学习","人情","其他"];
 var CATL={"餐饮":"Food","交通":"Transit","购物":"Shopping","居住":"Housing","娱乐":"Fun",
@@ -4131,13 +4330,13 @@ function cdSheet(rec){
   $("cdd").onkeydown=function(e){if(e.key==="Enter")save()};}
 
 /* ---- 线性图标库（单色，跟随文字颜色）---- */
-function ico(name,size){
-  var p={
+var ICONS={
     calendar:'<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
     calendar2:'<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M7.5 14h5M7.5 17h9"/>',
     journal:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19v17.5H6.5A2.5 2.5 0 0 0 4 22z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H19"/>',
     flame:'<path d="M12 22c3.9 0 6.5-2.6 6.5-6 0-4.5-4.5-6-4.5-10.5C11 7 10 9 10 11c-.9-.6-1.5-1.6-1.5-3C6.9 9.6 5.5 11.9 5.5 15c0 3.6 2.7 7 6.5 7z"/>',
     wallet:'<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1"/><rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/><path d="M16.5 13.8h.01"/>',
+    compass:'<circle cx="12" cy="12" r="9"/><path d="M15.7 8.3l-2.1 5.3-5.3 2.1 2.1-5.3z"/>',
     flag:'<path d="M6.5 20.5V3.5M6.5 3.5h11l-2.2 3.75L17.5 11h-11"/>',
     gift:'<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13.5h18M12 9v12"/><path d="M12 9S9.5 4.5 7.2 5.4C5.6 6 5.9 9 8.6 9zM12 9s2.5-4.5 4.8-3.6C18.4 6 18.1 9 15.4 9z"/>',
     repeat:'<path d="M3 11.5a7 7 0 0 1 7-7h8"/><path d="m15 1.5 3 3-3 3"/><path d="M21 12.5a7 7 0 0 1-7 7H6"/><path d="m9 22.5-3-3 3-3"/>',
@@ -4167,7 +4366,9 @@ function ico(name,size){
           '<path d="M4.9 8.9a6.6 6.6 0 0 0 0 6.2"/><path d="M19.1 8.9a6.6 6.6 0 0 1 0 6.2"/>'+
           '<path d="M2.2 7a10.2 10.2 0 0 0 0 10"/><path d="M21.8 7a10.2 10.2 0 0 1 0 10"/>',
     briefcase:'<rect x="2.6" y="7.2" width="18.8" height="13" rx="2.6"/><path d="M8.6 7.2V5.6a2 2 0 0 1 2-2h2.8a2 2 0 0 1 2 2v1.6"/><path d="M2.6 12.6h18.8"/>'
-  }[name]||"";
+};
+function ico(name,size){
+  var p=ICONS[name]||"";
   var sz=size||18;
   return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
     'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
@@ -4186,6 +4387,7 @@ var MENU=[
   {k:"plan",   ic:"calendar", n:"Schedule"},
   {k:"subs",   ic:"repeat",   n:"Recurring"},
   {k:"cdown",  ic:"flag",     n:"Milestones"},
+  {k:"plans",  ic:"compass",  n:"Long-term"},
   {k:"review", ic:"chart",    n:"Insights"}
 ].sort(function(a,b){return a.n.localeCompare(b.n)});
 
@@ -4217,7 +4419,7 @@ function openDrawer(){$("dwlist").innerHTML=drawerHTML();bindDrawer();
 function closeDrawer(){$("drawer").classList.remove("on");$("scrim").classList.remove("on");}
 function bindDrawer(){
   document.querySelectorAll("[data-go]").forEach(function(el){
-    el.onclick=function(){tab=el.dataset.go;habitOpen=null;closeDrawer();window.scrollTo(0,0);setTab();render();};});
+    el.onclick=function(){tab=el.dataset.go;habitOpen=null;planOpen=null;closeDrawer();window.scrollTo(0,0);setTab();render();};});
   document.querySelectorAll("[data-act]").forEach(function(el){
     el.onclick=function(){var a=el.dataset.act;closeDrawer();
       setTimeout(function(){
@@ -4451,6 +4653,46 @@ function bind(){
   ["todos","habits","subscriptions","birthdays","diary","ledger","countdowns"].forEach(function(tb){
     document.querySelectorAll("[data-del-"+tb+"]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
       dropUndo(tb,el.getAttribute("data-del-"+tb),"Deleted");render()}});});
+  var pbk=$("pBack"); if(pbk)pbk.onclick=function(){planOpen=null;window.scrollTo(0,0);render()};
+  var pa=$("plAdd");  if(pa)pa.onclick=function(){pitemSheet(planOpen,null)};
+  var pe=$("plEdit"); if(pe)pe.onclick=function(){var pp=planById(planOpen); if(pp)planSheet(pp)};
+  document.querySelectorAll("[data-popen]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    planOpen=el.dataset.popen;window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-ptog]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.ptog.split("|");togglePItem(a[0],a[1]);}});
+  document.querySelectorAll("[data-pedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pedit.split("|");pitemSheet(a[0],a[1]);}});
+  document.querySelectorAll("[data-pdrop]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pdrop.split("|"), pp=planById(a[0]); if(!pp)return;
+    var arr=pitems(pp), gone=arr.filter(function(x){return x.id===a[1]})[0];
+    savePlanItems(a[0],arr.filter(function(x){return x.id!==a[1]}));render();
+    if(gone)toast(T("Deleted")+" "+gone.text,function(){
+      var cur=pitems(planById(a[0])); cur.push(gone); savePlanItems(a[0],cur); render();});}});
+  document.querySelectorAll("[data-ppress]").forEach(function(el){
+    var px0=0,py0=0,pmv=false;
+    el.addEventListener("touchstart",function(e){
+      if(e.touches.length!==1)return;
+      px0=e.touches[0].clientX;py0=e.touches[0].clientY;pmv=false;},{passive:true});
+    el.addEventListener("touchmove",function(e){
+      var t=e.touches[0],ax=t.clientX-px0,ay=t.clientY-py0;
+      if(Math.abs(ax)>26&&Math.abs(ax)>Math.abs(ay)*1.5)pmv=true;},{passive:true});
+    el.addEventListener("touchend",function(e){
+      if(!pmv)return;
+      var ax=e.changedTouches[0].clientX-px0;
+      var open=el.classList.contains("armed")||el.classList.contains("armL");
+      if(open){closeCards(null);return;}
+      if(Math.abs(ax)<45)return;
+      closeCards(el);
+      el.classList.add(ax<0?"armed":"armL");
+      if(navigator.vibrate)try{navigator.vibrate(8)}catch(err){}});});
+  document.querySelectorAll("[data-pdel]").forEach(function(el){
+    el.dataset.armed="0";
+    el.onclick=function(ev){ev.stopPropagation();
+      if(el.dataset.armed!=="1"){el.dataset.armed="1";el.textContent=T("Confirm delete");return;}
+      var pp=planById(el.dataset.pdel); if(!pp)return;
+      var snap=Object.assign({},pp);
+      drop("plans",pp.id);render();
+      toast(T("Deleted")+" "+pp.name,function(){push("plans",snap);render();});};});
   document.querySelectorAll("[data-mday]").forEach(function(el){el.onclick=function(){
     ledSheet(null, el.dataset.mday);}});
   document.querySelectorAll("[data-sday]").forEach(function(el){el.onclick=function(){
@@ -4523,10 +4765,10 @@ function bind(){
     habitWk=addDays(habitWk, 7*(+el.dataset.hwk));render();}});
   /* 左滑露出删除，再点一次确认 —— iOS 列表那套 */
   function closeCards(except){
-    document.querySelectorAll(".hrw.armed").forEach(function(c){
+    document.querySelectorAll(".hrw.armed,.hrw.armL").forEach(function(c){
       if(c===except)return;
-      c.classList.remove("armed");
-      var b=c.querySelector("[data-hdel]");
+      c.classList.remove("armed");c.classList.remove("armL");
+      var b=c.querySelector("[data-hdel],[data-pdel]");
       if(b){b.dataset.armed="0";b.textContent=T("Delete");}});}
   document.querySelectorAll("[data-hpress]").forEach(function(el){
     var x0=0,y0=0,moved=false;
@@ -4539,9 +4781,12 @@ function bind(){
     el.addEventListener("touchend",function(e){
       if(!moved)return;
       var ax=e.changedTouches[0].clientX-x0;
-      if(ax<-45){closeCards(el);el.classList.add("armed");
-        if(navigator.vibrate)try{navigator.vibrate(8)}catch(err){}}
-      else if(ax>30)closeCards(null);});});
+      var open=el.classList.contains("armed")||el.classList.contains("armL");
+      if(open){closeCards(null);return;}          /* 已经打开时，任意方向滑一下收起 */
+      if(Math.abs(ax)<45)return;
+      closeCards(el);
+      el.classList.add(ax<0?"armed":"armL");
+      if(navigator.vibrate)try{navigator.vibrate(8)}catch(err){}});});
   document.querySelectorAll("[data-hdel]").forEach(function(el){
     el.dataset.armed="0";
     el.onclick=function(ev){ev.stopPropagation();
@@ -5147,10 +5392,10 @@ document.addEventListener("contextmenu",function(e){
 
 /* ---- 抽屉交互：只认按钮和遮罩，不接管任何滑动手势 ---- */
 document.addEventListener("click",function(e){
-  if(e.target.closest(".hrw.armed"))return;
-  document.querySelectorAll(".hrw.armed").forEach(function(c){
-    c.classList.remove("armed");
-    var b=c.querySelector("[data-hdel]");
+  if(e.target.closest(".hrw.armed,.hrw.armL"))return;
+  document.querySelectorAll(".hrw.armed,.hrw.armL").forEach(function(c){
+    c.classList.remove("armed");c.classList.remove("armL");
+    var b=c.querySelector("[data-hdel],[data-pdel]");
     if(b){b.dataset.armed="0";b.textContent=T("Delete");}});},true);
 $("menuBtn").onclick=openDrawer;
 $("scrim").onclick=closeDrawer;
@@ -5181,6 +5426,9 @@ function fabAction(){
     if(habitOpen){var hb3=habitById(habitOpen); if(hb3){logSheet(hb3,todayStr());return;}}
     tplSheet();return;}
   if(tab==="subs"){subSheet();return;}
+  if(tab==="plans"){
+    if(planOpen){pitemSheet(planOpen,null);return;}
+    planSheet();return;}
   if(tab==="diary"){diaryDate=todayStr();render();
     setTimeout(function(){var t=$("dtxt"); if(t)t.focus();},120);return;}
   capOpen();}                                          // 今天 / 回顾：万能快速捕捉
@@ -5341,7 +5589,7 @@ document.querySelectorAll("#tabs button").forEach(function(b){b.onclick=function
 
 /* Plan → 默认周视图；Calendar → 默认当天的日视图 */
 function goTab(t){
-  habitOpen=null;
+  habitOpen=null; planOpen=null;
   var ORD=["today","plan","habit"];
   var from=ORD.indexOf(curTabKey()), to=ORD.indexOf(t);
   var dir=(from>=0&&to>=0&&from!==to)?(to>from?1:-1):0;
