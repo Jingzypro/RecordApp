@@ -318,24 +318,26 @@
   .star{flex:none;border:none;background:transparent;cursor:pointer;font-size:17px;line-height:1;
     color:var(--faint);padding:2px 4px 2px 0;font-family:inherit;transition:color .15s}
   .star.on{color:var(--amber)}
-  .cdstrip{display:flex;gap:8px;overflow-x:auto;padding:1px 0 2px}
-  .cdcard{flex:none;min-width:118px;border:1px solid var(--line);background:var(--card);border-radius:13px;
-    padding:12px 13px;cursor:pointer}
-  .cdcard .n{font-size:12.5px;font-weight:650;letter-spacing:-.01em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:132px}
-  .cdcard .v{font-size:23px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
-    line-height:1.1;margin-top:5px}
-  .cdcard .u{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+  /* 首页倒计时 / 生日小卡：一行四个，多了换行（和习惯小卡一致）*/
+  .cdstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:1px 0 2px}
+  .cdcard{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;
+    padding:9px 9px 10px;cursor:pointer;overflow:hidden}
+  .cdcard .n{font-size:11.5px;font-weight:650;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .cdcard .v{font-size:19px;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
+    line-height:1.1;margin-top:4px}
+  .cdcard .u{font-size:8.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
+    margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* 生日卡片：暖色 + 蛋糕标记，跟倒计时区分开 */
   .cdcard.bd{background:color-mix(in srgb,var(--amber) 9%,var(--card));
     border-color:color-mix(in srgb,var(--amber) 26%,var(--line))}
   .cdcard.bd .v{color:var(--amber)}
   .cdcard.bd .n{display:flex;align-items:center;gap:5px}
-  .cdcard.bd .n::before{content:"";width:13px;height:13px;flex:none;
+  .cdcard.bd .n::before{content:"";width:11px;height:11px;flex:none;
     background:currentColor;color:var(--amber);
     -webkit-mask:var(--cake) center/contain no-repeat;mask:var(--cake) center/contain no-repeat}
-  .cdcard .tag{font-size:8.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--faint);margin-bottom:3px}
+  .cdcard .tag{font-size:7.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cdcard.bd .tag{color:var(--amber);opacity:.85}
 
   .dwi .ic{width:22px;flex:none;display:grid;place-items:center;color:var(--sub)}
@@ -997,6 +999,16 @@
   .hwd.td{background:var(--card2)}
   .hwd.td b{color:var(--hc)}
   .hwd.fu{opacity:.3;cursor:default}
+  /* 选中的那一天：右下角 + 就补签这天 */
+  .hwd.sel{background:color-mix(in srgb,var(--hc) 15%,transparent);
+    box-shadow:inset 0 0 0 1.5px var(--hc)}
+  .hwd.sel b{color:var(--hc)}
+  /* 记录页：当前选中日的小标题 */
+  .hdbar{display:flex;align-items:center;gap:8px;margin:0 2px 8px}
+  .hdbar b{font-size:14px;font-weight:750;letter-spacing:-.01em}
+  .hdbar small{font-size:11.5px;color:var(--faint);font-weight:650}
+  .hdbar .sp{flex:1}
+  .hdhint{font-size:11px;color:var(--faint);font-weight:600}
 
   /* 时段表盘：黑轨道 + 同色盘面与滑窗，中间露黑缝 */
   .kbox{background:var(--kbox);border-radius:20px;padding:13px 14px 11px;margin-top:4px}
@@ -1151,6 +1163,10 @@
   .scal .hcd{gap:1px}
   .scal .hcd.on{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
   .scal .hcd.td{border-color:var(--accent)}
+  /* 记账月历：选中的那天 + 还有别的币种时的小点 */
+  .scal .hcd.sel{box-shadow:inset 0 0 0 2px var(--accent)}
+  .mcal .hcd.mix::after{content:"";position:absolute;right:4px;top:4px;width:4px;height:4px;
+    border-radius:50%;background:var(--faint);opacity:.75}
   .mcal .hcd.neg.lv1{background:color-mix(in srgb,var(--red) 10%,transparent);color:var(--sub)}
   .mcal .hcd.neg.lv2{background:color-mix(in srgb,var(--red) 20%,transparent);color:var(--red)}
   .mcal .hcd.neg.lv3{background:color-mix(in srgb,var(--red) 34%,transparent);color:var(--red)}
@@ -1159,6 +1175,19 @@
   .mcal .hcd.pos.lv2{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent2)}
   .mcal .hcd.pos.lv3{background:color-mix(in srgb,var(--accent) 34%,transparent);color:var(--accent2)}
   .mcal .hcd.pos.lv4{background:color-mix(in srgb,var(--accent) 50%,transparent);color:var(--accent2)}
+  /* 小票明细：记账表单里的可编辑行 + 流水里的只读列表 */
+  .lirow{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .lirow .inp{margin:0}
+  .lirow .li-p{flex:0 0 96px;text-align:right;font-variant-numeric:tabular-nums}
+  .lirow .x{flex:none}
+  .litems2{padding:0 13px 10px;display:grid;gap:4px}
+  .litems2 .lit{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--sub)}
+  .litems2 .lit span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .litems2 .lit b{flex:none;font-weight:650;font-variant-numeric:tabular-nums;color:var(--faint)}
+  .card>.lentry:first-child>.kv{border-top:none}
+  /* 扫小票：pill 外观，里面藏一个 file input */
+  .scanb{position:relative;overflow:hidden;display:inline-flex;align-items:center;cursor:pointer}
+  .scanb input{position:absolute;inset:0;opacity:0;font-size:0;cursor:pointer}
   .mcleg{display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-top:10px;
     font-size:10px;color:var(--faint)}
   .mcleg i{width:13px;height:13px;border-radius:4px;background:var(--card2)}
@@ -1170,7 +1199,7 @@
   /* 订阅页 */
   .subhero{background:var(--card);border:1px solid var(--line);border-radius:18px;
     padding:16px 16px 14px;box-shadow:var(--sh)}
-  .shh{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .shh{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
   .shh b{font-size:20px;font-weight:800;letter-spacing:-.02em}
   .shh span{font-size:11.5px;font-weight:650;color:var(--sub);background:var(--card2);
     border-radius:999px;padding:4px 11px}
@@ -1178,7 +1207,15 @@
   .shg i{display:block;font-size:11.5px;color:var(--sub);font-style:normal;margin-bottom:5px}
   .shg b{font-size:23px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
   .shg b em{font-size:12px;font-weight:650;font-style:normal;color:var(--sub);margin-left:1px}
-  .sublist{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .sublist{display:flex;flex-direction:column;gap:10px;margin-top:6px;margin-bottom:4px}
+  /* 顶部那颗汇率 / 显示币种按钮 */
+  .shh .fxb{font-size:11.5px;font-weight:650;color:var(--sub);background:var(--card2);
+    border:1px solid var(--line);border-radius:99px;padding:5px 10px;cursor:pointer;
+    font-family:inherit;white-space:nowrap;margin-left:auto}
+  .shh .fxb:active{opacity:.7}
+  .fxrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .fxrow label{flex:1;font-size:12.5px;color:var(--sub)}
+  .fxrow .inp{flex:0 0 118px;margin:0;text-align:right;font-variant-numeric:tabular-nums}
   .subc{position:relative;display:flex;align-items:center;gap:13px;padding:14px 14px;
     background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh)}
   .subi{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
@@ -1557,6 +1594,7 @@ var TABLES=["todos","weekly_focus","diary","habits","habit_logs","subscriptions"
 var D={todos:[],weekly_focus:[],diary:[],habits:[],habit_logs:[],subscriptions:[],birthdays:[],ledger:[],countdowns:[],plans:[]};
 var outbox=[],cfg=null,tab="today",syncing=false;
 var planView="week", cursor=new Date(), diaryDate=todayStr(), ledMonth=new Date();
+var ledDay=null;                  // 记账页停在哪一天：右下角 + 就记这天的账
 /* 视图历史：记住是从哪一层进来的，返回时原路回去 */
 var viewStack=[];
 function goView(v){ if(v!==planView)viewStack.push(planView); if(viewStack.length>12)viewStack.shift(); planView=v; }
@@ -1633,10 +1671,13 @@ function parseCapture(raw,today){
   var out={text:"",date:null,time:null,end:null,cost:null,kind:"todo"};
 
   // 金额：¥35 / $35 / 35元 / +35（收入）
-  var m=s.match(/(?:^|\s)([¥$+])?(\d+(?:\.\d{1,2})?)(元|块)?(?=\s|$)/);
+  var m=s.match(/(?:^|\s)([¥￥$€£+])?(\d+(?:\.\d{1,2})?)(元|块)?(?=\s|$)/);
   var hasCur=false;
   if(m && (m[1]||m[3])){ hasCur=true;
     out.cost=parseFloat(m[2]); out.income=(m[1]==="+");
+    /* 写了符号就按符号，没写就用默认币种（默认美金）*/
+    out.cur = (m[1]==="¥"||m[1]==="￥"||m[3]) ? "CNY"
+            : m[1]==="$" ? "USD" : m[1]==="€" ? "EUR" : m[1]==="£" ? "GBP" : defCur();
     s=(s.slice(0,m.index)+" "+s.slice(m.index+m[0].length)).trim(); }
 
   // 日期词
@@ -1680,7 +1721,7 @@ function capPreview(){
   var bits=[];
   if(r.date)bits.push(r.date===todayStr()?"today":r.date);
   if(r.time)bits.push(r.time+(r.end?"–"+r.end:""));
-  if(r.cost!=null)bits.push((r.income?"+":"")+"¥"+r.cost);
+  if(r.cost!=null)bits.push((r.income?"+":"")+curSym(r.cur||defCur())+r.cost);
   pv.innerHTML='<span class="capk'+(r.kind==="cost"?" cost":"")+'">'+(r.kind==="cost"?"Cost":"Task")+'</span>'+
     '<b style="font-weight:650;color:var(--ink)">'+esc(r.text)+'</b>'+
     (bits.length?'<span class="capdim">'+bits.join(" · ")+'</span>':"");
@@ -1692,10 +1733,11 @@ function capClose(){$("capwrap").classList.remove("on");$("capin").value="";}
 function capSave(){
   var r=parseCapture($("capin").value); if(!r)return;
   if(r.kind==="cost"){
+    var ccur=r.cur||defCur();
     push("ledger",{id:uid(),date:r.date||todayStr(),amount:r.cost,kind:r.income?"income":"expense",
-      category:r.income?"其他":mapCat(r.text,"","expense"),note:r.text||null,source:"manual",
+      category:r.income?"其他":mapCat(r.text,"","expense"),currency:ccur,note:r.text||null,source:"manual",
       updated_at:new Date().toISOString()});
-    toast("Logged ¥"+r.cost);
+    toast("Logged "+curSym(ccur)+r.cost);
   }else{
     push("todos",{id:uid(),text:r.text,done:false,sort:Date.now(),due_date:r.date||null,
       due_time:r.time||null,end_time:r.end||null,color:null,updated_at:new Date().toISOString()});
@@ -1765,10 +1807,11 @@ function weekStats(ws){
   var td=D.todos.filter(function(t){return t.due_date&&t.due_date>=a&&t.due_date<=b});
   var done=td.filter(function(t){return t.done}).length;
   var led=D.ledger.filter(function(r){return r.date>=a&&r.date<=b});
-  var spend=led.filter(function(r){return r.kind==="expense"}).reduce(function(x,r){return x+(+r.amount||0)},0);
+  var spc=primCur(led), sm=sumCur(led,"expense");
+  var spend=sm[spc]||0;                    // 没有汇率，回顾只比同一个币种
   var logs=D.habit_logs.filter(function(l){return l.date>=a&&l.date<=b}).length;
   var dia=D.diary.filter(function(d){return d.date>=a&&d.date<=b&&(d.text||"").trim()}).length;
-  return {done:done,total:td.length,spend:spend,logs:logs,diary:dia,a:a,b:b};}
+  return {done:done,total:td.length,spend:spend,cur:spc,logs:logs,diary:dia,a:a,b:b};}
 
 function vReview(){
   var ws=startOfWeek(cursor), cur=weekStats(ws), prev=weekStats(addDays(ws,-7));
@@ -1783,7 +1826,7 @@ function vReview(){
   h+='<div class="rvhero">'+
      '<div class="rvc"><div class="rvn">'+rate+'%</div><div class="rvl">Tasks done</div>'+
        '<div class="rvd">'+cur.done+' of '+cur.total+(prate?" · last week "+prate+"%":"")+'</div></div>'+
-     '<div class="rvc"><div class="rvn">'+money(cur.spend)+'</div><div class="rvl">Spent</div>'+
+     '<div class="rvc"><div class="rvn">'+money(cur.spend,cur.cur)+'</div><div class="rvl">Spent</div>'+
        delta(cur.spend,prev.spend,true)+'</div>'+
      '<div class="rvc"><div class="rvn">'+cur.logs+'</div><div class="rvl">Habits</div>'+
        delta(cur.logs,prev.logs)+'</div>'+
@@ -1813,8 +1856,8 @@ function searchRun(){
   D.diary.forEach(function(d){ if((d.text||"").toLowerCase().indexOf(ql)>=0)
     out.push({tag:"Diary",tx:d.text.replace(/\n/g," "),mt:d.date,go:function(){tab="diary";diaryDate=d.date;}});});
   D.ledger.forEach(function(r){ if(((r.note||"")+" "+(r.category||"")).toLowerCase().indexOf(ql)>=0)
-    out.push({tag:"Cost",tx:(r.note||catL(r.category)),mt:money(r.amount)+" · "+r.date,go:function(){
-      tab="money";ledMonth=parse(r.date);}});});
+    out.push({tag:"Cost",tx:(r.note||catL(r.category)),mt:money(r.amount,rowCur(r))+" · "+r.date,go:function(){
+      tab="money";ledMonth=parse(r.date);ledDay=r.date;}});});
   D.birthdays.forEach(function(b){ if((b.name||"").toLowerCase().indexOf(ql)>=0)
     out.push({tag:"Birthday",tx:b.name,mt:b.date,go:function(){tab="bday"}});});
   D.subscriptions.forEach(function(x){ if((x.name||"").toLowerCase().indexOf(ql)>=0)
@@ -2083,7 +2126,7 @@ function vToday(){
   var doneH=hs.filter(function(h){return logged(h.id,ds)}).length;
   var dia=D.diary.filter(function(x){return x.id===ds})[0];
   var tl=D.ledger.filter(function(r){return r.date===ds});
-  var te=tl.filter(function(r){return r.kind==="expense"}).reduce(function(a,r){return a+(+r.amount||0)},0);
+  var te=sumCur(tl,"expense"), tpc=primCur(tl);      // 没有汇率，按主币种显示
   var bd=D.birthdays.map(function(b){return{b:b,d:daysUntil(b.date.slice(5)||b.date)}})
           .filter(function(x){return x.d<=14}).sort(function(a,b){return a.d-b.d})[0];
   var over=D.todos.filter(function(t){return !t.done&&t.due_date&&t.due_date<ds});
@@ -2108,7 +2151,7 @@ function vToday(){
   /* ── 一眼概览：紧跟主视觉，不再沉到页底 ── */
   var st=hs.length?Math.max.apply(null,hs.map(function(hb){return streak(hb.id)})):0;
   h+='<div class="mets">'+
-     '<div class="met" data-mgo="money"><div class="v">'+money(te)+'</div><div class="k">'+T("Spent today")+'</div></div>'+
+     '<div class="met" data-mgo="money"><div class="v">'+moneyMix(te,tpc)+'</div><div class="k">'+T("Spent today")+'</div></div>'+
      '<div class="met" data-mgo="habit"><div class="v">'+st+'</div><div class="k">'+T("Streak")+'</div></div>'+
      '<div class="met" data-mgo="diary"><div class="v">'+(dia&&dia.text?"✓":"—")+'</div><div class="k">'+T("Diary")+'</div></div>'+
      '</div>';
@@ -2190,9 +2233,10 @@ function vToday(){
     h+='</div>';}
 
   /* ── 置顶倒计时 + 临近生日（同一排） ── */
-  var cards=D.countdowns.filter(function(c){return c.pinned})
-    .map(function(c){
-      var n=daysTo(c.date), since=(c.mode==="since");
+  var cards=D.countdowns.map(function(c){return {c:c,n:daysTo(c.date)};})
+    .filter(function(x){return cdShown(x.c,x.n)})
+    .map(function(x){
+      var c=x.c, n=x.n, since=(c.mode==="since");
       return {go:"cdown", name:c.name, d:n, sort:(n<0?1:0)*1e6+Math.abs(n),
         big: since?Math.abs(n)+1:(n===0?"🎉":Math.abs(n)),
         unit: since?"days in":(n===0?"today":n<0?"days ago":n===1?"day left":"days left")};});
@@ -3132,6 +3176,29 @@ var ZH={
   "Nothing overdue":"没有逾期","Undated":"无日期","Overdue":"已逾期",
   /* 记账 */
   "By category":"分类占比","transactions":"笔记录",
+  "Whole month":"看整月","Spent":"支出",
+  "Scan":"扫小票","Items":"商品明细","Item":"商品","Sum → amount":"合计填入总额",
+  "Currency & rates":"币种与汇率","Show totals in":"合计用哪个币种显示",
+  "Rates · 1 USD =":"汇率 · 1 美元 =","Only USD in use so far":"目前只用到美元",
+  "Refresh from network":"联网刷新","Updated":"更新于","Fetching…":"正在获取…","Fetched":"已更新",
+  "Could not fetch · type them in by hand":"获取失败 · 可以手动填",
+  "Rates are only used for display totals. Each entry keeps the currency you typed.":"汇率只用于合计显示，每条记录本身仍保留你填的币种。",
+  "One-off":"一次性","day":"天","days":"天",
+  "No items yet":"还没有明细","items":"件",
+  "Receipt scan":"小票识别","Model":"模型",
+  "The key is kept in this device only. It never goes into the file or into sync.":"key 只存在这台设备上，不会写进文件，也不参与同步。",
+  "Each receipt costs a fraction of a cent. Scanning needs a network connection.":"每张小票花费不到一分钱，识别需要联网。",
+  "Receipt scan is ready":"小票识别已就绪","Key cleared":"已清除 key",
+  "Reading the receipt…":"正在识别小票…","Receipt read":"小票已识别","Read":"识别出",
+  "Could not read that image":"这张图片读不出来",
+  "Could not read that receipt · fill it in by hand":"这张小票认不出来 · 请手动填写",
+  "Scan failed":"识别失败",
+  "Nothing on this day · tap ＋ to add":"这天还没有记账 · 点右下角 ＋ 补记",
+  /* 习惯：某一天的详情 */
+  "Rest of this week":"本周其它记录","Tap a card to edit":"点卡片可以修改",
+  "Tap ＋ to check in this day":"点右下角 ＋ 补签这天","Not checked in":"这天没有打卡",
+  "Edit this record":"修改这条","Add another":"再记一段","Check in this day":"补签这天",
+  "split into":"分成",
   /* 其他页 */
   "Counting down":"倒数","Counting up":"正数","Passed":"已过","Past entries":"过往记录",
   "Consistency · last 26 weeks":"坚持度 · 近 26 周",
@@ -3427,6 +3494,7 @@ function logSheet(hb,ds,logId){
 
 /* ---- 列表 ---- */
 var habitOpen=null, habitMode="log", habitMon=new Date(), habitWk=new Date(), habitTab=0;
+var habitDay=todayStr();          // 记录页当前停在哪一天：右下角 + 就补签这天
 
 /* 近 28 天：有数值属性就画柱状图，纯打卡的才画有无格 */
 function barStrip(hb){
@@ -3501,18 +3569,18 @@ function hCal(hb){
       ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]); if(vv!=null)tt=(tt||0)+vv;});
       if(tt!=null)sm=fnum(tt,mf.type==="clock"?1:mf.dec);}
     out+='<div class="hcd'+(l?" on":"")+(ls.length>1?" sp":"")+(ds===ts?" td":"")+(fu?" fu":"")+'"'+
-      (fu?"":' data-hday="'+hb.id+'|'+ds+'"')+'>'+
+      (fu?"":' data-hdet="'+hb.id+'|'+ds+'"')+'>'+
       '<b>'+d+'</b>'+(sm?'<i>'+esc(sm)+'</i>':"")+'</div>';}
   return '<div class="hcalw" style="--hc:'+hcol(hb)+'">'+
     calHead()+'<div class="hcal">'+out+'</div></div>';}
 
-/* 记录页顶部的一周条：轻，不抢戏，点某天补签 */
+/* 记录页顶部的一周条：点某天只是跳到那天，补签交给右下角的 + */
 function hWeek(hb){
   var s0=startOfWeek(habitWk), ts=todayStr(), out="";
   for(var i=0;i<7;i++){
     var d=addDays(s0,i), ds=fmt(d), ls=logsOn(hb.id,ds), fu=(ds>ts);
-    out+='<div class="hwd'+(ds===ts?" td":"")+(fu?" fu":"")+'"'+
-      (fu?"":' data-hday="'+hb.id+'|'+ds+'"')+'>'+
+    out+='<div class="hwd'+(ds===ts?" td":"")+(ds===habitDay?" sel":"")+(fu?" fu":"")+'"'+
+      (fu?"":' data-hsel="'+ds+'"')+'>'+
       '<span>'+WDE[d.getDay()].slice(0,1)+'</span><b>'+d.getDate()+'</b>'+
       '<em class="hwdd">'+(ls.length?'<i class="on"></i>':'<i></i>')+
       (ls.length>1?'<i class="on"></i>':"")+'</em></div>';}
@@ -3529,6 +3597,57 @@ function logCard(hb,l){
       '<span class="k">'+esc(f.label)+'</span>'+
       '<span class="v'+(f.type==="text"?" tx":"")+(f.type==="rating"?" rt":"")+'">'+
       (f.type==="rating"?fmtField(f,vs[f.id]):esc(fmtField(f,vs[f.id])))+'</span></div>';}).join("");}
+
+/* 时间轴上的一天：{ds, ls, d} */
+function tlRow(hb,r){
+  var mf=mainField(hb), tt=null;
+  if(mf&&r.ls.length>1){tt=0;r.ls.forEach(function(x){
+    var vv=fVal(mf,lvals(x)[mf.id]); if(vv!=null)tt+=vv;});}
+  return '<div class="tli">'+
+    '<div class="tld">'+pad(r.d.getMonth()+1)+'-'+pad(r.d.getDate())+
+      ' <small>'+WDE[r.d.getDay()]+'</small>'+
+      (r.ls.length>1?'<em class="split">分 '+r.ls.length+' 段'+
+        (tt!=null?' · 合计 '+esc(fnum(tt,1)+fUnit(mf)):"")+'</em>':"")+'</div>'+
+    r.ls.map(function(x){
+      return '<div class="tlc" data-hedid="'+x.id+'">'+
+        (x.start_time?'<span class="tlt">'+esc(x.start_time)+'</span>':"")+
+        logCard(hb,x)+'</div>';}).join("")+'</div>';}
+
+/* 选中那一天的详情：右下角的 + 就是补签这一天 */
+function hDayPanel(hb,ds){
+  var ls=logsOn(hb.id,ds), d=parse(ds), ts=todayStr();
+  var h='<div class="hdbar"><b>'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'</b>'+
+    '<small>'+WDE[d.getDay()]+(ds===ts?" · "+T("Today"):"")+'</small><span class="sp"></span>'+
+    '<span class="hdhint">'+(ls.length?T("Tap a card to edit"):T("Tap ＋ to check in this day"))+'</span></div>';
+  if(!ls.length)
+    return h+'<div class="card"><div class="empty">'+T("Not checked in")+'</div></div>';
+  return h+'<div class="tl">'+tlRow(hb,{ds:ds,ls:ls,d:d})+'</div>';}
+
+/* 统计页日历点某天：看这天的打卡细节，不直接补签 */
+function hDaySheet(hb,ds){
+  var ls=logsOn(hb.id,ds), d=parse(ds);
+  var mf=mainField(hb), tt=null;
+  if(mf)ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]); if(vv!=null)tt=(tt||0)+vv;});
+  var body = ls.length
+    ? ls.map(function(x){
+        return '<div class="card" style="margin-bottom:8px;padding:10px 12px">'+
+          (x.start_time?'<div class="kvs" style="margin-bottom:4px">'+esc(x.start_time)+
+            (x.end_time?" – "+esc(x.end_time):"")+'</div>':"")+
+          logCard(hb,x)+
+          '<button class="btn g" data-dsed="'+x.id+'" style="width:100%;margin-top:8px">'+T("Edit this record")+'</button></div>';}).join("")
+    : '<div class="card"><div class="empty">'+T("Not checked in")+'</div></div>';
+  openSheet('<h2>'+esc(hb.name)+'</h2>'+
+    '<div class="note" style="margin:0 0 12px">'+esc(ds)+' · '+WDE[d.getDay()]+
+      (ls.length>1?' · '+T("split into")+' '+ls.length:"")+
+      (tt!=null?' · '+esc(fnum(tt,1)+fUnit(mf)):"")+'</div>'+
+    body+
+    '<div class="row" style="margin-top:12px">'+
+      '<button class="btn" id="hdAdd" style="flex:1">'+(ls.length?T("Add another"):T("Check in this day"))+'</button>'+
+      '<button class="btn g" id="hdX">'+T("Close")+'</button></div>');
+  $("hdX").onclick=closeSheet;
+  $("hdAdd").onclick=function(){logSheet(hb,ds, (isMulti(hb)||!ls.length)?null:ls[0].id);};
+  document.querySelectorAll("[data-dsed]").forEach(function(el){el.onclick=function(){
+    logSheet(hb,ds,el.dataset.dsed);};});}
 
 function vHabitOne(hb){
   var h='<div class="hseg"><div class="sw">'+
@@ -3556,22 +3675,13 @@ function vHabitOne(hb){
     wrows.push({ds:wds,ls:wls,d:wd});}
 
   if(habitMode==="log"){
+    if(habitDay>ts)habitDay=ts;                 // 不停在未来
     h+=hWeek(hb);
-    h+= wrows.length
-      ? '<div class="tl">'+wrows.map(function(r){
-          var mf2=mainField(hb), tt=null;
-          if(mf2&&r.ls.length>1){tt=0;r.ls.forEach(function(x){
-            var vv=fVal(mf2,lvals(x)[mf2.id]); if(vv!=null)tt+=vv;});}
-          return '<div class="tli">'+
-            '<div class="tld">'+pad(r.d.getMonth()+1)+'-'+pad(r.d.getDate())+
-              ' <small>'+WDE[r.d.getDay()]+'</small>'+
-              (r.ls.length>1?'<em class="split">分 '+r.ls.length+' 段'+
-                (tt!=null?' · 合计 '+esc(fnum(tt,1)+fUnit(mf2)):"")+'</em>':"")+'</div>'+
-            r.ls.map(function(x){
-              return '<div class="tlc" data-hedid="'+x.id+'">'+
-                (x.start_time?'<span class="tlt">'+esc(x.start_time)+'</span>':"")+
-                logCard(hb,x)+'</div>';}).join("")+'</div>';}).join("")+'</div>'
-      : '<div class="card"><div class="empty">'+T("No records this week")+'</div></div>';
+    h+=hDayPanel(hb,habitDay);
+    var others=wrows.filter(function(r){return r.ds!==habitDay});
+    if(others.length)
+      h+='<div class="sec">'+T("Rest of this week")+'</div><div class="tl">'+
+         others.map(function(r){return tlRow(hb,r)}).join("")+'</div>';
     return h;}
   var flat=[];
   rows.forEach(function(r){logsOn(hb.id,r.ds).forEach(function(x){flat.push({ds:r.ds,l:x,d:r.d});});});
@@ -3917,11 +4027,208 @@ function catL(c){return CATL[c]||c;}
 var INCAT=["工资","报销","红包","理财","其他"];
 function monKey(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)}
 function ledOf(mk){return D.ledger.filter(function(x){return String(x.date).indexOf(mk)===0})}
-function money(n){return (n<0?"-":"")+"¥"+Math.abs(n).toFixed(2)}
+
+/* ---- 币种 ----
+   记账默认美金；老数据没有 currency 字段，按原来显示的 ¥ 当人民币处理。
+   没有汇率，所以多币种不相加，各自单独统计。 */
+var CURS=[["USD","$"],["CNY","¥"],["EUR","€"],["GBP","£"],["JPY","JP¥"],["HKD","HK$"],
+          ["TWD","NT$"],["KRW","₩"],["SGD","S$"],["CAD","C$"],["AUD","A$"]];
+var CURSYM={};CURS.forEach(function(c){CURSYM[c[0]]=c[1]});
+function curSym(c){return CURSYM[c]||((c||"")+" ")}
+function rowCur(r){return (r&&r.currency)||"CNY"}
+function defCur(){try{return store.get("rec.cur")||"USD"}catch(e){return "USD"}}
+function money(n,cur){return (n<0?"-":"")+curSym(cur||"CNY")+Math.abs(n).toFixed(2)}
+/* 一批记录按币种汇总：{USD:12.5, CNY:80} */
+function sumCur(rows,kind){
+  var m={};
+  rows.forEach(function(r){
+    if(kind&&r.kind!==kind)return;
+    var c=rowCur(r);m[c]=(m[c]||0)+(+r.amount||0);});
+  return m;}
+/* 主币种：这批记录里金额最大的那个，没有记录就用默认币种 */
+function primCur(rows){
+  var m=sumCur(rows), ks=Object.keys(m);
+  if(!ks.length)return defCur();
+  return ks.sort(function(a,b){return m[b]-m[a]})[0];}
+/* 主币种之外的其它币种，拼成一行小字 */
+function otherCur(m,pc){
+  return Object.keys(m).filter(function(c){return c!==pc&&m[c]})
+    .sort(function(a,b){return m[b]-m[a]})
+    .map(function(c){return money(m[c],c)}).join(" · ");}
+/* 紧凑显示：主币种金额，另有别的币种就加个 + */
+function moneyMix(m,pc){
+  var ks=Object.keys(m).filter(function(c){return m[c]});
+  if(!ks.length)return money(0,pc);
+  var s=money(m[pc]||0,pc), n=ks.filter(function(c){return c!==pc}).length;
+  return s+(n?'<small style="font-weight:600;opacity:.6"> +'+n+'</small>':"");}
+/* ---- 汇率：多币种先折算成同一个币种再加总 ----
+   FX 里的数字是「1 美元 = 多少」，可以手填，也可以联网刷新。 */
+var FXDEF={USD:1,CNY:7.20,EUR:0.92,GBP:0.78,JPY:157,HKD:7.80,TWD:32.5,KRW:1380,SGD:1.34,CAD:1.37,AUD:1.52};
+var FX=(function(){try{var o=JSON.parse(store.get("rec.fx")||"null");
+  return (o&&typeof o==="object")?Object.assign({},FXDEF,o):Object.assign({},FXDEF);}catch(e){return Object.assign({},FXDEF)}})();
+var FXAT=(function(){try{return store.get("rec.fxat")||""}catch(e){return ""}})();
+var SHOWCUR=(function(){try{return store.get("rec.showcur")||defCur()}catch(e){return "USD"}})();
+function fxRate(c){var r=+FX[c]; return (r&&isFinite(r)&&r>0)?r:1;}
+/* 换算：先折成美元，再折到目标币种 */
+function fx(n,from,to){ n=+n||0; to=to||SHOWCUR; from=from||"CNY";
+  return from===to ? n : n/fxRate(from)*fxRate(to);}
+/* 带币种前缀的金额：US$39.99 / CN¥6.00，避免 $ 和 ¥ 认不清是哪国的 */
+var CURP={USD:"US$",CNY:"CN¥",EUR:"€",GBP:"£",JPY:"JP¥",HKD:"HK$",TWD:"NT$",KRW:"₩",SGD:"S$",CAD:"CA$",AUD:"A$"};
+function curP(c){return CURP[c]||((c||"")+" ")}
+function amtP(n,c){return curP(c)+(Math.abs(+n||0)).toFixed(2)}
+/* 数据里真正用到的币种，用来决定汇率表要列哪几行 */
+function usedCurs(){
+  var m={};
+  m[SHOWCUR]=1; m[defCur()]=1;
+  D.subscriptions.forEach(function(x){m[x.currency||"CNY"]=1});
+  D.ledger.forEach(function(x){m[rowCur(x)]=1});
+  return Object.keys(m).filter(function(c){return c!=="USD"}).sort();}
+
+function fxSheet(){
+  var list=usedCurs();
+  openSheet('<h2>'+T("Currency & rates")+'</h2>'+
+    '<label class="fl">'+T("Show totals in")+'</label>'+
+    '<div class="row" id="fxpick" style="flex-wrap:wrap;gap:6px"></div>'+
+    '<label class="fl" style="margin-top:14px">'+T("Rates · 1 USD =")+'</label>'+
+    (list.length
+      ? list.map(function(c){
+          return '<div class="fxrow"><label>'+esc(curP(c))+' '+esc(c)+'</label>'+
+            '<input class="inp fxin" data-c="'+c+'" type="number" step="0.0001" inputmode="decimal" value="'+
+            esc(String(fxRate(c)))+'"></div>';}).join("")
+      : '<div class="st">'+T("Only USD in use so far")+'</div>')+
+    '<div class="row" style="gap:8px;margin-top:4px">'+
+      '<button class="pill" id="fxnet">'+T("Refresh from network")+'</button>'+
+      '<span class="st" id="fxst" style="margin:0;align-self:center">'+(FXAT?T("Updated")+" "+esc(FXAT):"")+'</span></div>'+
+    '<div class="note" style="margin:10px 0 0">'+T("Rates are only used for display totals. Each entry keeps the currency you typed.")+'</div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn" id="fxv" style="flex:1">'+T("Save")+'</button>'+
+    '<button class="btn g" id="fxx">'+T("Close")+'</button></div>');
+  var pick=SHOWCUR;
+  function drawPick(){
+    $("fxpick").innerHTML=CURS.map(function(c){
+      return '<button class="pill'+(c[0]===pick?" ok":"")+'" data-fc="'+c[0]+'">'+curP(c[0])+' '+c[0]+'</button>';}).join("");
+    $("fxpick").querySelectorAll("[data-fc]").forEach(function(b){b.onclick=function(){pick=b.dataset.fc;drawPick();};});}
+  drawPick();
+  $("fxx").onclick=closeSheet;
+  $("fxnet").onclick=function(){
+    var st=$("fxst"); st.textContent=T("Fetching…"); st.className="st";
+    fetch("https://open.er-api.com/v6/latest/USD").then(function(r){return r.json()})
+      .then(function(d){
+        if(!d||!d.rates)throw new Error("bad response");
+        Object.keys(FXDEF).forEach(function(c){ if(isFinite(+d.rates[c])&&+d.rates[c]>0)FX[c]=+d.rates[c]; });
+        FX.USD=1;
+        document.querySelectorAll(".fxin").forEach(function(i){i.value=String(fxRate(i.dataset.c));});
+        st.textContent=T("Fetched")+" ✓"; st.className="st good";})
+      .catch(function(e){
+        st.textContent=T("Could not fetch · type them in by hand"); st.className="st bad";});};
+  $("fxv").onclick=function(){
+    document.querySelectorAll(".fxin").forEach(function(i){
+      var v=parseFloat(i.value); if(v>0&&isFinite(v))FX[i.dataset.c]=v;});
+    FX.USD=1; SHOWCUR=pick;
+    FXAT=todayStr();
+    try{store.set("rec.fx",JSON.stringify(FX));store.set("rec.showcur",SHOWCUR);store.set("rec.fxat",FXAT);}catch(e){}
+    closeSheet();render();};}
+
+/* ---- 小票识别：照片 → Claude → 商家 / 金额 / 逐项明细 ----
+   key 只存在这台设备的 localStorage 里，不写进文件、也不上传 Supabase。 */
+var AIKEY=(function(){try{return store.get("rec.aikey")||""}catch(e){return ""}})();
+var AIMODEL=(function(){try{return store.get("rec.aimodel")||"claude-sonnet-5"}catch(e){return "claude-sonnet-5"}})();
+
+function aiSheet(){
+  openSheet('<h2>'+T("Receipt scan")+'</h2>'+
+    '<div class="note" style="margin:0 0 12px">'+T("The key is kept in this device only. It never goes into the file or into sync.")+'</div>'+
+    '<label class="fl">API key</label>'+
+    '<input class="inp" id="ak" placeholder="sk-ant-..." value="'+esc(AIKEY)+'" autocapitalize="off" spellcheck="false">'+
+    '<label class="fl">'+T("Model")+'</label>'+
+    '<input class="inp" id="am" value="'+esc(AIMODEL)+'" autocapitalize="off" spellcheck="false">'+
+    '<div class="note" style="margin:6px 0 0">'+T("Each receipt costs a fraction of a cent. Scanning needs a network connection.")+'</div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn" id="av" style="flex:1">'+T("Save")+'</button>'+
+    '<button class="btn g" id="ax">'+T("Close")+'</button></div>');
+  $("ax").onclick=closeSheet;
+  $("av").onclick=function(){
+    AIKEY=$("ak").value.trim(); AIMODEL=$("am").value.trim()||"claude-sonnet-5";
+    try{store.set("rec.aikey",AIKEY);store.set("rec.aimodel",AIMODEL);}catch(e){}
+    closeSheet();render();
+    toast(AIKEY?T("Receipt scan is ready"):T("Key cleared"));};}
+
+/* 压到 1600px 以内再发：省流量也省 token。识别完就丢，不保存原图 */
+function imgToB64(file,cb){
+  var fr=new FileReader();
+  fr.onerror=function(){cb(null)};
+  fr.onload=function(){
+    var im=new Image();
+    im.onerror=function(){cb(null)};
+    im.onload=function(){
+      try{
+        var mx=1600, w=im.naturalWidth||im.width||mx, h=im.naturalHeight||im.height||mx;
+        var sc=Math.min(1,mx/Math.max(w,h));
+        var cv=document.createElement("canvas");
+        cv.width=Math.max(1,Math.round(w*sc)); cv.height=Math.max(1,Math.round(h*sc));
+        cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+        cb(String(cv.toDataURL("image/jpeg",0.8)).split(",")[1]||null);
+      }catch(e){cb(null)}};
+    im.src=fr.result;};
+  fr.readAsDataURL(file);}
+
+var RCPROMPT="You are reading a purchase receipt. Reply with JSON only: no prose, no markdown fences. "+
+  'Shape: {"merchant":string|null,"date":"YYYY-MM-DD"|null,"currency":ISO code like "USD"|null,'+
+  '"category":one of ["餐饮","交通","购物","居住","娱乐","医疗","学习","人情","其他"],'+
+  '"total":number|null,"items":[{"name":string,"qty":number|null,"price":number|null}]}. '+
+  "For each item, price is the line total actually charged for that line, not the unit price. "+
+  "Leave subtotal, tax, tip, discount and change lines out of items. "+
+  "Keep item names as printed; do not translate them. "+
+  'If the image is not a readable receipt, reply {"error":"unreadable"}.';
+
+/* 小票上的合计 / 税 / 找零之类不是商品，模型偶尔会带进来，这里再滤一层。
+   用整段匹配，免得把 "Total Cereal" 这种品牌名当成合计行删掉 */
+var NOTITEM=/^(sales\s+)?(sub-?total|total|tax|vat|gst|hst|pst|tip|gratuity|change|cash|card|visa|mastercard|amex|debit|credit|balance|discount|savings|coupon|rounding|amount\s+due|payment|合计|小计|总计|总额|应付|实付|税|税金|税额|服务费|折扣|优惠|抹零|找零|现金|刷卡|支付|余额)[:：]?$/i;
+
+function scanFile(file){
+  if(!AIKEY){aiSheet();return;}
+  if(!file)return;
+  toast(T("Reading the receipt…"));
+  imgToB64(file,function(b64){
+    if(!b64){toast(T("Could not read that image"));return;}
+    fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"x-api-key":AIKEY,"anthropic-version":"2023-06-01","content-type":"application/json",
+               "anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:AIMODEL,max_tokens:1500,
+        messages:[{role:"user",content:[
+          {type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},
+          {type:"text",text:RCPROMPT}]}]})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d&&d.error)throw new Error(d.error.message||"api error");
+      var tx=(d&&d.content||[]).filter(function(c){return c.type==="text"})
+              .map(function(c){return c.text||""}).join("").trim();
+      tx=tx.replace(/^```(?:json)?/,"").replace(/```$/,"").trim();
+      var pr=JSON.parse(tx);
+      if(pr.error){
+        toast(T("Could not read that receipt · fill it in by hand"));
+        ledSheet(null,ledDay||todayStr());return;}
+      var items=(Array.isArray(pr.items)?pr.items:[]).map(function(it){
+        return {name:String(it&&it.name||"").slice(0,60),
+                qty:(it&&isFinite(+it.qty)&&+it.qty>0)?+it.qty:null,
+                price:(it&&it.price!=null&&isFinite(+it.price))?+it.price:null};})
+        .filter(function(it){return (it.name||it.price!=null) && !NOTITEM.test(String(it.name||"").trim())});
+      var sum=items.reduce(function(a,it){return a+(it.price||0)},0);
+      var names=items.map(function(it){return it.name}).join(" ");
+      ledSheet(null, parseYMD(pr.date)||ledDay||todayStr(), {
+        amount:(pr.total!=null&&isFinite(+pr.total))?+pr.total:(sum||null),
+        currency:(pr.currency&&CURSYM[pr.currency])?pr.currency:defCur(),
+        note:pr.merchant||null,
+        category:(CATS.indexOf(pr.category)>=0)?pr.category:mapCat((pr.merchant||"")+" "+names,"","expense"),
+        items:items});
+      toast(items.length?(T("Read")+" "+items.length+" "+T("items")):T("Receipt read"));})
+    .catch(function(e){
+      toast(T("Scan failed")+": "+String(e&&e.message||"network").slice(0,60));});});}
+
 function vMoney(){
   var mk=monKey(ledMonth), rows=ledOf(mk);
-  var exp=rows.filter(function(r){return r.kind==="expense"}).reduce(function(a,r){return a+(+r.amount||0)},0);
-  var inc=rows.filter(function(r){return r.kind==="income"}).reduce(function(a,r){return a+(+r.amount||0)},0);
+  var pc=primCur(rows);                                  // 主币种
+  var expM=sumCur(rows,"expense"), incM=sumCur(rows,"income");
+  var exp=expM[pc]||0, inc=incM[pc]||0;                  // 概览与占比只看主币种
+  var expO=otherCur(expM,pc), incO=otherCur(incM,pc);
 
   var h='<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px">'+
     '<div class="row" style="gap:6px;align-items:center">'+
@@ -3929,21 +4236,28 @@ function vMoney(){
       '<div style="font-weight:700;font-size:15px;min-width:104px;text-align:center">'+
         MONS[ledMonth.getMonth()]+' '+ledMonth.getFullYear()+'</div>'+
       '<button class="pill" data-mnav="1">›</button></div>'+
-    '<button class="pill" id="impLed">'+T("Import")+'</button></div>';
+    '<div class="row" style="gap:6px">'+
+      (AIKEY?'<label class="pill scanb" id="scanLed">'+T("Scan")+'<input type="file" accept="image/*"></label>'
+            :'<button class="pill" id="scanCfg">'+T("Scan")+'</button>')+
+      '<button class="pill" id="impLed">'+T("Import")+'</button></div></div>';
 
   h+='<div class="card" style="padding:14px;margin-bottom:10px"><div class="row" style="justify-content:space-between">'+
-     '<div><div class="kvs">Expense</div><div style="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums">'+money(exp)+'</div></div>'+
-     '<div style="text-align:right"><div class="kvs">Income</div><div style="font-size:15px;font-weight:700;color:var(--accent2)">'+money(inc)+'</div>'+
-     '<div class="kvs" style="margin-top:3px">Balance '+money(inc-exp)+'</div></div></div></div>';
+     '<div><div class="kvs">Expense · '+esc(pc)+'</div><div style="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums">'+money(exp,pc)+'</div>'+
+     (expO?'<div class="kvs" style="margin-top:3px">+ '+expO+'</div>':"")+'</div>'+
+     '<div style="text-align:right"><div class="kvs">Income</div><div style="font-size:15px;font-weight:700;color:var(--accent2)">'+money(inc,pc)+'</div>'+
+     (incO?'<div class="kvs" style="margin-top:2px">+ '+incO+'</div>':"")+
+     '<div class="kvs" style="margin-top:3px">Balance '+money(inc-exp,pc)+'</div></div></div></div>';
 
   /* 月历：一眼看出哪天花得多 */
   (function(){
     var y=ledMonth.getFullYear(), m=ledMonth.getMonth();
     var last=new Date(y,m+1,0).getDate(), lead=new Date(y,m,1).getDay(), ts=todayStr();
-    /* 每天算净额：支出多为红，收入多为绿，深浅按金额 */
-    var net={}, mx=0;
+    /* 每天算净额：支出多为红，收入多为绿，深浅按金额
+       没有汇率，所以只按主币种算，那天还有别的币种就点个小点 */
+    var net={}, oth={}, mx=0;
     rows.forEach(function(r){
       var d=+String(r.date).slice(8,10), a=+r.amount||0;
+      if(rowCur(r)!==pc){oth[d]=true;return;}
       net[d]=(net[d]||0)+(r.kind==="income"?a:-a);});
     Object.keys(net).forEach(function(k){if(Math.abs(net[k])>mx)mx=Math.abs(net[k]);});
     var out="";
@@ -3952,7 +4266,8 @@ function vMoney(){
       var ds2=y+"-"+pad(m+1)+"-"+pad(d2), v=net[d2]||0, av=Math.abs(v);
       var lv=av?Math.max(1,Math.ceil(av/mx*4)):0;
       var tone=v<0?"neg":(v>0?"pos":"");
-      out+='<div class="hcd '+tone+' lv'+lv+(ds2===ts?" td":"")+'" data-mday="'+ds2+'">'+
+      out+='<div class="hcd '+tone+' lv'+lv+(ds2===ts?" td":"")+(ds2===ledDay?" sel":"")+
+        (oth[d2]?" mix":"")+'" data-mday="'+ds2+'">'+
         '<b>'+d2+'</b>'+(av?'<i>'+(v>0?"+":"−")+(av>=1000?(Math.round(av/100)/10)+"k":Math.round(av))+'</i>':"")+'</div>';}
     h+='<div class="card" style="padding:12px 12px 14px;margin-bottom:12px">'+
        calHead()+
@@ -3960,16 +4275,51 @@ function vMoney(){
        '<div class="mcleg"><span>支出</span><i class="neg lv4"></i><i class="neg lv2"></i>'+
        '<i class="lv0"></i><i class="pos lv2"></i><i class="pos lv4"></i><span>收入</span></div></div>';})();
 
-  // 分类占比
+  // 分类占比：只算主币种，不同币种混在一起算比例没意义
   var byCat={};
-  rows.filter(function(r){return r.kind==="expense"}).forEach(function(r){byCat[r.category]=(byCat[r.category]||0)+(+r.amount||0)});
+  rows.filter(function(r){return r.kind==="expense"&&rowCur(r)===pc})
+      .forEach(function(r){byCat[r.category]=(byCat[r.category]||0)+(+r.amount||0)});
   var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
-  if(cats.length){h+='<div class="sec">'+T("By category")+'</div><div class="card" style="padding:12px 13px">'+cats.map(function(c){
+  if(cats.length){h+='<div class="sec">'+T("By category")+' · '+esc(pc)+'</div><div class="card" style="padding:12px 13px">'+cats.map(function(c){
     var pct=exp?byCat[c]/exp*100:0;
     return '<div style="margin-bottom:9px"><div class="row" style="justify-content:space-between;font-size:13px;margin-bottom:4px">'+
-      '<span style="font-weight:600">'+esc(catL(c))+'</span><span class="muted" style="font-variant-numeric:tabular-nums">'+money(byCat[c])+' · '+pct.toFixed(0)+'%</span></div>'+
+      '<span style="font-weight:600">'+esc(catL(c))+'</span><span class="muted" style="font-variant-numeric:tabular-nums">'+money(byCat[c],pc)+' · '+pct.toFixed(0)+'%</span></div>'+
       '<div class="b" style="height:6px;border-radius:99px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:var(--accent)"></i></div></div>';
     }).join("")+'</div>';}
+
+  // 一笔记录一行
+  var ledRow=function(r){
+    var its=jarr(r.items);
+    return '<div class="kv" data-ledit="'+r.id+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+esc(r.note||r.category)+'</div>'+
+      '<div class="kvs">'+esc(catL(r.category))+
+        (its.length?' · '+its.length+' '+T("items"):"")+
+        (r.source&&r.source!=="manual"?' · '+esc(r.source==="alipay"?"Alipay":"WeChat"):"")+'</div></div>'+
+      '<div class="kvr"><div class="kvp" style="color:'+(r.kind==="income"?"var(--accent2)":"var(--ink)")+'">'+
+      (r.kind==="income"?"+":"-")+esc(curSym(rowCur(r)))+(+r.amount).toFixed(2)+'</div></div>'+
+      '<button class="x" data-del-ledger="'+r.id+'">×</button></div>';};
+  // 单日视图里把小票明细摊开
+  var ledEntry=function(r){
+    var its=jarr(r.items); if(!its.length)return ledRow(r);
+    return '<div class="lentry">'+ledRow(r)+'<div class="litems2">'+its.map(function(it){
+      return '<div class="lit"><span>'+esc(it.name||"—")+(it.qty&&it.qty>1?' ×'+it.qty:"")+'</span>'+
+        (it.price!=null?'<b>'+esc(curSym(rowCur(r))+(+it.price).toFixed(2))+'</b>':"")+'</div>';}).join("")+
+      '</div></div>';};
+
+  /* 日历点了某一天：只看那天，右下角的 + 就记那天的账 */
+  if(ledDay){
+    var dr=D.ledger.filter(function(r){return r.date===ledDay})
+             .sort(function(a,b){return (b.updated_at||"").localeCompare(a.updated_at||"")});
+    var dd=parse(ledDay), dm=sumCur(dr,"expense"), dpc=primCur(dr);
+    h+='<div class="sec"><span>'+MONS[dd.getMonth()]+' '+dd.getDate()+' · '+WDE[dd.getDay()]+
+       (ledDay===todayStr()?" · "+T("Today"):"")+'</span>'+
+       '<button class="pill" id="ledAll" style="float:right;margin-top:-4px">'+T("Whole month")+'</button></div>';
+    if(!dr.length)
+      h+='<div class="card"><div class="empty"><span class="e">🧾</span>'+T("Nothing on this day · tap ＋ to add")+'</div></div>';
+    else h+='<div class="card">'+dr.map(ledEntry).join("")+'</div>'+
+      '<div class="row" style="justify-content:flex-end;margin:6px 4px 0">'+
+      '<span style="font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums">'+
+      T("Spent")+' '+money(dm[dpc]||0,dpc)+(otherCur(dm,dpc)?' · '+otherCur(dm,dpc):"")+'</span></div>';
+    return h;}
 
   // 按天流水
   var byDay={};
@@ -3978,31 +4328,70 @@ function vMoney(){
   h+='<div class="sec">'+rows.length+''+" "+T("transactions")+'</div>';
   if(!days.length)return h+'<div class="card"><div class="empty"><span class="e">🧾</span>No records this month</div></div>';
   h+=days.map(function(ds){
-    var day=byDay[ds], de=day.filter(function(r){return r.kind==="expense"}).reduce(function(a,r){return a+(+r.amount||0)},0);
+    var day=byDay[ds], dm2=sumCur(day,"expense"), dp2=primCur(day);
     return '<div class="row" style="justify-content:space-between;margin:12px 4px 5px"><span style="font-size:12px;font-weight:700;color:var(--sub)">'+esc(ds.slice(5))+'</span>'+
-      '<span style="font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums">'+money(de)+'</span></div>'+
-      '<div class="card">'+day.map(function(r){
-        return '<div class="kv" data-ledit="'+r.id+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+esc(r.note||r.category)+'</div>'+
-          '<div class="kvs">'+esc(catL(r.category))+(r.source&&r.source!=="manual"?' · '+esc(r.source==="alipay"?"Alipay":"WeChat"):"")+'</div></div>'+
-          '<div class="kvr"><div class="kvp" style="color:'+(r.kind==="income"?"var(--accent2)":"var(--ink)")+'">'+
-          (r.kind==="income"?"+":"-")+'¥'+(+r.amount).toFixed(2)+'</div></div>'+
-          '<button class="x" data-del-ledger="'+r.id+'">×</button></div>';}).join("")+'</div>';
+      '<span style="font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums">'+money(dm2[dp2]||0,dp2)+
+      (otherCur(dm2,dp2)?' · '+otherCur(dm2,dp2):"")+'</span></div>'+
+      '<div class="card">'+day.map(ledRow).join("")+'</div>';
   }).join("");
   return h;}
 
-function ledSheet(rec,defDate){
-  var ed=rec||null;
+function ledSheet(rec,defDate,pre){
+  var ed=rec||null; pre=pre||null;
   openSheet('<h2>'+(ed?T("Edit entry"):T("New entry"))+'</h2>'+
     '<div class="seg" id="lkind" style="margin-bottom:10px">'+
       '<button data-k="expense"'+(!ed||ed.kind!=="income"?' class="on"':'')+'>'+T("Expense")+'</button>'+
       '<button data-k="income"'+(ed&&ed.kind==="income"?' class="on"':'')+'>'+T("Income")+'</button></div>'+
-    '<label class="fl">'+T("Amount")+'</label><input class="inp" id="la" type="number" step="0.01" inputmode="decimal" placeholder="0.00" value="'+(ed?esc((+ed.amount).toFixed(2)):"")+'" style="font-size:22px;font-weight:700">'+
+    '<div class="row" style="gap:8px;align-items:flex-end">'+
+      '<div style="flex:1"><label class="fl">'+T("Amount")+'</label>'+
+      '<input class="inp" id="la" type="number" step="0.01" inputmode="decimal" placeholder="0.00" value="'+
+        (ed?esc((+ed.amount).toFixed(2)):(pre&&pre.amount!=null?esc((+pre.amount).toFixed(2)):""))+'" style="font-size:22px;font-weight:700"></div>'+
+      '<div style="flex:0 0 108px"><label class="fl">'+T("Currency")+'</label>'+
+      '<select class="inp" id="lc">'+CURS.map(function(c){
+        return '<option value="'+c[0]+'">'+c[1]+' '+c[0]+'</option>';}).join("")+'</select></div></div>'+
     '<label class="fl">'+T("Category")+'</label><div class="row" id="lcats" style="flex-wrap:wrap;gap:6px"></div>'+
-    '<label class="fl">'+T("Note")+'</label><input class="inp" id="ln" placeholder=T("Optional") value="'+(ed?esc(ed.note||""):"")+'">'+
+    '<label class="fl">'+T("Note")+'</label><input class="inp" id="ln" placeholder="'+T("Optional")+'" value="'+
+      (ed?esc(ed.note||""):(pre&&pre.note?esc(pre.note):""))+'">'+
     '<label class="fl">'+T("Date")+'</label><input class="inp" id="ld" type="date" value="'+esc(ed?ed.date:(defDate||todayStr()))+'">'+
+    '<label class="fl">'+T("Items")+
+      '<button class="pill" id="lisum" style="float:right;margin-top:-4px">'+T("Sum → amount")+'</button></label>'+
+    '<div id="litems"></div>'+
+    '<button class="pill" id="liadd" style="margin-bottom:4px">＋ '+T("Add item")+'</button>'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="lv" style="flex:1">'+T("Save")+'</button><button class="btn g" id="lx">'+T("Cancel")+'</button></div>'+
     (ed?'<button class="btn g" id="ldel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this entry")+'</button>':""));
-  var kind=(ed&&ed.kind)||"expense", cat=(ed&&ed.category)||"餐饮";
+  var kind=(ed&&ed.kind)||"expense", cat=(ed&&ed.category)||(pre&&pre.category)||"餐饮";
+  $("lc").value = ed ? rowCur(ed) : ((pre&&pre.currency)||defCur());   // 新记录默认美金（或上次用过的）
+
+  /* 小票明细：可改可删，改完总额可以一键取合计 */
+  var items=(ed?jarr(ed.items):((pre&&pre.items)||[])).map(function(it){
+    return {name:it&&it.name||"",qty:(it&&it.qty)||null,price:(it&&it.price!=null)?+it.price:null};});
+  function readItems(){
+    var box=$("litems"); if(!box)return;
+    items=[].slice.call(box.querySelectorAll(".lirow")).map(function(row){
+      var pv=row.querySelector(".li-p").value;
+      return {name:row.querySelector(".li-n").value.trim(),
+              qty:+row.dataset.qty||null,
+              price:pv===""?null:+pv};})
+      .filter(function(it){return it.name||it.price!=null});}
+  function drawItems(){
+    var box=$("litems"); if(!box)return;
+    box.innerHTML = items.length ? items.map(function(it,i){
+      return '<div class="lirow" data-qty="'+(it.qty||"")+'">'+
+        '<input class="inp li-n" value="'+esc(it.name||"")+'" placeholder="'+T("Item")+'">'+
+        '<input class="inp li-p" type="number" step="0.01" inputmode="decimal" placeholder="0.00" value="'+
+          (it.price!=null?esc((+it.price).toFixed(2)):"")+'">'+
+        '<button class="x" data-lidel="'+i+'">×</button></div>';}).join("")
+      : '<div class="st">'+T("No items yet")+'</div>';
+    box.querySelectorAll("[data-lidel]").forEach(function(b){b.onclick=function(){
+      readItems();items.splice(+b.dataset.lidel,1);drawItems();};});}
+  drawItems();
+  $("liadd").onclick=function(){readItems();items.push({name:"",qty:null,price:null});drawItems();
+    var ns=$("litems").querySelectorAll(".li-n"); if(ns.length)ns[ns.length-1].focus();};
+  $("lisum").onclick=function(){
+    readItems();
+    var sum=items.reduce(function(a,it){return a+(it.price||0)},0);
+    if(sum>0)$("la").value=sum.toFixed(2);
+    drawItems();};
   function drawCats(){var arr=kind==="expense"?CATS:INCAT; if(arr.indexOf(cat)<0)cat=arr[0];
     $("lcats").innerHTML=arr.map(function(c){return '<button class="pill'+(c===cat?" ok":"")+'" data-c="'+c+'">'+catL(c)+'</button>'}).join("");
     $("lcats").querySelectorAll("[data-c]").forEach(function(el){el.onclick=function(){cat=el.dataset.c;drawCats()}});}
@@ -4017,8 +4406,12 @@ function ledSheet(rec,defDate){
     drop("ledger",ed.id);closeSheet();render();
     toast(T("Deleted"),function(){push("ledger",snap);render();});};
   $("lv").onclick=function(){var amt=parseFloat($("la").value);if(!amt||amt<=0)return;
+    var cur=$("lc").value||"USD";
+    try{store.set("rec.cur",cur)}catch(e){}          // 记住这次用的币种
+    readItems();
     var row={id:ed?ed.id:uid(),date:$("ld").value||todayStr(),amount:Math.abs(amt),kind:kind,category:cat,
-      note:$("ln").value||null,source:(ed&&ed.source)||"manual",updated_at:new Date().toISOString()};
+      currency:cur,note:$("ln").value||null,items:items.length?JSON.stringify(items):null,
+      source:(ed&&ed.source)||"manual",updated_at:new Date().toISOString()};
     push("ledger",row);
     closeSheet();render();};
   $("la").onkeydown=function(e){if(e.key==="Enter")$("lv").click()};}
@@ -4102,7 +4495,7 @@ function parseBill(txt){
     var cat=mapCat(((iCat>=0?c[iCat]:"")||"")+" "+peer, note, kind);
     var id="imp_"+date.replace(/-/g,"")+"_"+Math.round(Math.abs(amt)*100)+"_"+hash(note+io);
     if(seen[id])continue; seen[id]=1;
-    out.push({id:id,date:date,amount:Math.abs(amt),kind:kind,category:cat,note:note||null,
+    out.push({id:id,date:date,amount:Math.abs(amt),kind:kind,category:cat,currency:"CNY",note:note||null,
       source:/微信|零钱/.test(txt.slice(0,400))?"wechat":"alipay",updated_at:new Date().toISOString()});
   }
   return out;}
@@ -4129,11 +4522,10 @@ function expired(s){
   if(s.cycle==="once")return s.start_date && s.start_date < todayStr();
   return s.end_date && s.end_date < todayStr();}
 
-/* 价格的中文说法：每月100元 / 固定日期 100元 */
+/* 周期 + 金额，带明确币种前缀：Monthly US$39.99 / 2026-08-01 CN¥6.00 */
 function cycTxt(s){
-  var cur=(s.currency==="USD"?"$":"");
-  var amt=cur+(+s.price||0).toFixed((+s.price||0)%1?2:0)+(s.currency==="USD"?"":"元");
-  return s.cycle==="once" ? (esc(s.start_date||"")+" "+amt) : (CYC[s.cycle]+amt);}
+  var amt=amtP(s.price,subCur(s));
+  return s.cycle==="once" ? (esc(s.start_date||"")+" "+amt) : (T(CYC[s.cycle])+" "+amt);}
 
 /* 下一次扣费日；已结束返回 null */
 function nextCharge(s){
@@ -4207,11 +4599,19 @@ function subTile(s){
   var c=HCOLORS[ks[hsum%ks.length]];
   return '<span class="subi" style="--c:'+c+'">'+esc(n.slice(0,1).toUpperCase())+'</span>';}
 
+function subCur(s){return (s&&s.currency)||"CNY";}
+/* 订阅金额：本币 + （币种不同时）折算成显示币种 */
+function subAmt(s,conv){
+  var c=subCur(s), t=amtP(s.price,c);
+  if(conv&&c!==SHOWCUR)t+=" ≈ "+amtP(fx(s.price,c,SHOWCUR),SHOWCUR);
+  return t;}
+
 function vSubs(){
   var subs=D.subscriptions.slice();
   var act=subs.filter(function(s){return !expired(s)});
-  var moAvg=act.reduce(function(a,s){return a+monthly(s)},0);
-  var allSpent=subs.reduce(function(a,s){return a+spentSoFar(s)},0);
+  /* 各种币种先折算成显示币种，再加总 */
+  var moAvg=act.reduce(function(a,s){return a+fx(monthly(s),subCur(s),SHOWCUR)},0);
+  var allSpent=subs.reduce(function(a,s){return a+fx(spentSoFar(s),subCur(s),SHOWCUR)},0);
   var y=subMonth.getFullYear(), m=subMonth.getMonth();
   var last=new Date(y,m+1,0).getDate(), lead=new Date(y,m,1).getDay(), ts=todayStr();
 
@@ -4219,15 +4619,16 @@ function vSubs(){
   act.forEach(function(s){
     subDaysIn(s,y,m).forEach(function(d){
       (byDay[d]=byDay[d]||[]).push(s);
-      monTot+=(+s.price||0);});});
+      monTot+=fx(+s.price||0,subCur(s),SHOWCUR);});});
 
-  /* ── 顶部概览 ── */
+  /* ── 顶部概览：全部换算成同一个币种，点右上角那颗按钮可以切 ── */
   var h='<div class="subhero">'+
-    '<div class="shh"><b>'+T("My subscriptions")+'</b><span>'+T("Total spent")+' '+Math.round(allSpent)+' 元</span></div>'+
+    '<div class="shh"><b>'+T("My subscriptions")+'</b>'+
+      '<button class="fxb" id="fxBtn">'+T("Total spent")+' '+esc(amtP(allSpent,SHOWCUR))+' ⇄</button></div>'+
     '<div class="shg">'+
-      '<div><i>'+T("Spent this month")+'</i><b>'+Math.round(monTot)+'<em>元</em></b></div>'+
+      '<div><i>'+T("Spent this month")+'</i><b>'+Math.round(monTot)+'<em>'+esc(SHOWCUR)+'</em></b></div>'+
       '<div><i>'+T("Subscriptions")+'</i><b>'+act.length+'</b></div>'+
-      '<div><i>'+T("Daily cost")+'</i><b>'+(moAvg*12/365).toFixed(2)+'<em>元</em></b></div>'+
+      '<div><i>'+T("Daily cost")+'</i><b>'+(moAvg*12/365).toFixed(2)+'<em>'+esc(SHOWCUR)+'</em></b></div>'+
     '</div></div>';
 
   /* ── 扣费日历 ── */
@@ -4254,15 +4655,29 @@ function vSubs(){
     if(a.d==null&&b.d==null)return 0;
     if(a.d==null)return 1; if(b.d==null)return -1;
     return a.d-b.d;});
-  h+='<div class="sublist">'+withD.map(function(x){
+
+  /* 按周期归组：每组一个小标题，条目里就不用再重复写 Monthly 了 */
+  var CORD=["monthly","quarterly","yearly","weekly","once"];
+  var grp={};
+  withD.forEach(function(x){
+    var k = (x.d==null) ? "ended" : (CORD.indexOf(x.s.cycle)>=0 ? x.s.cycle : "other");
+    (grp[k]=grp[k]||[]).push(x);});
+  var CLBL={monthly:"Monthly",quarterly:"Quarterly",yearly:"Yearly",weekly:"Weekly",
+            once:"One-off",other:"Other",ended:"Ended"};
+  var dayU=function(n){return LANG==="zh"?"天":(n===1?T("day"):T("days"));};
+  var subRow=function(x){
     var s=x.s, dd=x.d;
     return '<div class="subc" data-sedit="'+s.id+'" style="cursor:pointer">'+subTile(s)+
-      '<div class="subm"><b>'+esc(s.name)+(dd!=null?" "+T("left"):"")+'</b>'+
-      '<i>'+cycTxt(s)+'</i></div>'+
+      '<div class="subm"><b>'+esc(s.name)+'</b>'+
+      '<i>'+esc(subAmt(s,true))+(s.cycle==="once"&&s.start_date?' · '+esc(s.start_date):"")+'</i></div>'+
       (dd==null
         ? '<div class="subd off">'+T("Ended")+'</div>'
-        : '<div class="subd"><b>'+dd+'</b><span>天</span></div>')+
-      '<button class="x" data-del-subscriptions="'+s.id+'">×</button></div>';}).join("")+'</div>';
+        : '<div class="subd"><b>'+dd+'</b><span>'+dayU(dd)+'</span></div>')+
+      '<button class="x" data-del-subscriptions="'+s.id+'">×</button></div>';};
+  h+=CORD.concat(["other","ended"]).filter(function(k){return grp[k]&&grp[k].length})
+    .map(function(k){
+      return '<div class="alsec">'+esc(T(CLBL[k]))+' <span style="opacity:.5">· '+grp[k].length+'</span></div>'+
+        '<div class="sublist">'+grp[k].map(subRow).join("")+'</div>';}).join("");
   return h;}
 
 function vBday(){
@@ -4323,8 +4738,10 @@ function cdRow(x){
   var badge = since
     ? (n>0 ? "in "+n+"d" : "day "+(Math.abs(n)+1))
     : (n===0 ? "today 🎉" : past ? Math.abs(n)+"d ago" : n+"d");
-  return '<div class="kv"><button class="star'+(x.c.pinned?" on":"")+'" data-cdpin="'+x.c.id+'" title="Show on Today">'+
-    (x.c.pinned?"★":"☆")+'</button>'+
+  var lit=cdShown(x.c,n);
+  return '<div class="kv"><button class="star'+(lit?" on":"")+'" data-cdpin="'+x.c.id+'"'+
+    ' title="'+(lit?"Showing on Today":"Tap to pin on Today")+'">'+
+    (lit?"★":"☆")+'</button>'+
     '<div style="min-width:0;flex:0 1 58%"><div class="kvn">'+esc(x.c.name)+'</div>'+
     '<div class="kvs">'+esc(x.c.date)+(x.c.note?' · '+esc(x.c.note):"")+'</div></div>'+
     '<span class="badge'+(!since&&!past&&n<=7?" warn":"")+(!since&&past?" off":"")+'">'+badge+'</span>'+
@@ -4491,7 +4908,9 @@ var SETTINGS=[
   {a:"ics",   ic:"calexport", n:"Export Calendar"},
   {a:"bill",  ic:"receipt",   n:"Import Bills"},
   {a:"imp",   ic:"upload",    n:"Restore Backup"},
-  {a:"cfg",   ic:"cloud",     n:"Sync"}
+  {a:"cfg",   ic:"cloud",     n:"Sync"},
+  {a:"ai",    ic:"receipt",   n:"Receipt scan"},
+  {a:"fx",    ic:"wallet",    n:"Currency & rates"}
 ].sort(function(a,b){return a.n.localeCompare(b.n)});
 
 function drawerHTML(){
@@ -4521,6 +4940,8 @@ function bindDrawer(){
         else if(a==="ics")exportICS();
         else if(a==="bill")impSheet();
         else if(a==="cfg")cfgSheet();
+        else if(a==="ai")aiSheet();
+        else if(a==="fx")fxSheet();
         else if(a==="exp")exportData();
         else if(a==="imp")importSheet();},180);};});}
 
@@ -4802,8 +5223,16 @@ function bind(){
       var snap=Object.assign({},pp);
       drop("plans",pp.id);render();
       toast(T("Deleted")+" "+pp.name,function(){push("plans",snap);render();});};});
+  /* 记账月历：点日期跳到那天，补记交给右下角的 + */
   document.querySelectorAll("[data-mday]").forEach(function(el){el.onclick=function(){
-    ledSheet(null, el.dataset.mday);}});
+    ledDay=(ledDay===el.dataset.mday)?null:el.dataset.mday;render();}});
+  var la=$("ledAll"); if(la)la.onclick=function(){ledDay=null;render();};
+  /* 扫小票：拍照或从相册选一张，识别完就丢原图 */
+  var sl=$("scanLed");
+  if(sl){var si=sl.querySelector("input");
+    if(si)si.onchange=function(){var f=this.files&&this.files[0];this.value="";if(f)scanFile(f);};}
+  var sc=$("scanCfg"); if(sc)sc.onclick=aiSheet;
+  var fb=$("fxBtn"); if(fb)fb.onclick=fxSheet;
   document.querySelectorAll("[data-sday]").forEach(function(el){el.onclick=function(){
     subSheet(null, el.dataset.sday);}});
   document.querySelectorAll("[data-ledit]").forEach(function(el){el.onclick=function(ev){
@@ -4817,7 +5246,8 @@ function bind(){
   document.querySelectorAll("[data-snav]").forEach(function(el){el.onclick=function(){
     subMonth=new Date(subMonth.getFullYear(),subMonth.getMonth()+ +el.dataset.snav,1);render();}});
   document.querySelectorAll("[data-mnav]").forEach(function(el){el.onclick=function(){
-    ledMonth=new Date(ledMonth.getFullYear(),ledMonth.getMonth()+ +el.dataset.mnav,1);render()}});
+    ledMonth=new Date(ledMonth.getFullYear(),ledMonth.getMonth()+ +el.dataset.mnav,1);
+    ledDay=null;render()}});
   var il=$("impLed"); if(il)il.onclick=impSheet;
   var tl=$("todayLed"); if(tl)tl.onclick=ledSheet;
   var ta=$("tdAdd");  if(ta)ta.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
@@ -4826,13 +5256,13 @@ function bind(){
   var ea=$("evAdd");  if(ea)ea.onclick=function(){newTodoSheet(todayStr(),null,null,"event")};
   // 首页快捷动作
   var q1=$("qaTask"); if(q1)q1.onclick=capOpen;
-  var q2=$("qaCost"); if(q2)q2.onclick=ledSheet;
+  var q2=$("qaCost"); if(q2)q2.onclick=function(){ledSheet(null,todayStr())};   // 别把点击事件当成要编辑的记录
   var q3=$("qaDiary");if(q3)q3.onclick=function(){tab="diary";diaryDate=todayStr();setTab();window.scrollTo(0,0);render()};
   var q4=$("qaPlan"); if(q4)q4.onclick=function(){tab="plan";viewStack=[];planView="day";cursor=new Date();setTab();window.scrollTo(0,0);render()};
   document.querySelectorAll("[data-mgo]").forEach(function(el){el.onclick=function(){
     var g=el.dataset.mgo;
     if(g==="plan"){tab="plan";viewStack=[];planView="week";cursor=new Date();}
-    else {tab=g; if(g==="diary")diaryDate=todayStr();}
+    else {tab=g; if(g==="diary")diaryDate=todayStr(); if(g==="money"){ledMonth=new Date();ledDay=null;}}
     setTab();window.scrollTo(0,0);render();};});
   var twn=$("toWeekNow"); if(twn)twn.onclick=function(){cursor=new Date();render()};
   var tm=$("toMonth"); if(tm)tm.onclick=function(){goView("month");window.scrollTo(0,0);render()};
@@ -4865,13 +5295,19 @@ function bind(){
   var ah=$("addHb");if(ah)ah.onclick=tplSheet;
   var hbk=$("hBack");if(hbk)hbk.onclick=function(){habitOpen=null;window.scrollTo(0,0);render()};
   document.querySelectorAll("[data-hopen]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
-    habitOpen=el.dataset.hopen;habitMode="log";habitMon=new Date();window.scrollTo(0,0);render();}});
+    habitOpen=el.dataset.hopen;habitMode="log";habitMon=new Date();
+    habitWk=new Date();habitDay=todayStr();window.scrollTo(0,0);render();}});
   document.querySelectorAll("[data-hm]").forEach(function(el){el.onclick=function(){
     habitMode=el.dataset.hm;habitTab=0;render();}});
   document.querySelectorAll("[data-fs]").forEach(function(el){el.onclick=function(){
     habitTab=+el.dataset.fs;render();}});
   document.querySelectorAll("[data-hwk]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
-    habitWk=addDays(habitWk, 7*(+el.dataset.hwk));render();}});
+    habitWk=addDays(habitWk, 7*(+el.dataset.hwk));
+    /* 选中日跟着翻到新的一周（同一个星期几），未来的就退回今天 */
+    var wd=parse(habitDay).getDay(), ts=todayStr();      // 周日起，偏移就是 getDay()
+    var nd=fmt(addDays(startOfWeek(habitWk),wd));
+    habitDay = nd>ts ? ts : nd;
+    render();}});
   /* 左滑露出删除，再点一次确认 —— iOS 列表那套 */
   function closeCards(except){
     document.querySelectorAll(".hrw.armed,.hrw.armL").forEach(function(c){
@@ -4915,10 +5351,13 @@ function bind(){
   document.querySelectorAll("[data-hedid]").forEach(function(el){el.onclick=function(){
     var lg=D.habit_logs.filter(function(x){return x.id===el.dataset.hedid})[0]; if(!lg)return;
     var hb2=habitById(lg.habit_id); if(hb2)logSheet(hb2,lg.date,lg.id);}});
-  document.querySelectorAll("[data-hday]").forEach(function(el){el.onclick=function(){
-    var a=el.dataset.hday.split("|"), hb4=habitById(a[0]); if(!hb4)return;
-    var ex=logsOn(hb4.id,a[1]);
-    logSheet(hb4,a[1], (isMulti(hb4)||!ex.length)?null:ex[0].id);}});
+  /* 一周条：点日期只是跳到那天，补签靠右下角的 + */
+  document.querySelectorAll("[data-hsel]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    habitDay=el.dataset.hsel; habitWk=parse(habitDay); render();}});
+  /* 统计页日历：点日期看这天的细节 */
+  document.querySelectorAll("[data-hdet]").forEach(function(el){el.onclick=function(){
+    var a=el.dataset.hdet.split("|"), hb4=habitById(a[0]); if(!hb4)return;
+    hDaySheet(hb4,a[1]);}});
   document.querySelectorAll("[data-hedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var hb=D.habits.filter(function(x){return x.id===el.dataset.hedit})[0]; if(hb)habitSheet(hb);};});
   if(tab==="plan"&&planView==="day")bindDayGrid();   // 时间轴手势
@@ -4933,8 +5372,13 @@ function bind(){
     if(b)bdSheet(b);};});
   document.querySelectorAll("[data-cdpin]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var c=D.countdowns.filter(function(x){return x.id===el.dataset.cdpin})[0]; if(!c)return;
-    push("countdowns",Object.assign({},c,{pinned:!c.pinned,updated_at:new Date().toISOString()}));
-    toast(c.pinned?"Removed from Today":"Pinned to Today");render();};});
+    var n=daysTo(c.date), on=cdShown(c,n);
+    var auto=((c.mode||"until")!=="since" && n>=0 && n<=14);
+    var next = on ? {pinned:false,muted:true}           // 正显示 → 关掉
+                  : (auto ? {pinned:false,muted:false}  // 两周内 → 恢复自动
+                          : {pinned:true, muted:false});// 两周外 → 手动置顶
+    push("countdowns",Object.assign({},c,next,{updated_at:new Date().toISOString()}));
+    toast(on?"Hidden from Today":(auto?"Showing on Today":"Pinned to Today"));render();};});
   document.querySelectorAll("[data-bdmute]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var b=D.birthdays.filter(function(x){return x.id===el.dataset.bdmute})[0]; if(!b)return;
     var d=daysUntil((b.date||"").slice(5)), on=bdShown(b,d);
@@ -5086,7 +5530,9 @@ function subSheet(rec,defDate){
   var ed=rec||null;
   openSheet('<h2>'+(ed?T("Edit subscription"):T("Add subscription"))+'</h2><label class="fl">名称</label><input class="inp" id="sn" placeholder="Netflix / iCloud" value="'+(ed?esc(ed.name):"")+'">'+
     '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">'+T("Amount")+'</label><input class="inp" id="sp" type="number" step="0.01" placeholder="0.00" value="'+(ed?esc(ed.price):"")+'"></div>'+
-    '<div style="flex:1"><label class="fl">'+T("Currency")+'</label><select class="inp" id="sc"><option value="CNY">¥ CNY</option><option value="USD">$ USD</option></select></div></div>'+
+    '<div style="flex:1"><label class="fl">'+T("Currency")+'</label><select class="inp" id="sc">'+
+      CURS.map(function(c){return '<option value="'+c[0]+'">'+curP(c[0])+' '+c[0]+'</option>';}).join("")+
+    '</select></div></div>'+
     '<label class="fl">'+T("Cycle")+'</label><select class="inp" id="sy">'+
       '<option value="monthly">'+T("Monthly")+'</option><option value="quarterly">'+T("Quarterly")+'</option>'+
       '<option value="yearly">'+T("Yearly")+'</option><option value="weekly">'+T("Weekly")+'</option>'+
@@ -5098,7 +5544,8 @@ function subSheet(rec,defDate){
     '<div class="note" id="scn" style="margin:6px 0 0"></div>'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="sv" style="flex:1">'+T("Save")+'</button><button class="btn g" id="sx">'+T("Cancel")+'</button></div>'+
     (ed?'<button class="btn g" id="sdel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this subscription")+'</button>':""));
-  if(ed){$("sc").value=ed.currency||"CNY"; $("sy").value=ed.cycle||"monthly";}
+  $("sc").value = ed ? (ed.currency||"CNY") : defCur();   // 新建默认美金（或上次用过的）
+  if(ed)$("sy").value=ed.cycle||"monthly";
   function syncCyc(){
     var once=$("sy").value==="once";
     $("ssl").textContent = once?T("Charge date"):"开始日期";
@@ -5137,6 +5584,16 @@ function bdShown(b,d){
   if(b.pinned)return true;
   if(d==null)d=daysUntil((b.date||"").slice(5));
   return d<=14;}
+
+/* 倒计时是否出现在首页：和生日同一套规则
+   pinned 手动打星 → 一直显示；muted 手动关掉 → 一直不显示；
+   都没设 → 两周内自动显示（正计时只有打星才上首页）*/
+function cdShown(c,n){
+  if(c.muted) return false;
+  if(c.pinned)return true;
+  if((c.mode||"until")==="since")return false;
+  if(n==null)n=daysTo(c.date);
+  return n>=0&&n<=14;}
 
 /* 姓名首字母：英文取首字母，中文按拼音归到 A–Z */
 var __coll=null;
@@ -5528,11 +5985,15 @@ function fabAction(){
     if(planView==="day")newTodoSheet(fmt(cursor));    // 那一天的日程
     else newTodoSheet("");                            // 纯 ToDo
     return;}
-  if(tab==="money"){ledSheet();return;}
+  if(tab==="money"){ledSheet(null, ledDay||todayStr());return;}   // 停在哪天就记哪天
   if(tab==="bday"){bdSheet();return;}
   if(tab==="cdown"){cdSheet();return;}
   if(tab==="habit"){
-    if(habitOpen){var hb3=habitById(habitOpen); if(hb3){logSheet(hb3,todayStr());return;}}
+    if(habitOpen){var hb3=habitById(habitOpen);
+      if(hb3){
+        var hd=(habitDay&&habitDay<=todayStr())?habitDay:todayStr();   // 停在哪天就补签哪天
+        var ex=logsOn(hb3.id,hd);
+        logSheet(hb3,hd,(isMulti(hb3)||!ex.length)?null:ex[0].id);return;}}
     tplSheet();return;}
   if(tab==="subs"){subSheet();return;}
   if(tab==="plans"){
@@ -5670,7 +6131,7 @@ var __curTab="today";
     if(document.querySelector(".ov.show,.qswrap.on,.drawer.on"))return;   // 弹层打开时不响应
     if(tab==="plan"&&planView==="day")return;                            // 日视图交给它自己
     var t=e.target;
-    if(t.closest&&t.closest(".cdstrip,.hcar,.hstrip,.tlscroll,.dtrack,.hrw,.cpal,.ftab,.tplg,.kdial,input,textarea"))return;
+    if(t.closest&&t.closest(".hcar,.hstrip,.tlscroll,.dtrack,.hrw,.cpal,.ftab,.tplg,.kdial,input,textarea"))return;
     var X=e.touches[0].clientX, W=window.innerWidth;
     if(X<24||X>W-24)return;              // 贴边不接管，留给系统返回手势
     x0=X; y0=e.touches[0].clientY; act=true;},{passive:true});
