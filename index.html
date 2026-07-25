@@ -3828,8 +3828,13 @@ function planStat(p){
 
 function vPlans(){
   if(planOpen){var po=planById(planOpen); if(po)return vPlanOne(po); planOpen=null;}
+  /* 按图标排序：顺序跟新建计划时那排图标一致，图标相同的再按创建顺序 */
+  var iRank=function(p){
+    var i=PLICO.indexOf((p&&p.emoji)||"flag");
+    return i<0?PLICO.length:i;};
   var ps=D.plans.filter(function(x){return !x.archived})
-                .sort(function(a,b){return (a.sort||0)-(b.sort||0)});
+                .sort(function(a,b){
+                  return iRank(a)-iRank(b) || (a.sort||0)-(b.sort||0);});
   if(!ps.length)
     return '<div class="card"><div class="empty"><span class="e">🧭</span>'+
       T("No plans yet · tap + to create")+'</div></div>';
