@@ -1187,6 +1187,7 @@
   .card>.lentry:first-child>.kv{border-top:none}
   /* 扫小票：pill 外观，里面藏一个 file input */
   .scanb{position:relative;overflow:hidden;display:inline-flex;align-items:center;cursor:pointer}
+  .kgear{padding-left:8px;padding-right:8px;font-size:12px;line-height:1}
   .scanb input{position:absolute;inset:0;opacity:0;font-size:0;cursor:pointer}
   .mcleg{display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-top:10px;
     font-size:10px;color:var(--faint)}
@@ -3193,6 +3194,11 @@ var ZH={
   "Could not read that image":"这张图片读不出来",
   "Could not read that receipt · fill it in by hand":"这张小票认不出来 · 请手动填写",
   "Scan failed":"识别失败",
+  "Test this key":"测试这个 key","Checking…":"正在检查…","Key works":"key 可用",
+  "Not working":"用不了","Enter a key first":"先填一个 key","Could not reach the API":"连不上 API",
+  "API key was rejected":"API key 被拒绝","API credit ran out":"API 余额不足",
+  "The key was rejected — it may have expired or been revoked. Paste a new one.":"这个 key 被拒绝了 —— 可能已过期或被吊销，换一个新的粘进来。",
+  "The API account is out of credit, or hit a rate limit. Top it up in the Console, or paste a different key.":"API 账户余额不足，或者撞到了速率限制。去 Console 充值，或者换一个 key。",
   "Nothing on this day · tap ＋ to add":"这天还没有记账 · 点右下角 ＋ 补记",
   /* 习惯：某一天的详情 */
   "Rest of this week":"本周其它记录","Tap a card to edit":"点卡片可以修改",
@@ -4138,17 +4144,37 @@ function fxSheet(){
 var AIKEY=(function(){try{return store.get("rec.aikey")||""}catch(e){return ""}})();
 var AIMODEL=(function(){try{return store.get("rec.aimodel")||"claude-sonnet-5"}catch(e){return "claude-sonnet-5"}})();
 
-function aiSheet(){
+function aiSheet(warn){
   openSheet('<h2>'+T("Receipt scan")+'</h2>'+
+    (warn?'<div class="st bad" style="margin:0 0 10px">'+esc(warn)+'</div>':"")+
     '<div class="note" style="margin:0 0 12px">'+T("The key is kept in this device only. It never goes into the file or into sync.")+'</div>'+
     '<label class="fl">API key</label>'+
     '<input class="inp" id="ak" placeholder="sk-ant-..." value="'+esc(AIKEY)+'" autocapitalize="off" spellcheck="false">'+
     '<label class="fl">'+T("Model")+'</label>'+
     '<input class="inp" id="am" value="'+esc(AIMODEL)+'" autocapitalize="off" spellcheck="false">'+
+    '<div class="row" style="gap:8px;margin-top:8px">'+
+      '<button class="pill" id="atest">'+T("Test this key")+'</button>'+
+      '<span class="st" id="as" style="margin:0;align-self:center"></span></div>'+
     '<div class="note" style="margin:6px 0 0">'+T("Each receipt costs a fraction of a cent. Scanning needs a network connection.")+'</div>'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="av" style="flex:1">'+T("Save")+'</button>'+
     '<button class="btn g" id="ax">'+T("Close")+'</button></div>');
   $("ax").onclick=closeSheet;
+  /* 当场打一个 1 token 的请求，确认 key 到底还能不能用 */
+  $("atest").onclick=function(){
+    var k=$("ak").value.trim(), st=$("as");
+    if(!k){st.className="st bad";st.textContent=T("Enter a key first");return;}
+    st.className="st"; st.textContent=T("Checking…");
+    fetch("https://api.anthropic.com/v1/messages",{method:"POST",
+      headers:{"x-api-key":k,"anthropic-version":"2023-06-01","content-type":"application/json",
+               "anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:$("am").value.trim()||"claude-sonnet-5",max_tokens:1,
+        messages:[{role:"user",content:"hi"}]})})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        if(d&&d.error){st.className="st bad";
+          st.textContent=T("Not working")+": "+String(d.error.message||d.error.type||"").slice(0,70);}
+        else {st.className="st good";st.textContent=T("Key works")+" ✓";}})
+      .catch(function(){st.className="st bad";st.textContent=T("Could not reach the API");});};
   $("av").onclick=function(){
     AIKEY=$("ak").value.trim(); AIMODEL=$("am").value.trim()||"claude-sonnet-5";
     try{store.set("rec.aikey",AIKEY);store.set("rec.aimodel",AIMODEL);}catch(e){}
@@ -4203,7 +4229,7 @@ function scanFile(file){
           {type:"text",text:RCPROMPT}]}]})})
     .then(function(r){return r.json()})
     .then(function(d){
-      if(d&&d.error)throw new Error(d.error.message||"api error");
+      if(d&&d.error){var er=new Error(d.error.message||"api error");er.kind=d.error.type||"";throw er;}
       var tx=(d&&d.content||[]).filter(function(c){return c.type==="text"})
               .map(function(c){return c.text||""}).join("").trim();
       tx=tx.replace(/^```(?:json)?/,"").replace(/```$/,"").trim();
@@ -4226,7 +4252,17 @@ function scanFile(file){
         items:items});
       toast(items.length?(T("Read")+" "+items.length+" "+T("items")):T("Receipt read"));})
     .catch(function(e){
-      toast(T("Scan failed")+": "+String(e&&e.message||"network").slice(0,60));});});}
+      var m=String(e&&e.message||"network"), k=String(e&&e.kind||"");
+      /* key 过期 / 被吊销 / 没权限：直接把输入框推到眼前，不然没有别的地方能改 */
+      if(/authentication|permission/i.test(k)||/api-key|api key|unauthorized|401|403/i.test(m)){
+        toast(T("API key was rejected"));
+        aiSheet(T("The key was rejected — it may have expired or been revoked. Paste a new one."));
+        return;}
+      if(/billing|credit|quota|429|402/i.test(k+" "+m)){
+        toast(T("API credit ran out"));
+        aiSheet(T("The API account is out of credit, or hit a rate limit. Top it up in the Console, or paste a different key."));
+        return;}
+      toast(T("Scan failed")+": "+m.slice(0,60));});});}
 
 function vMoney(){
   var mk=monKey(ledMonth), rows=ledOf(mk);
@@ -4242,7 +4278,8 @@ function vMoney(){
         MONS[ledMonth.getMonth()]+' '+ledMonth.getFullYear()+'</div>'+
       '<button class="pill" data-mnav="1">›</button></div>'+
     '<div class="row" style="gap:6px">'+
-      (AIKEY?'<label class="pill scanb" id="scanLed">'+T("Scan")+'<input type="file" accept="image/*"></label>'
+      (AIKEY?'<label class="pill scanb" id="scanLed">'+T("Scan")+'<input type="file" accept="image/*"></label>'+
+             '<button class="pill kgear" id="scanCfg" title="'+T("Receipt scan")+'">⚙</button>'
             :'<button class="pill" id="scanCfg">'+T("Scan")+'</button>')+
       '<button class="pill" id="impLed">'+T("Import")+'</button></div></div>';
 
