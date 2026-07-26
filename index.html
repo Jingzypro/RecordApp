@@ -3268,7 +3268,9 @@ var ZH={
   "Currency & rates":"币种与汇率","Show totals in":"合计用哪个币种显示",
   "Rates · 1 USD =":"汇率 · 1 美元 =","Only USD in use so far":"目前只用到美元",
   "Refresh from network":"联网刷新","Updated":"更新于","Fetching…":"正在获取…","Fetched":"已更新",
-  "Could not fetch · type them in by hand":"获取失败 · 可以手动填",
+  "Could not fetch · type them in by hand":"获取失败 · 可以手动填","Could not fetch":"获取失败",
+  "This is a new AQ. style key; some Google endpoints still reject it. Try creating an AIza… key in AI Studio.":"这是新版 AQ. 格式的 key，部分 Google 接口还不认。去 AI Studio 建一个 AIza… 开头的试试。",
+  "Opened as a local file: the browser sends Origin null and Google refuses it. Put the page on https.":"当前是本地文件打开的，浏览器会把 Origin 报成 null，Google 会拒绝。把页面放到 https 上再试。",
   "Rates are only used for display totals. Each entry keeps the currency you typed.":"汇率只用于合计显示，每条记录本身仍保留你填的币种。",
   "One-off":"一次性","day":"天","days":"天",
   "Write":"写","Stats":"统计","Days written":"写了几天","Current streak":"当前连续",
@@ -3284,7 +3286,16 @@ var ZH={
   "Could not read that image":"这张图片读不出来",
   "Could not read that receipt · fill it in by hand":"这张小票认不出来 · 请手动填写",
   "Scan failed":"识别失败",
-  "Service":"识别服务","Load models":"拉取模型","models":"个可用模型",
+  "Service":"识别服务","Load models":"拉取模型","models":"个可用模型","Switched to":"已换成","Diagnose":"诊断","inside an iframe":"在 iframe 里",
+  "Same-origin request failed too — the page is not running from a normal web address, or fetch is overridden.":"连同源请求都失败 —— 页面不是从正常网址运行的，或者 fetch 被改写了。",
+  "This page can make requests at all":"页面本身能发请求",
+  "Even same-page requests fail — something blocks fetch entirely":"连同源请求都失败，fetch 被整体挡住了",
+  "Reached Google and read the reply":"能连上 Google 并读到回应",
+  "Google answered with an error":"Google 回了错误",
+  "Cross-origin request failed":"跨域请求失败",
+  "The request did leave the browser, but CORS blocked the reply. The page origin is what Google refuses.":"请求确实发出去了，但回应被跨域策略挡住 —— Google 不接受当前页面的来源。",
+  "Blocked by a Content-Security-Policy on the page — your host adds it, not this file.":"被页面的 CSP 拦住了 —— 是你托管的那个网站加的，不是这个文件本身。",
+  "The request never left the browser: an extension, VPN or network filter is blocking googleapis.com. Try a private window, another browser, or your phone.":"请求根本没发出去：浏览器扩展、VPN 或网络在拦 googleapis.com。试试无痕窗口、换个浏览器，或者用手机。","Not callable on this account":"这个账号调不通",
   "Billed per use in the Claude Console. A receipt costs a fraction of a cent.":"在 Claude Console 按量付费，一张小票不到一分钱。",
   "Free tier needs no card. Google may use free-tier content to improve their models — avoid it for sensitive receipts.":"免费额度不用绑卡。但免费档的内容 Google 可能用于改进模型，敏感小票别走这条。",
   "Model name not accepted":"模型名不对",
@@ -4245,6 +4256,102 @@ var AIPROV=(function(){try{return store.get("rec.aiprov")||"claude"}catch(e){ret
 var GKEY=(function(){try{return store.get("rec.gkey")||""}catch(e){return ""}})();
 var GMODEL=(function(){try{return store.get("rec.gmodel")||"gemini-2.5-flash"}catch(e){return "gemini-2.5-flash"}})();
 var GBASE="https://generativelanguage.googleapis.com/v1beta/";
+/* 有些模型列表里有、真调用却说「不对新用户开放」，记下来，自动挑模型时跳过 */
+var GBAD=(function(){try{var a=JSON.parse(store.get("rec.gbad")||"[]");return Array.isArray(a)?a:[]}catch(e){return []}})();
+function gMarkBad(m){ if(m&&GBAD.indexOf(m)<0){GBAD.push(m);try{store.set("rec.gbad",JSON.stringify(GBAD))}catch(e){}} }
+/* Google 会下架旧模型（2.5-flash 就已经对新用户关闭了），所以不写死名字：
+   问一次 ListModels，挑一个当前能用的 flash。 */
+/* key 放在查询串里而不是自定义头：GET 变成「简单请求」，浏览器不再发 preflight，
+   少一个会被挡下来的环节 */
+function gURL(path,key){return GBASE+path+(path.indexOf("?")>=0?"&":"?")+"key="+encodeURIComponent(key||"");}
+/* 先按官方文档用 x-goog-api-key 头（新版 AQ. 格式的 key 只认这条路），
+   只有在网络层直接失败时才退回 ?key= 查询串再试一次 */
+function gFetch(path,key,init){
+  init=init||{};
+  var withHdr=Object.assign({},init,{headers:Object.assign({},init.headers||{},{"x-goog-api-key":key})});
+  /* 三段式退让：
+     ① 官方推荐的 x-goog-api-key 头（新版 AQ. key 主要认这条）
+     ② key 放查询串，GET 就变成简单请求
+     ③ 再把 content-type 降成 text/plain —— 这样 POST 也不触发预检，
+        跨域被卡在 OPTIONS 那一步时这是唯一还能走通的路 */
+  return fetch(GBASE+path,withHdr)
+    .catch(function(){return fetch(gURL(path,key),init);})
+    .catch(function(){
+      var plain=Object.assign({},init,{headers:Object.assign({},init.headers||{},{"content-type":"text/plain;charset=UTF-8"})});
+      return fetch(gURL(path,key),plain);});}
+/* 网络层直接失败时，把真实原因和常见坑一起说清楚 */
+function gKeyHint(msg){
+  /* Google 正在把 AIza 换成 AQ. 格式，但部分接口还不认新格式 */
+  if(/ACCESS_TOKEN_TYPE_UNSUPPORTED|UNAUTHENTICATED|API key not valid|API_KEY_INVALID/i.test(String(msg||""))
+     && /^AQ\./.test(GKEY||""))
+    return " · "+T("This is a new AQ. style key; some Google endpoints still reject it. Try creating an AIza… key in AI Studio.");
+  return "";}
+function netHint(e){
+  var m=String((e&&e.message)||"");
+  var h=m?" ("+m.slice(0,44)+")":"";
+  h+=gKeyHint(m);
+  try{ if(location.protocol==="file:")h+=" · "+T("Opened as a local file: the browser sends Origin null and Google refuses it. Put the page on https.");}catch(x){}
+  return h;}
+/* 一键诊断：把「请求出不去」拆成几层分别探测，直接给结论，
+   省得让人去开控制台看红字 */
+function gDiag(key,done){
+  var out=[], csp=false;
+  var onCSP=function(e){ if(String((e&&e.blockedURI)||"").indexOf("googleapis")>=0)csp=true; };
+  document.addEventListener("securitypolicyviolation",onCSP);
+  var url=gURL("models",key);
+  var finish=function(){document.removeEventListener("securitypolicyviolation",onCSP);done(out);};
+  /* 先把环境本身报出来：同源请求都失败时，多半是运行环境的问题而不是网络 */
+  try{
+    var env=location.protocol+"//"+(location.host||"(no host)");
+    if(window.top!==window.self)env+=" · "+T("inside an iframe");
+    var og=(location.origin==null||location.origin==="null")?"null":location.origin;
+    env+=" · origin "+og;
+    out.push([2,env]);
+  }catch(x){out.push([2,"location unavailable"]);}
+  fetch(location.href,{method:"HEAD",cache:"no-store"})
+    .then(function(){out.push([1,T("This page can make requests at all")]);},
+          function(){out.push([0,T("Same-origin request failed too — the page is not running from a normal web address, or fetch is overridden.")]);})
+    .then(function(){
+      return fetch(url).then(function(r){return r.json()}).then(function(d){
+        if(d&&d.models){out.push([1,T("Reached Google and read the reply")+" · "+d.models.length+" models"]);return "ok";}
+        out.push([0,T("Google answered with an error")+": "+String((d.error&&(d.error.message||d.error.status))||"").slice(0,70)]);
+        return "err";})
+      .catch(function(e){out.push([0,T("Cross-origin request failed")+": "+String((e&&e.message)||"")]);return "fail";});})
+    .then(function(st){
+      if(st!=="fail")return finish();
+      /* no-cors 只要请求真的发出去了就会 resolve（内容读不到没关系），
+         用它区分「被 CORS 拒绝」和「请求压根没发出去」 */
+      return fetch(url,{mode:"no-cors"})
+        .then(function(){out.push([0,T("The request did leave the browser, but CORS blocked the reply. The page origin is what Google refuses.")]);})
+        .catch(function(){out.push([0, csp
+            ? T("Blocked by a Content-Security-Policy on the page — your host adds it, not this file.")
+            : T("The request never left the browser: an extension, VPN or network filter is blocking googleapis.com. Try a private window, another browser, or your phone.")]);})
+        .then(finish);});}
+
+function gModelList(key){
+  return gFetch("models",key)
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d&&d.error)throw new Error(d.error.message||"list failed");
+      return (d.models||[])
+        .filter(function(m){return (m.supportedGenerationMethods||[]).indexOf("generateContent")>=0;})
+        .map(function(m){return String(m.name||"").replace(/^models\//,"")})
+        .filter(function(n){return n&&!/embedding|aqa|imagen|veo|tts|audio|image|live/i.test(n)});});}
+function gVer(n){var m=String(n).match(/(\d+)(?:[.-](\d+))?/);return m?(+m[1]*100+(+m[2]||0)):0;}
+/* 优先 flash（免费额度给得多），同代里优先正式版，再按版本号从新到旧 */
+function gPickModel(list){
+  if(!list||!list.length)return "";
+  list=list.filter(function(n){return GBAD.indexOf(n)<0});      // 调不通的跳过
+  if(!list.length)return "";
+  var pool=list.filter(function(n){return /flash/i.test(n)&&!/thinking/i.test(n)});
+  if(!pool.length)pool=list.filter(function(n){return /pro/i.test(n)});
+  if(!pool.length)pool=list.slice();
+  var stable=pool.filter(function(n){return !/preview|exp|latest/i.test(n)});
+  var arr=(stable.length?stable:pool).slice();
+  arr.sort(function(a,b){
+    var v=gVer(b)-gVer(a); if(v)return v;
+    return (/lite/i.test(a)?1:0)-(/lite/i.test(b)?1:0);});
+  return arr[0]||"";}
 /* 当前这家配好了没有：没配就不显示扫描按钮 */
 function aiReady(){return AIPROV==="gemini" ? !!GKEY : !!AIKEY;}
 
@@ -4272,7 +4379,9 @@ function aiSheet(warn){
     '</div>'+
     '<div class="row" style="gap:8px;margin-top:10px">'+
       '<button class="pill" id="atest">'+T("Test this key")+'</button>'+
+      '<button class="pill" id="adiag">'+T("Diagnose")+'</button>'+
       '<span class="st" id="as" style="margin:0;align-self:center"></span></div>'+
+    '<div id="adg" style="margin-top:6px"></div>'+
     '<div class="note" style="margin:6px 0 0">'+T("The key is kept in this device only. It never goes into the file or into sync.")+'</div>'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="av" style="flex:1">'+T("Save")+'</button>'+
     '<button class="btn g" id="ax">'+T("Close")+'</button></div>');
@@ -4284,49 +4393,71 @@ function aiSheet(warn){
       prov=b.dataset.pv; drawProv();};});
     $("apc").style.display = prov==="claude" ? "" : "none";
     $("apg").style.display = prov==="gemini" ? "" : "none";
-    $("as").textContent="";}
+    $("as").textContent="";
+    /* 切到 Gemini 且已经有 key：自动核对一次模型，省得手动点 */
+    if(prov==="gemini"&&$("gk").value.trim()&&!$("gmods").innerHTML)
+      setTimeout(function(){loadModels(true)},0);}
   drawProv();
   $("ax").onclick=closeSheet;
 
-  /* 拉一份当前 key 能用的模型列表，省得记模型名 —— 模型名 Google 换得很勤 */
-  $("glist").onclick=function(){
+  /* 拉一份当前 key 能用的模型列表；当前填的那个要是已经下架，直接换成能用的 */
+  function loadModels(quiet){
     var k=$("gk").value.trim(), st=$("as");
-    if(!k){st.className="st bad";st.textContent=T("Enter a key first");return;}
-    st.className="st";st.textContent=T("Checking…");
-    fetch(GBASE+"models",{headers:{"x-goog-api-key":k}})
-      .then(function(r){return r.json()})
-      .then(function(d){
-        if(d&&d.error)throw new Error(d.error.message||"");
-        var ms=(d.models||[]).filter(function(m){
-            return (m.supportedGenerationMethods||[]).indexOf("generateContent")>=0
-              && !/embedding|aqa|imagen|veo|tts/i.test(m.name||"");})
-          .map(function(m){return String(m.name||"").replace(/^models\//,"")})
-          .filter(function(n){return /flash|pro/i.test(n)&&!/thinking|image|live|native-audio/i.test(n)});
-        if(!ms.length)throw new Error("no vision models");
-        st.className="st good"; st.textContent=ms.length+" "+T("models");
-        $("gmods").innerHTML=ms.slice(0,14).map(function(n){
-          return '<button class="pill" data-gm="'+esc(n)+'">'+esc(n)+'</button>';}).join("");
-        $("gmods").querySelectorAll("[data-gm]").forEach(function(b){b.onclick=function(){
-          $("gm").value=b.dataset.gm;
-          $("gmods").querySelectorAll("[data-gm]").forEach(function(o){o.className="pill"});
-          b.className="pill ok";};});})
-      .catch(function(e){st.className="st bad";
-        st.textContent=T("Could not fetch")+": "+String(e&&e.message||"").slice(0,60);});};
+    if(!k){if(!quiet){st.className="st bad";st.textContent=T("Enter a key first");}return;}
+    if(!quiet){st.className="st";st.textContent=T("Checking…");}
+    return gModelList(k).then(function(ms){
+      if(!ms.length)throw new Error("no usable model");
+      $("gmods").innerHTML=ms.slice(0,14).map(function(n){
+        var dead=GBAD.indexOf(n)>=0;
+        return '<button class="pill'+(n===$("gm").value.trim()?" ok":"")+'" data-gm="'+esc(n)+'"'+
+          (dead?' style="opacity:.4" title="'+T("Not callable on this account")+'"':"")+'>'+esc(n)+(dead?" ✕":"")+'</button>';}).join("");
+      $("gmods").querySelectorAll("[data-gm]").forEach(function(b){b.onclick=function(){
+        $("gm").value=b.dataset.gm;
+        $("gmods").querySelectorAll("[data-gm]").forEach(function(o){o.className="pill"});
+        b.className="pill ok";$("as").textContent="";};});
+      var curM=$("gm").value.trim();
+      if(!curM||ms.indexOf(curM)<0){
+        var pick=gPickModel(ms);
+        if(pick){$("gm").value=pick;
+          $("gmods").querySelectorAll("[data-gm]").forEach(function(o){
+            o.className=(o.dataset.gm===pick)?"pill ok":"pill";});
+          st.className="st good"; st.textContent=T("Switched to")+" "+pick;
+          return;}}
+      st.className="st good"; st.textContent=ms.length+" "+T("models");})
+    .catch(function(e){st.className="st bad";
+      st.textContent=T("Could not fetch")+netHint(e);});}
+  $("glist").onclick=function(){loadModels(false)};
+  $("adiag").onclick=function(){
+    var box=$("adg"), k=(prov==="gemini"?$("gk").value.trim():$("ak").value.trim());
+    if(!k){box.innerHTML='<div class="st bad">'+T("Enter a key first")+'</div>';return;}
+    box.innerHTML='<div class="st">'+T("Checking…")+'</div>';
+    gDiag(k,function(lines){
+      box.innerHTML=lines.map(function(l){
+        var cls=l[0]===2?"st":(l[0]?"st good":"st bad");
+        var mk=l[0]===2?"· ":(l[0]?"✓ ":"✕ ");
+        return '<div class="'+cls+'" style="margin:2px 0">'+mk+esc(l[1])+'</div>';}).join("");});};
 
   /* 当场打一个最小请求，确认 key 到底能不能用 */
   $("atest").onclick=function(){
     var st=$("as");
     var ok=function(){st.className="st good";st.textContent=T("Key works")+" ✓";};
-    var bad=function(m){st.className="st bad";st.textContent=T("Not working")+": "+String(m||"").slice(0,70);};
+    var bad=function(m){st.className="st bad";st.textContent=T("Not working")+": "+String(m||"").slice(0,220);};
     st.className="st"; st.textContent=T("Checking…");
     if(prov==="gemini"){
       var gk=$("gk").value.trim(); if(!gk){bad(T("Enter a key first"));return;}
-      fetch(GBASE+"models/"+encodeURIComponent($("gm").value.trim()||"gemini-2.5-flash")+":generateContent",
-        {method:"POST",headers:{"content-type":"application/json","x-goog-api-key":gk},
+      gFetch("models/"+encodeURIComponent($("gm").value.trim()||"gemini-flash-latest")+":generateContent",gk,
+        {method:"POST",headers:{"content-type":"application/json"},
          body:JSON.stringify({contents:[{parts:[{text:"hi"}]}],generationConfig:{maxOutputTokens:1}})})
         .then(function(r){return r.json()})
-        .then(function(d){ (d&&d.error) ? bad(d.error.message||d.error.status) : ok(); })
-        .catch(function(){bad(T("Could not reach the API"));});
+        .then(function(d){
+          if(!d||!d.error){ok();return;}
+          var msg=String(d.error.message||d.error.status||"")+gKeyHint(d.error.message||d.error.status);
+          /* 模型没了就自动挑一个能用的，再让用户点一次 */
+          if(/no longer available|not found|not supported|NOT_FOUND/i.test(msg+String(d.error.status||""))){
+            gMarkBad($("gm").value.trim());     // 这个模型调不通，别再自动选它
+            return loadModels(false);}
+          bad(msg);})
+        .catch(function(e){bad(T("Could not reach the API")+netHint(e));});
       return;}
     var k=$("ak").value.trim(); if(!k){bad(T("Enter a key first"));return;}
     fetch("https://api.anthropic.com/v1/messages",{method:"POST",
@@ -4336,7 +4467,7 @@ function aiSheet(warn){
         messages:[{role:"user",content:"hi"}]})})
       .then(function(r){return r.json()})
       .then(function(d){ (d&&d.error) ? bad(d.error.message||d.error.type) : ok(); })
-      .catch(function(){bad(T("Could not reach the API"));});};
+      .catch(function(e){bad(T("Could not reach the API")+netHint(e));});};
 
   $("av").onclick=function(){
     AIPROV=prov;
@@ -4381,24 +4512,45 @@ var RCPROMPT="You are reading a purchase receipt. Reply with JSON only: no prose
 var NOTITEM=/^(sales\s+)?(sub-?total|total|tax|vat|gst|hst|pst|tip|gratuity|change|cash|card|visa|mastercard|amex|debit|credit|balance|discount|savings|coupon|rounding|amount\s+due|payment|合计|小计|总计|总额|应付|实付|税|税金|税额|服务费|折扣|优惠|抹零|找零|现金|刷卡|支付|余额)[:：]?$/i;
 
 /* 把图片发给当前选的服务，回调拿到纯文本（要求是 JSON） */
+function gVision(mdl,b64,prompt){
+  return gFetch("models/"+encodeURIComponent(mdl)+":generateContent",GKEY,{
+    method:"POST",
+    headers:{"content-type":"application/json"},
+    body:JSON.stringify({
+      contents:[{parts:[
+        {inline_data:{mime_type:"image/jpeg",data:b64}},
+        {text:prompt}]}],
+      generationConfig:{temperature:0,responseMimeType:"application/json"}})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d&&d.error){var er=new Error(d.error.message||"api error");
+        er.kind=String(d.error.status||"")+" "+String(d.error.code||"");throw er;}
+      var cd=(d.candidates||[])[0]||{};
+      if(cd.finishReason&&cd.finishReason!=="STOP"&&!(cd.content&&cd.content.parts))
+        throw new Error("blocked: "+cd.finishReason);
+      return ((cd.content||{}).parts||[]).map(function(x){return x.text||""}).join("").trim();});}
+
+function gUnavail(e){
+  var t=String((e&&e.kind)||"")+" "+String((e&&e.message)||"");
+  return /NOT_FOUND|404|no longer available|not found|not supported|not available/i.test(t);}
+
 function aiVision(b64,prompt){
   if(AIPROV==="gemini"){
-    return fetch(GBASE+"models/"+encodeURIComponent(GMODEL||"gemini-2.5-flash")+":generateContent",{
-      method:"POST",
-      headers:{"content-type":"application/json","x-goog-api-key":GKEY},
-      body:JSON.stringify({
-        contents:[{parts:[
-          {inline_data:{mime_type:"image/jpeg",data:b64}},
-          {text:prompt}]}],
-        generationConfig:{temperature:0,responseMimeType:"application/json"}})})
-      .then(function(r){return r.json()})
-      .then(function(d){
-        if(d&&d.error){var er=new Error(d.error.message||"api error");
-          er.kind=String(d.error.status||"")+" "+String(d.error.code||"");throw er;}
-        var cd=(d.candidates||[])[0]||{};
-        if(cd.finishReason&&cd.finishReason!=="STOP"&&!(cd.content&&cd.content.parts))
-          throw new Error("blocked: "+cd.finishReason);
-        return ((cd.content||{}).parts||[]).map(function(x){return x.text||""}).join("").trim();});}
+    var useM=function(m){GMODEL=m;try{store.set("rec.gmodel",m)}catch(e){}return m;};
+    /* 模型不可用就拉黑、换下一个，最多换三次，免得来回撞同一个 */
+    var attempt=function(mdl,left){
+      return gVision(mdl,b64,prompt).catch(function(e){
+        if(!gUnavail(e)||left<=0)throw e;
+        gMarkBad(mdl);
+        return gModelList(GKEY).then(function(ms){
+          var pk=gPickModel(ms);
+          if(!pk)throw e;
+          toast(T("Switched to")+" "+pk);
+          return attempt(useM(pk),left-1);});});};
+    if(GMODEL)return attempt(GMODEL,3);
+    return gModelList(GKEY).then(function(ms){
+      var pk=gPickModel(ms); if(!pk)throw new Error("no usable model");
+      return attempt(useM(pk),3);});}
   return fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"x-api-key":AIKEY,"anthropic-version":"2023-06-01","content-type":"application/json",
@@ -4457,7 +4609,7 @@ function scanFile(file){
         toast(T("Out of quota"));
         aiSheet(T("Out of credit or over the free-tier limit. Free quota resets daily — or switch service / top up."));
         return;}
-      toast(T("Scan failed")+": "+m.slice(0,60));});});}
+      toast(T("Scan failed")+": "+m.slice(0,60)+(/fetch|network|load failed/i.test(m)?netHint(e):""));});});}
 
 function vMoney(){
   var mk=monKey(ledMonth), rows=ledOf(mk);
@@ -5468,7 +5620,7 @@ function bind(){
   var sl=$("scanLed");
   if(sl){var si=sl.querySelector("input");
     if(si)si.onchange=function(){var f=this.files&&this.files[0];this.value="";if(f)scanFile(f);};}
-  var sc=$("scanCfg"); if(sc)sc.onclick=aiSheet;
+  var sc=$("scanCfg"); if(sc)sc.onclick=function(){aiSheet()};   // 不能直接绑，否则 PointerEvent 会当成警告文案
   var fb=$("fxBtn"); if(fb)fb.onclick=fxSheet;
   document.querySelectorAll("[data-sday]").forEach(function(el){el.onclick=function(){
     subSheet(null, el.dataset.sday);}});
@@ -5486,7 +5638,7 @@ function bind(){
     ledMonth=new Date(ledMonth.getFullYear(),ledMonth.getMonth()+ +el.dataset.mnav,1);
     ledDay=null;render()}});
   var il=$("impLed"); if(il)il.onclick=impSheet;
-  var tl=$("todayLed"); if(tl)tl.onclick=ledSheet;
+  var tl=$("todayLed"); if(tl)tl.onclick=function(){ledSheet(null,ledDay||todayStr())};
   var ta=$("tdAdd");  if(ta)ta.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
   var ta2=$("tdAdd2");if(ta2)ta2.onclick=function(){newTodoSheet(todayStr(),null,null,"todo")};
   var tg2=$("tdGo"); if(tg2)tg2.onclick=function(){goTab("plan")};
