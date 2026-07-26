@@ -1935,7 +1935,9 @@ function sync(){if(!cfg){setSync("local");return Promise.resolve(false)}
     return Promise.all(TABLES.map(function(t){
       return api(t+"?select=*").then(function(r){return r.json()})
         .catch(function(e){throw new Error(t+": "+(e&&e.message||"failed"))});}));})
-  .then(function(res){TABLES.forEach(function(t,i){D[t]=res[i]||[]});saveLocal();lastErr="";setSync("ok");render();
+  .then(function(res){var before=JSON.stringify(D);
+    TABLES.forEach(function(t,i){D[t]=res[i]||[]});saveLocal();lastErr="";setSync("ok");
+    if(JSON.stringify(D)!==before)render();   // 内容没变就不用重画，省得打断操作
     syncing=false;return true;})
   .catch(function(e){lastErr=String(e&&e.message||"network error");setSync("offline");
     syncing=false;return false;});}
@@ -2053,7 +2055,17 @@ function weekInbox(k){
 function getFocus(k){var f=D.weekly_focus.filter(function(x){return x.id===k})[0];return f?f.text:""}
 
 /* ============ 渲染 ============ */
+var renderPending=false;
+/* 正在往输入框里打字时不重画：后台每 30 秒同步一次，一重画 textarea 就被换成新节点，
+   光标位置和刚敲进去、还没到自动保存那一拍的字全都会丢。等失焦了再补画。 */
+function typingNow(){
+  var ae=document.activeElement, v=$("view");
+  return !!(ae&&v&&v.contains(ae)&&
+    (ae.tagName==="TEXTAREA"||ae.tagName==="INPUT"||ae.isContentEditable));}
+
 function render(){
+  if(typingNow()){renderPending=true;return;}
+  renderPending=false;
   var ttl=$("pageTitle");
   if(tab==="plan"){ttl.innerHTML=planHeader();ttl.style.cssText="margin:0";}
   else if(tab==="plans"&&planOpen&&planById(planOpen)){
@@ -2778,9 +2790,83 @@ function bindYearCells(){
 
 /* ---- 日记 ---- */
 var MOODS=["😊","🙂","😐","😔","😤","🥱","🤩"];
+var diaryMode="write", diaryMon=new Date();
+function diaryOn(ds){return D.diary.filter(function(x){return x.id===ds&&(x.text||x.mood)})[0]||null;}
+/* 连续写了几天：从今天（或最后一篇）往回数 */
+function diaryStreak(){
+  var t=todayStr(), cur=0, best=0, run=0;
+  var all=D.diary.filter(function(x){return x.text||x.mood}).map(function(x){return x.id}).sort();
+  if(!all.length)return {cur:0,best:0,total:0};
+  var set={}; all.forEach(function(d){set[d]=1});
+  /* 当前连续：今天没写就从昨天算起，免得白天还没写就显示断了 */
+  var d0=parse(t); if(!set[t])d0=addDays(d0,-1);
+  while(set[fmt(d0)]){cur++;d0=addDays(d0,-1);}
+  var prev=null;
+  all.forEach(function(ds){
+    if(prev&&fmt(addDays(parse(prev),1))===ds)run++; else run=1;
+    if(run>best)best=run; prev=ds;});
+  return {cur:cur,best:best,total:all.length};}
+
+function dCal(){
+  var y=diaryMon.getFullYear(), m=diaryMon.getMonth();
+  var lead=new Date(y,m,1).getDay(), last=new Date(y,m+1,0).getDate(), ts=todayStr(), out="";
+  for(var i=0;i<lead;i++)out+='<div class="hcz"></div>';
+  for(var d=1;d<=last;d++){
+    var ds=y+"-"+pad(m+1)+"-"+pad(d), e=diaryOn(ds), fu=(ds>ts);
+    out+='<div class="hcd'+(e?" on":"")+(ds===ts?" td":"")+(fu?" fu":"")+'"'+
+      (fu?"":' data-dgo="'+ds+'"')+'>'+
+      '<b>'+d+'</b>'+(e&&e.mood?'<i style="font-size:11px">'+esc(e.mood)+'</i>':"")+'</div>';}
+  return '<div class="hcalw" style="--hc:var(--accent)">'+calHead()+'<div class="hcal">'+out+'</div></div>';}
+
+function dStat(){
+  var y=diaryMon.getFullYear(), m=diaryMon.getMonth();
+  var last=new Date(y,m+1,0).getDate(), ts=todayStr();
+  var days=0, wrote=0, chars=0, moods={};
+  for(var j=1;j<=last;j++){
+    var ds=y+"-"+pad(m+1)+"-"+pad(j);
+    if(ds>ts)break;
+    days++;
+    var e=diaryOn(ds); if(!e)continue;
+    wrote++; chars+=(e.text||"").length;
+    if(e.mood)moods[e.mood]=(moods[e.mood]||0)+1;}
+  var st=diaryStreak();
+  var allChars=D.diary.reduce(function(a,x){return a+((x.text||"").length)},0);
+
+  var h=dCal();
+  h+='<div class="sec">'+T("Basic stats")+'</div><div class="stg">'+
+    '<div class="stc"><div class="k">'+T("Days written")+'</div><div class="v">'+wrote+'<small>/'+days+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Current streak")+'</div><div class="v">'+st.cur+'<small>'+T("d")+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Longest streak")+'</div><div class="v">'+st.best+'<small>'+T("d")+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Words this month")+'</div><div class="v">'+chars+'</div></div>'+
+    '<div class="stc"><div class="k">'+T("All entries")+'</div><div class="v">'+st.total+'</div></div>'+
+    '<div class="stc"><div class="k">'+T("Average length")+'</div><div class="v">'+(wrote?Math.round(chars/wrote):0)+'</div></div>'+
+    '</div>';
+
+  var mk=Object.keys(moods).sort(function(a,b){return moods[b]-moods[a]});
+  if(mk.length){
+    var mx=moods[mk[0]];
+    h+='<div class="sec">'+T("Mood this month")+'</div><div class="card" style="padding:12px 13px">'+
+      mk.map(function(mo){
+        var pct=Math.round(moods[mo]/wrote*100);
+        return '<div style="margin-bottom:9px"><div class="row" style="justify-content:space-between;font-size:13px;margin-bottom:4px">'+
+          '<span style="font-size:16px">'+esc(mo)+'</span>'+
+          '<span class="muted" style="font-variant-numeric:tabular-nums">'+moods[mo]+' · '+pct+'%</span></div>'+
+          '<div class="b" style="height:6px;border-radius:99px;background:var(--line);overflow:hidden">'+
+          '<i style="display:block;height:100%;width:'+Math.round(moods[mo]/mx*100)+'%;background:var(--accent)"></i></div></div>';}).join("")+
+      '</div>';}
+  if(allChars)h+='<div class="note" style="margin-top:10px">'+T("Written in total")+' '+allChars+' '+T("characters")+'</div>';
+  return h;}
 function vDiary(){
+  var seg='<div class="hseg"><div class="sw">'+
+    '<button data-dm="write"'+(diaryMode==="write"?' class="on"':'')+'>'+T("Write")+'</button>'+
+    '<button data-dm="stat"'+(diaryMode==="stat"?' class="on"':'')+'>'+T("Stats")+'</button></div></div>';
+  if(diaryMode==="stat")
+    return seg+'<div class="hmon"><button class="pill" data-dmn="-1">‹</button>'+
+      '<b>'+monLabel(diaryMon)+'</b>'+
+      '<button class="pill" data-dmn="1">›</button></div>'+dStat();
+
   var cur=D.diary.filter(function(x){return x.id===diaryDate})[0]||{text:"",mood:""};
-  var h='<div class="row" style="justify-content:space-between;margin-bottom:10px">'+
+  var h=seg+'<div class="row" style="justify-content:space-between;margin-bottom:10px">'+
     '<button class="pill" data-dnav="-1">‹</button><input class="inp" id="dd" type="date" value="'+diaryDate+'" style="width:auto;padding:7px 10px">'+
     '<button class="pill" data-dnav="1">›</button></div>';
   h+='<div class="card" style="padding:13px">'+
@@ -3185,6 +3271,10 @@ var ZH={
   "Could not fetch · type them in by hand":"获取失败 · 可以手动填",
   "Rates are only used for display totals. Each entry keeps the currency you typed.":"汇率只用于合计显示，每条记录本身仍保留你填的币种。",
   "One-off":"一次性","day":"天","days":"天",
+  "Write":"写","Stats":"统计","Days written":"写了几天","Current streak":"当前连续",
+  "Longest streak":"最长连续","Words this month":"本月字数","All entries":"全部篇数",
+  "Average length":"平均长度","Mood this month":"本月心情","Written in total":"累计写了",
+  "characters":"字","d":"天",
   "No items yet":"还没有明细","items":"件",
   "Receipt scan":"小票识别","Model":"模型",
   "The key is kept in this device only. It never goes into the file or into sync.":"key 只存在这台设备上，不会写进文件，也不参与同步。",
@@ -3194,6 +3284,13 @@ var ZH={
   "Could not read that image":"这张图片读不出来",
   "Could not read that receipt · fill it in by hand":"这张小票认不出来 · 请手动填写",
   "Scan failed":"识别失败",
+  "Service":"识别服务","Load models":"拉取模型","models":"个可用模型",
+  "Billed per use in the Claude Console. A receipt costs a fraction of a cent.":"在 Claude Console 按量付费，一张小票不到一分钱。",
+  "Free tier needs no card. Google may use free-tier content to improve their models — avoid it for sensitive receipts.":"免费额度不用绑卡。但免费档的内容 Google 可能用于改进模型，敏感小票别走这条。",
+  "Model name not accepted":"模型名不对",
+  "That model name was not accepted. Tap Load models and pick one from the list.":"这个模型名用不了。点「拉取模型」从列表里选一个。",
+  "Out of quota":"额度用完了",
+  "Out of credit or over the free-tier limit. Free quota resets daily — or switch service / top up.":"余额不足，或超出免费额度。免费额度每天会重置 —— 也可以换一家或者充值。",
   "Test this key":"测试这个 key","Checking…":"正在检查…","Key works":"key 可用",
   "Not working":"用不了","Enter a key first":"先填一个 key","Could not reach the API":"连不上 API",
   "API key was rejected":"API key 被拒绝","API credit ran out":"API 余额不足",
@@ -4143,43 +4240,113 @@ function fxSheet(){
    key 只存在这台设备的 localStorage 里，不写进文件、也不上传 Supabase。 */
 var AIKEY=(function(){try{return store.get("rec.aikey")||""}catch(e){return ""}})();
 var AIMODEL=(function(){try{return store.get("rec.aimodel")||"claude-sonnet-5"}catch(e){return "claude-sonnet-5"}})();
+/* 识别服务可以切：claude 按量付费，gemini 有免费额度 */
+var AIPROV=(function(){try{return store.get("rec.aiprov")||"claude"}catch(e){return "claude"}})();
+var GKEY=(function(){try{return store.get("rec.gkey")||""}catch(e){return ""}})();
+var GMODEL=(function(){try{return store.get("rec.gmodel")||"gemini-2.5-flash"}catch(e){return "gemini-2.5-flash"}})();
+var GBASE="https://generativelanguage.googleapis.com/v1beta/";
+/* 当前这家配好了没有：没配就不显示扫描按钮 */
+function aiReady(){return AIPROV==="gemini" ? !!GKEY : !!AIKEY;}
 
 function aiSheet(warn){
+  var prov=AIPROV;
   openSheet('<h2>'+T("Receipt scan")+'</h2>'+
     (warn?'<div class="st bad" style="margin:0 0 10px">'+esc(warn)+'</div>':"")+
-    '<div class="note" style="margin:0 0 12px">'+T("The key is kept in this device only. It never goes into the file or into sync.")+'</div>'+
-    '<label class="fl">API key</label>'+
-    '<input class="inp" id="ak" placeholder="sk-ant-..." value="'+esc(AIKEY)+'" autocapitalize="off" spellcheck="false">'+
-    '<label class="fl">'+T("Model")+'</label>'+
-    '<input class="inp" id="am" value="'+esc(AIMODEL)+'" autocapitalize="off" spellcheck="false">'+
-    '<div class="row" style="gap:8px;margin-top:8px">'+
+    '<label class="fl">'+T("Service")+'</label>'+
+    '<div class="row" id="apv" style="gap:6px"></div>'+
+    '<div id="apc">'+
+      '<label class="fl">Anthropic API key</label>'+
+      '<input class="inp" id="ak" placeholder="sk-ant-..." value="'+esc(AIKEY)+'" autocapitalize="off" spellcheck="false">'+
+      '<label class="fl">'+T("Model")+'</label>'+
+      '<input class="inp" id="am" value="'+esc(AIMODEL)+'" autocapitalize="off" spellcheck="false">'+
+      '<div class="note" style="margin:6px 0 0">'+T("Billed per use in the Claude Console. A receipt costs a fraction of a cent.")+'</div>'+
+    '</div>'+
+    '<div id="apg">'+
+      '<label class="fl">Google AI Studio API key</label>'+
+      '<input class="inp" id="gk" placeholder="AIza..." value="'+esc(GKEY)+'" autocapitalize="off" spellcheck="false">'+
+      '<label class="fl">'+T("Model")+
+        '<button class="pill" id="glist" style="float:right;margin-top:-4px">'+T("Load models")+'</button></label>'+
+      '<input class="inp" id="gm" value="'+esc(GMODEL)+'" autocapitalize="off" spellcheck="false">'+
+      '<div class="row" id="gmods" style="flex-wrap:wrap;gap:5px;margin-top:6px"></div>'+
+      '<div class="note" style="margin:6px 0 0">'+T("Free tier needs no card. Google may use free-tier content to improve their models — avoid it for sensitive receipts.")+'</div>'+
+    '</div>'+
+    '<div class="row" style="gap:8px;margin-top:10px">'+
       '<button class="pill" id="atest">'+T("Test this key")+'</button>'+
       '<span class="st" id="as" style="margin:0;align-self:center"></span></div>'+
-    '<div class="note" style="margin:6px 0 0">'+T("Each receipt costs a fraction of a cent. Scanning needs a network connection.")+'</div>'+
+    '<div class="note" style="margin:6px 0 0">'+T("The key is kept in this device only. It never goes into the file or into sync.")+'</div>'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="av" style="flex:1">'+T("Save")+'</button>'+
     '<button class="btn g" id="ax">'+T("Close")+'</button></div>');
+
+  function drawProv(){
+    $("apv").innerHTML=[["claude","Claude"],["gemini","Gemini"]].map(function(x){
+      return '<button class="pill'+(x[0]===prov?" ok":"")+'" data-pv="'+x[0]+'">'+x[1]+'</button>';}).join("");
+    $("apv").querySelectorAll("[data-pv]").forEach(function(b){b.onclick=function(){
+      prov=b.dataset.pv; drawProv();};});
+    $("apc").style.display = prov==="claude" ? "" : "none";
+    $("apg").style.display = prov==="gemini" ? "" : "none";
+    $("as").textContent="";}
+  drawProv();
   $("ax").onclick=closeSheet;
-  /* 当场打一个 1 token 的请求，确认 key 到底还能不能用 */
-  $("atest").onclick=function(){
-    var k=$("ak").value.trim(), st=$("as");
+
+  /* 拉一份当前 key 能用的模型列表，省得记模型名 —— 模型名 Google 换得很勤 */
+  $("glist").onclick=function(){
+    var k=$("gk").value.trim(), st=$("as");
     if(!k){st.className="st bad";st.textContent=T("Enter a key first");return;}
+    st.className="st";st.textContent=T("Checking…");
+    fetch(GBASE+"models",{headers:{"x-goog-api-key":k}})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        if(d&&d.error)throw new Error(d.error.message||"");
+        var ms=(d.models||[]).filter(function(m){
+            return (m.supportedGenerationMethods||[]).indexOf("generateContent")>=0
+              && !/embedding|aqa|imagen|veo|tts/i.test(m.name||"");})
+          .map(function(m){return String(m.name||"").replace(/^models\//,"")})
+          .filter(function(n){return /flash|pro/i.test(n)&&!/thinking|image|live|native-audio/i.test(n)});
+        if(!ms.length)throw new Error("no vision models");
+        st.className="st good"; st.textContent=ms.length+" "+T("models");
+        $("gmods").innerHTML=ms.slice(0,14).map(function(n){
+          return '<button class="pill" data-gm="'+esc(n)+'">'+esc(n)+'</button>';}).join("");
+        $("gmods").querySelectorAll("[data-gm]").forEach(function(b){b.onclick=function(){
+          $("gm").value=b.dataset.gm;
+          $("gmods").querySelectorAll("[data-gm]").forEach(function(o){o.className="pill"});
+          b.className="pill ok";};});})
+      .catch(function(e){st.className="st bad";
+        st.textContent=T("Could not fetch")+": "+String(e&&e.message||"").slice(0,60);});};
+
+  /* 当场打一个最小请求，确认 key 到底能不能用 */
+  $("atest").onclick=function(){
+    var st=$("as");
+    var ok=function(){st.className="st good";st.textContent=T("Key works")+" ✓";};
+    var bad=function(m){st.className="st bad";st.textContent=T("Not working")+": "+String(m||"").slice(0,70);};
     st.className="st"; st.textContent=T("Checking…");
+    if(prov==="gemini"){
+      var gk=$("gk").value.trim(); if(!gk){bad(T("Enter a key first"));return;}
+      fetch(GBASE+"models/"+encodeURIComponent($("gm").value.trim()||"gemini-2.5-flash")+":generateContent",
+        {method:"POST",headers:{"content-type":"application/json","x-goog-api-key":gk},
+         body:JSON.stringify({contents:[{parts:[{text:"hi"}]}],generationConfig:{maxOutputTokens:1}})})
+        .then(function(r){return r.json()})
+        .then(function(d){ (d&&d.error) ? bad(d.error.message||d.error.status) : ok(); })
+        .catch(function(){bad(T("Could not reach the API"));});
+      return;}
+    var k=$("ak").value.trim(); if(!k){bad(T("Enter a key first"));return;}
     fetch("https://api.anthropic.com/v1/messages",{method:"POST",
       headers:{"x-api-key":k,"anthropic-version":"2023-06-01","content-type":"application/json",
                "anthropic-dangerous-direct-browser-access":"true"},
       body:JSON.stringify({model:$("am").value.trim()||"claude-sonnet-5",max_tokens:1,
         messages:[{role:"user",content:"hi"}]})})
       .then(function(r){return r.json()})
-      .then(function(d){
-        if(d&&d.error){st.className="st bad";
-          st.textContent=T("Not working")+": "+String(d.error.message||d.error.type||"").slice(0,70);}
-        else {st.className="st good";st.textContent=T("Key works")+" ✓";}})
-      .catch(function(){st.className="st bad";st.textContent=T("Could not reach the API");});};
+      .then(function(d){ (d&&d.error) ? bad(d.error.message||d.error.type) : ok(); })
+      .catch(function(){bad(T("Could not reach the API"));});};
+
   $("av").onclick=function(){
-    AIKEY=$("ak").value.trim(); AIMODEL=$("am").value.trim()||"claude-sonnet-5";
-    try{store.set("rec.aikey",AIKEY);store.set("rec.aimodel",AIMODEL);}catch(e){}
+    AIPROV=prov;
+    AIKEY=$("ak").value.trim();  AIMODEL=$("am").value.trim()||"claude-sonnet-5";
+    GKEY=$("gk").value.trim();   GMODEL=$("gm").value.trim()||"gemini-2.5-flash";
+    try{store.set("rec.aiprov",AIPROV);
+        store.set("rec.aikey",AIKEY);store.set("rec.aimodel",AIMODEL);
+        store.set("rec.gkey",GKEY);  store.set("rec.gmodel",GMODEL);}catch(e){}
     closeSheet();render();
-    toast(AIKEY?T("Receipt scan is ready"):T("Key cleared"));};}
+    toast(aiReady()?T("Receipt scan is ready"):T("Key cleared"));};}
 
 /* 压到 1600px 以内再发：省流量也省 token。识别完就丢，不保存原图 */
 function imgToB64(file,cb){
@@ -4213,26 +4380,48 @@ var RCPROMPT="You are reading a purchase receipt. Reply with JSON only: no prose
    用整段匹配，免得把 "Total Cereal" 这种品牌名当成合计行删掉 */
 var NOTITEM=/^(sales\s+)?(sub-?total|total|tax|vat|gst|hst|pst|tip|gratuity|change|cash|card|visa|mastercard|amex|debit|credit|balance|discount|savings|coupon|rounding|amount\s+due|payment|合计|小计|总计|总额|应付|实付|税|税金|税额|服务费|折扣|优惠|抹零|找零|现金|刷卡|支付|余额)[:：]?$/i;
 
+/* 把图片发给当前选的服务，回调拿到纯文本（要求是 JSON） */
+function aiVision(b64,prompt){
+  if(AIPROV==="gemini"){
+    return fetch(GBASE+"models/"+encodeURIComponent(GMODEL||"gemini-2.5-flash")+":generateContent",{
+      method:"POST",
+      headers:{"content-type":"application/json","x-goog-api-key":GKEY},
+      body:JSON.stringify({
+        contents:[{parts:[
+          {inline_data:{mime_type:"image/jpeg",data:b64}},
+          {text:prompt}]}],
+        generationConfig:{temperature:0,responseMimeType:"application/json"}})})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        if(d&&d.error){var er=new Error(d.error.message||"api error");
+          er.kind=String(d.error.status||"")+" "+String(d.error.code||"");throw er;}
+        var cd=(d.candidates||[])[0]||{};
+        if(cd.finishReason&&cd.finishReason!=="STOP"&&!(cd.content&&cd.content.parts))
+          throw new Error("blocked: "+cd.finishReason);
+        return ((cd.content||{}).parts||[]).map(function(x){return x.text||""}).join("").trim();});}
+  return fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"x-api-key":AIKEY,"anthropic-version":"2023-06-01","content-type":"application/json",
+             "anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:AIMODEL,max_tokens:1500,
+      messages:[{role:"user",content:[
+        {type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},
+        {type:"text",text:prompt}]}]})})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d&&d.error){var er=new Error(d.error.message||"api error");er.kind=d.error.type||"";throw er;}
+      return (d&&d.content||[]).filter(function(c){return c.type==="text"})
+              .map(function(c){return c.text||""}).join("").trim();});}
+
 function scanFile(file){
-  if(!AIKEY){aiSheet();return;}
+  if(!aiReady()){aiSheet();return;}
   if(!file)return;
   toast(T("Reading the receipt…"));
   imgToB64(file,function(b64){
     if(!b64){toast(T("Could not read that image"));return;}
-    fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{"x-api-key":AIKEY,"anthropic-version":"2023-06-01","content-type":"application/json",
-               "anthropic-dangerous-direct-browser-access":"true"},
-      body:JSON.stringify({model:AIMODEL,max_tokens:1500,
-        messages:[{role:"user",content:[
-          {type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},
-          {type:"text",text:RCPROMPT}]}]})})
-    .then(function(r){return r.json()})
-    .then(function(d){
-      if(d&&d.error){var er=new Error(d.error.message||"api error");er.kind=d.error.type||"";throw er;}
-      var tx=(d&&d.content||[]).filter(function(c){return c.type==="text"})
-              .map(function(c){return c.text||""}).join("").trim();
-      tx=tx.replace(/^```(?:json)?/,"").replace(/```$/,"").trim();
+    aiVision(b64,RCPROMPT)
+    .then(function(tx){
+      tx=String(tx||"").replace(/^```(?:json)?/,"").replace(/```$/,"").trim();
       var pr=JSON.parse(tx);
       if(pr.error){
         toast(T("Could not read that receipt · fill it in by hand"));
@@ -4254,13 +4443,19 @@ function scanFile(file){
     .catch(function(e){
       var m=String(e&&e.message||"network"), k=String(e&&e.kind||"");
       /* key 过期 / 被吊销 / 没权限：直接把输入框推到眼前，不然没有别的地方能改 */
-      if(/authentication|permission/i.test(k)||/api-key|api key|unauthorized|401|403/i.test(m)){
+      if(/authentication|permission|UNAUTHENTICATED|PERMISSION_DENIED/i.test(k)
+         ||/api.?key|unauthorized|401|403|API_KEY_INVALID/i.test(m)){
         toast(T("API key was rejected"));
         aiSheet(T("The key was rejected — it may have expired or been revoked. Paste a new one."));
         return;}
-      if(/billing|credit|quota|429|402/i.test(k+" "+m)){
-        toast(T("API credit ran out"));
-        aiSheet(T("The API account is out of credit, or hit a rate limit. Top it up in the Console, or paste a different key."));
+      /* 模型名写错 / 这个 key 用不了这个模型：Gemini 换模型名很勤 */
+      if(/NOT_FOUND|404/i.test(k)||/not found for API version|is not supported|unknown model|model:/i.test(m)){
+        toast(T("Model name not accepted"));
+        aiSheet(T("That model name was not accepted. Tap Load models and pick one from the list."));
+        return;}
+      if(/billing|credit|quota|429|402|RESOURCE_EXHAUSTED/i.test(k+" "+m)){
+        toast(T("Out of quota"));
+        aiSheet(T("Out of credit or over the free-tier limit. Free quota resets daily — or switch service / top up."));
         return;}
       toast(T("Scan failed")+": "+m.slice(0,60));});});}
 
@@ -4278,7 +4473,7 @@ function vMoney(){
         MONS[ledMonth.getMonth()]+' '+ledMonth.getFullYear()+'</div>'+
       '<button class="pill" data-mnav="1">›</button></div>'+
     '<div class="row" style="gap:6px">'+
-      (AIKEY?'<label class="pill scanb" id="scanLed">'+T("Scan")+'<input type="file" accept="image/*"></label>'+
+      (aiReady()?'<label class="pill scanb" id="scanLed">'+T("Scan")+'<input type="file" accept="image/*"></label>'+
              '<button class="pill kgear" id="scanCfg" title="'+T("Receipt scan")+'">⚙</button>'
             :'<button class="pill" id="scanCfg">'+T("Scan")+'</button>')+
       '<button class="pill" id="impLed">'+T("Import")+'</button></div></div>';
@@ -5323,9 +5518,22 @@ function bind(){
   var wf=$("wf");
   if(wf)wf.onblur=function(){push("weekly_focus",{id:wf.dataset.k,text:wf.value,updated_at:new Date().toISOString()})};
   var dtxt=$("dtxt"),dd=$("dd");
-  if(dtxt){var tm;dtxt.oninput=function(){clearTimeout(tm);$("dsave").textContent="Typing…";
-    tm=setTimeout(function(){saveDiary(dtxt.value);$("dsave").textContent="Saved ✓"},700)};}
+  if(dtxt){var tm;
+    dtxt.oninput=function(){clearTimeout(tm);var st=$("dsave");if(st)st.textContent="Typing…";
+      tm=setTimeout(function(){saveDiary(dtxt.value);var s2=$("dsave");if(s2)s2.textContent="Saved ✓"},700)};
+    /* 切走 / 收起键盘时立刻存一次，不然最后几个字会跟着那 700ms 一起丢 */
+    dtxt.onblur=function(){clearTimeout(tm);saveDiary(dtxt.value);
+      var s3=$("dsave");if(s3)s3.textContent="Saved ✓";};}
   if(dd)dd.onchange=function(){diaryDate=dd.value;render()};
+  document.querySelectorAll("[data-dm]").forEach(function(el){el.onclick=function(){
+    diaryMode=el.dataset.dm;
+    if(diaryMode==="stat")diaryMon=parse(diaryDate);
+    window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-dmn]").forEach(function(el){el.onclick=function(){
+    diaryMon=new Date(diaryMon.getFullYear(),diaryMon.getMonth()+ +el.dataset.dmn,1);render()}});
+  /* 统计里点某一天 → 跳到那天的日记 */
+  document.querySelectorAll("[data-dgo]").forEach(function(el){el.onclick=function(){
+    diaryDate=el.dataset.dgo;diaryMode="write";window.scrollTo(0,0);render()}});
   document.querySelectorAll("[data-dnav]").forEach(function(el){el.onclick=function(){
     diaryDate=fmt(addDays(parse(diaryDate),+el.dataset.dnav));render()}});
   document.querySelectorAll("[data-mood]").forEach(function(el){el.onclick=function(){
@@ -6287,6 +6495,9 @@ window.addEventListener("offline",function(){ if(cfg)setSync("offline"); });
 })();
 
 $("syncPill").onclick=cfgSheet;
+/* 输入框失焦后，把刚才憋着没画的那一次补上 */
+document.addEventListener("focusout",function(){
+  setTimeout(function(){if(renderPending&&!typingNow())render();},80);});
 document.addEventListener("visibilitychange",function(){if(!document.hidden)sync()});
 setInterval(function(){if(!document.hidden)sync()},30000);
 render();
