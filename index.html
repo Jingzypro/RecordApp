@@ -1616,6 +1616,8 @@ function saveOut(){try{store.set(LS.out,JSON.stringify(outbox));}catch(e){}}
 var $=function(id){return document.getElementById(id)};
 function uid(){return (crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+/* 中文输入法组词中:确认候选(空格/回车)不能当成提交键 */
+function imeKey(e){return e.isComposing||e.keyCode===229;}
 
 /* ============ 日期工具 ============ */
 function pad(n){return n<10?"0"+n:""+n}
@@ -2422,7 +2424,7 @@ function quickEvent(ds,st,et){
       color:CK2[Math.floor(Math.random()*CK2.length)],
       updated_at:new Date().toISOString()});
     closeSheet();render();}
-  q.onkeydown=function(e){if(e.key==="Enter")save()};
+  q.onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))save()};
   $("qev").onclick=save;}
 
 var selEv=null;                       // 当前选中的日程
@@ -4803,7 +4805,7 @@ function ledSheet(rec,defDate,pre){
       source:(ed&&ed.source)||"manual",updated_at:new Date().toISOString()};
     push("ledger",row);
     closeSheet();render();};
-  $("la").onkeydown=function(e){if(e.key==="Enter")$("lv").click()};}
+  $("la").onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))$("lv").click()};}
 
 /* ---- 账单 CSV 导入（支付宝 / 微信） ---- */
 function impSheet(){
@@ -5225,8 +5227,8 @@ function cdSheet(rec){
       updated_at:new Date().toISOString()});
     closeSheet();render();}
   $("cdv").onclick=save;
-  $("cdn").onkeydown=function(e){if(e.key==="Enter")$("cdd").focus()};
-  $("cdd").onkeydown=function(e){if(e.key==="Enter")save()};}
+  $("cdn").onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))$("cdd").focus()};
+  $("cdd").onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))save()};}
 
 /* ---- 线性图标库（单色，跟随文字颜色）---- */
 var ICONS={
@@ -5538,7 +5540,7 @@ function bind(){
       addTodo(v, qb.dataset.date||(tab==="today"?todayStr():null));
       qa.value="";qb.disabled=true;render();};
     qb.onclick=go;
-    qa.onkeydown=function(e){if(e.key==="Enter")go()};
+    qa.onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))go()};
   }
   document.querySelectorAll("[data-tg]").forEach(function(el){el.onclick=function(){
     if(Date.now()-dragBlockClick<400)return;
@@ -5664,7 +5666,7 @@ function bind(){
     else cursor=new Date(cursor.getFullYear()+n,cursor.getMonth(),1);render()}});
   document.querySelectorAll("[data-day]").forEach(function(el){el.onclick=function(){
     cursor=parse(el.dataset.day);goView("day");render()}});
-  document.querySelectorAll("[data-new]").forEach(function(el){el.onclick=function(){newTodoSheet(el.dataset.new)}});
+  document.querySelectorAll("[data-new]").forEach(function(el){el.onclick=function(){newTodoSheet(el.dataset.new,null,null,"todo",null,true)}});
   document.querySelectorAll("[data-newwk]").forEach(function(el){el.onclick=function(){
     newTodoSheet(null,null,null,"todo",el.dataset.newwk)}});
   var wf=$("wf");
@@ -5799,7 +5801,7 @@ function openSheet(html){$("sheet").classList.remove("form");$("sheet").innerHTM
 function closeSheet(){$("ov").classList.remove("show");$("sheet").classList.remove("form")}
 $("ov").onclick=function(e){if(e.target===$("ov"))closeSheet()};
 
-function newTodoSheet(ds,st,et,md,wk){
+function newTodoSheet(ds,st,et,md,wk,lock){
   var REP=[["","Never"],["daily","Daily"],["weekday","Weekdays"],["weekly","Weekly"],["monthly","Monthly"]];
   var TRV=[["","None"],["5","5 min"],["15","15 min"],["30","30 min"],["60","1 hour"]];
   var CK=Object.keys(COLORS);
@@ -5817,7 +5819,7 @@ function newTodoSheet(ds,st,et,md,wk){
       '<span class="t">New</span>'+
       '<button class="acir ok" id="nv">✓</button></div>'+
 
-    (ds?'<div class="aseg" id="nseg">':'<div class="aseg" id="nseg" style="display:none">')+
+    ((ds&&!lock)?'<div class="aseg" id="nseg">':'<div class="aseg" id="nseg" style="display:none">')+
       '<button data-md="event"'+(mode==="event"?' class="on"':'')+'>Event</button>'+
       '<button data-md="todo"'+(mode==="todo"?' class="on"':'')+'>To-do</button></div>'+
 
@@ -5925,7 +5927,7 @@ function newTodoSheet(ds,st,et,md,wk){
     $("sheet").classList.remove("form");
     closeSheet();render();}
   $("nv").onclick=save;
-  $("nt").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();
+  $("nt").onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e)){e.preventDefault();
     if(mode==="event")$("nloc").focus(); else save();}};}
 
 function subSheet(rec,defDate){
@@ -6211,7 +6213,7 @@ function bdSheet(rec){
       note:$("bo").value.trim()||null,
       updated_at:new Date().toISOString()});
     closeSheet();render();}
-  q.onkeydown=function(e){if(e.key==="Enter")save()};
+  q.onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))save()};
   $("bv").onclick=save;}
 
 /* ---- 更多菜单：设置 + 导出日历 ---- */
@@ -6385,7 +6387,7 @@ $("scrim").onclick=closeDrawer;
 function fabAction(){
   if(tab==="plan"){
     if(planView==="day")newTodoSheet(fmt(cursor));    // 那一天的日程
-    else newTodoSheet("");                            // 纯 ToDo
+    else newTodoSheet(todayStr());                    // Event / To-do 都能加
     return;}
   if(tab==="money"){ledSheet(null, ledDay||todayStr());return;}   // 停在哪天就记哪天
   if(tab==="bday"){bdSheet();return;}
@@ -6434,7 +6436,7 @@ $("srin").oninput=searchRun;
 $("srin").onkeydown=function(e){if(e.key==="Escape")searchClose()};
 $("capin").oninput=capPreview;
 $("capin").onkeydown=function(e){
-  if(e.key==="Enter")capSave();
+  if(e.key==="Enter"&&!imeKey(e))capSave();
   else if(e.key==="Escape")capClose();};
 $("capwrap").onclick=function(e){if(e.target===$("capwrap"))capClose()};
 document.addEventListener("keydown",function(e){
@@ -6499,7 +6501,7 @@ function qsPaint(){
       var n=$("qsIn"); if(n)n.focus();             // 保持焦点，连续添加
     };
     qg.onclick=add;
-    qi.onkeydown=function(e){if(e.key==="Enter")add()};}
+    qi.onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))add()};}
   $("qsList").querySelectorAll("[data-qa]").forEach(function(el){
     el.onclick=function(){
       var t=D.todos.filter(function(x){return x.id===el.dataset.qa})[0]; if(!t)return;
