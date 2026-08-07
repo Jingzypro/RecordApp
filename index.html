@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -1399,10 +1399,16 @@
     border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
     max-height:88dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
     animation:up .26s cubic-bezier(.2,.85,.25,1)}
-  .sheet *{max-width:100%;box-sizing:border-box}
-  /* iOS：输入字号 <16px 会触发页面自动放大，统一到 16px */
-  .sheet input,.sheet textarea,.sheet select{font-size:16px}
-  @keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet *{max-width:100%;box-sizing:border-box}
+/* iOS：输入字号 <16px 会触发页面自动放大，统一到 16px */
+.sheet input,.sheet textarea,.sheet select{font-size:16px}
+.ckselect{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:10px;
+  background-color:var(--card);background-image:linear-gradient(45deg, transparent 50%, var(--faint) 50%),
+  linear-gradient(135deg, var(--faint) 50%, transparent 50%);
+  background-position:calc(100% - 14px) 17px,calc(100% - 8px) 17px;
+  background-size:6px 6px;background-repeat:no-repeat;padding-right:26px}
+.ckselect:focus{border-color:var(--accent);outline:none}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
   @media(min-width:600px){.ov{align-items:center}.sheet{border-radius:18px}}
   .sheet h2{margin:0 0 12px;font-size:18px}
   .fl{display:block;font-size:12.5px;font-weight:700;margin:10px 0 5px;color:var(--sub)}
@@ -1410,12 +1416,102 @@
   .st.good{color:var(--accent2)}.st.bad{color:var(--danger)}
   .note{font-size:11.5px;color:var(--faint);line-height:1.5;margin-top:12px}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ============ Kitchen 厨房模块 ============ */
+  .ckseg{display:flex;background:var(--card2);border-radius:12px;padding:3px;margin:2px 0 14px}
+  .ckseg button{flex:1;border:0;background:transparent;padding:8px 0;border-radius:9px;font-size:13.5px;
+    font-weight:600;color:var(--sub);cursor:pointer}
+  .ckseg button.on{background:var(--card);color:var(--ink);box-shadow:var(--sh)}
+  .cksect{display:flex;align-items:center;gap:7px;margin:20px 2px 10px;font-size:15px;font-weight:700}
+  .cksect .d{width:8px;height:8px;border-radius:50%}
+  .cksect .c{font-size:13px;color:var(--faint);font-weight:500}
+  .ckgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .ckgrid2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(min-width:430px){.ckgrid2{grid-template-columns:repeat(4,1fr)}}
+  .cki{background:var(--card);border:0;border-radius:var(--r2);box-shadow:var(--sh);padding:13px 4px 10px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:var(--font);color:var(--ink)}
+  .cki .em{font-size:30px;line-height:1}
+  .cki .nm{font-size:12.5px;font-weight:600}
+  .ckf{position:relative;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+    padding:18px 6px 13px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+  .ckf .em{font-size:36px;line-height:1.1;margin-bottom:5px}
+  .ckf .nm{font-size:14.5px;font-weight:700;border-bottom:1.5px solid var(--ink);padding-bottom:1px}
+  .ckf .q{font-size:12.5px;color:var(--sub);margin-top:3px}
+  .ckf .b{font-size:11px;color:var(--faint)}
+  .ckf .e{font-size:13.5px;font-weight:800;margin-top:5px;display:inline-block;
+    padding:4px 11px;border-radius:999px;letter-spacing:.2px}
+  .ckf .e.warn{color:var(--amber);background:color-mix(in srgb,var(--amber) 14%,transparent)}
+  .ckf .e.dead{color:var(--danger);background:color-mix(in srgb,var(--danger) 14%,transparent)}
+  .ckf .e.ok{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .ckf .e.gray{color:var(--sub);font-weight:500}
+  .ckf .x{position:absolute;top:7px;right:9px;border:0;background:none;color:var(--faint);font-size:13px;padding:4px;cursor:pointer}
+  .ckr{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:15px 16px;margin-bottom:11px;
+    display:flex;gap:12px;align-items:center;cursor:pointer}
+  .ckr .L{flex:1;min-width:0}
+  .ckr .nm{font-size:17px;font-weight:800}
+  .ckr .mt{font-size:12.5px;color:var(--sub);margin-top:4px}
+  .ckr .ds{font-size:13px;color:var(--amber);margin-top:6px;line-height:1.45}
+  .ckr .hv{font-size:11.5px;margin-top:5px;color:var(--accent)}
+  .ckr .ms{font-size:11.5px;margin-top:5px;color:var(--faint)}
+  .ckr .pic{font-size:38px;flex:0 0 auto}
+  .ckr .src{font-size:10.5px;color:var(--faint);margin-top:4px}
+  .ckhero{display:flex;justify-content:center;padding:14px 0 4px;font-size:84px;line-height:1}
+  .ckmeta{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--sub);font-size:13.5px;margin:6px 0 14px}
+  .cksrv{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:12px 16px;
+    display:flex;align-items:center;justify-content:space-between;font-size:14.5px;font-weight:600;margin-bottom:16px}
+.ckstep{display:flex;align-items:center;gap:13px}
+.ckstep button{width:36px;height:36px;border-radius:50%;border:0;background:var(--card2);font-size:19px;color:var(--ink);cursor:pointer}
+.ckstep button:disabled{opacity:.35}
+.ckstep .v{font-size:15.5px;font-weight:700;min-width:40px;text-align:center}
+.cknum{width:86px;box-sizing:border-box;padding:9px 10px;font-size:15px;font-weight:700;text-align:center;
+  border:1px solid var(--line);border-radius:10px;outline:none;color:var(--ink);background:var(--card);
+  font-family:var(--font);appearance:textfield;-webkit-appearance:none}
+.cknum::-webkit-outer-spin-button,.cknum::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ckh2{font-size:15px;font-weight:700;margin:18px 2px 9px}
+  .ckir{background:var(--card);border-radius:var(--r2);box-shadow:var(--sh);padding:12px 14px;margin-bottom:8px;
+    display:flex;align-items:center;gap:9px;font-size:14px}
+  .ckir .gd{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+  .ckir .nm{color:var(--accent);font-weight:600;flex:1}
+  .ckir .q{color:var(--sub)}
+  .ckir.lack .nm{color:var(--amber)}.ckir.lack .gd{background:var(--amber)}
+  .ckst{display:flex;gap:11px;margin-bottom:13px;align-items:flex-start}
+  .ckst .n{flex:0 0 27px;width:27px;height:27px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+  .ckst .t{font-size:14px;line-height:1.6;padding-top:3px}
+  .ckbig{display:block;width:100%;border:0;background:var(--accent);color:#fff;font-size:16px;font-weight:800;
+    border-radius:999px;padding:14px 0;text-align:center;margin:18px 0 6px;cursor:pointer;font-family:var(--font)}
+  .ckbig.sec{background:var(--card2);color:var(--ink)}
+  .ckcons{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;margin-bottom:11px}
+  .ckcons .h{display:flex;align-items:center;gap:8px}
+  .ckcons .h .em{font-size:21px}
+  .ckcons .h .nm{font-size:15px;font-weight:700;flex:1}
+  .ckcons .h .st{font-size:11.5px;color:var(--faint)}
+  .ckcons .b{display:flex;align-items:center;margin-top:10px}
+  .ckcons .b .l{font-size:12.5px;color:var(--sub);flex:1}
+  .ckcons .lf{font-size:11px;color:var(--faint);text-align:right;margin-top:6px}
+  .ckback{display:flex;align-items:center;gap:6px;border:0;background:none;color:var(--ink);
+    font-size:15px;font-weight:700;padding:0 0 12px;cursor:pointer;font-family:var(--font)}
+  .ckcap{display:flex;gap:10px;margin:2px 0 14px}
+  .ckcap button{flex:1;border:0;border-radius:var(--r);padding:16px 0 13px;display:flex;flex-direction:column;
+    align-items:center;gap:6px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
+  .ckcap .ai{background:var(--soft);color:var(--accent)}
+  .ckcap .man{background:var(--card2);color:var(--ink)}
+  .ckcap .big{font-size:24px}
+  .cksearch{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:999px;
+    padding:10px 14px;box-shadow:var(--sh);margin:0 0 6px}
+  .cksearch input{border:0;outline:0;background:transparent;color:var(--ink);font-size:16px;width:100%;font-family:var(--font)}
+  .ckta{width:100%;min-height:110px;border:1px solid var(--line);border-radius:var(--r2);background:var(--card);
+    color:var(--ink);padding:12px;font-size:16px;font-family:var(--font);resize:vertical;box-sizing:border-box}
+  .ckempty{color:var(--sub);text-align:center;padding:44px 20px;font-size:14px;line-height:1.8}
+  .ckfav{border:0;background:none;font-size:22px;color:var(--faint);cursor:pointer;padding:4px}
+  .ckfav.on{color:var(--amber)}
+
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="row" style="min-width:0;gap:6px"><button class="menub" id="menuBtn" aria-label="Menu">☰</button><h1 id="pageTitle">今天</h1></div>
+    <div class="row" style="min-width:0;gap:6px"><button class="menub" id="menuBtn" aria-label="Menu">☰</button><h1 id="pageTitle">Today</h1></div>
     <div class="row">
       <button class="pill" id="qsBtn" aria-label="ToDo" style="display:none;padding:5px 10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></button>
       <button class="pill" id="searchBtn" aria-label="Search"><i data-ti="search"></i></button>
@@ -1591,7 +1687,7 @@ function setTheme(t){theme=t;try{store.set(LS.theme,t)}catch(e){}applyTheme();}
 applyTheme();
 try{window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(theme==="system")applyTheme()});}catch(e){}
 
-var TABLES=["todos","weekly_focus","diary","habits","habit_logs","subscriptions","birthdays","ledger","countdowns","plans"];
+var TABLES=["todos","weekly_focus","diary","habits","habit_logs","subscriptions","birthdays","ledger","countdowns","plans","pantry","recipes"];
 var D={todos:[],weekly_focus:[],diary:[],habits:[],habit_logs:[],subscriptions:[],birthdays:[],ledger:[],countdowns:[],plans:[]};
 var outbox=[],cfg=null,tab="today",syncing=false;
 var planView="week", cursor=new Date(), diaryDate=todayStr(), ledMonth=new Date();
@@ -1936,7 +2032,7 @@ function sync(){if(!cfg){setSync("local");return Promise.resolve(false)}
   return flush().then(function(ok){if(ok===false)throw new Error(lastErr||"upload failed");
     return Promise.all(TABLES.map(function(t){
       return api(t+"?select=*").then(function(r){return r.json()})
-        .catch(function(e){throw new Error(t+": "+(e&&e.message||"failed"))});}));})
+        .catch(function(e){if(t==="pantry"||t==="recipes")return D[t]||[];throw new Error(t+": "+(e&&e.message||"failed"))});}));})
   .then(function(res){var before=JSON.stringify(D);
     TABLES.forEach(function(t,i){D[t]=res[i]||[]});saveLocal();lastErr="";setSync("ok");
     if(JSON.stringify(D)!==before)render();   // 内容没变就不用重画，省得打断操作
@@ -2077,14 +2173,14 @@ function render(){
     ttl.style.cssText="margin:0";
     ttl.innerHTML='<button class="ybtn" id="hBack">‹ '+esc(habitById(habitOpen).name)+'</button>';}
   else{ttl.style.cssText="";
-    var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones",plans:"Long-term"}[tab]||"Record";
+    var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones",plans:"Long-term",cook:"Menu"}[tab]||"Record";
     ttl.innerHTML=esc(T(lbl))+(tab==="today"?wxChip():"");}
   if(typeof setTab==="function")setTab();     // 视图切换时底栏高亮跟着变
   var v=$("view");
   v.innerHTML = tab==="today"?vToday() : tab==="plan"?vPlan() : tab==="money"?vMoney() :
     tab==="diary"?vDiary() : tab==="habit"?vHabit() : tab==="subs"?vSubs() :
     tab==="review"?vReview() : tab==="cdown"?vCountdown() :
-    tab==="plans"?vPlans() : vBday();
+    tab==="plans"?vPlans() : tab==="cook"?vCook() : vBday();
   var old=document.getElementById("todayFab"); if(old)old.remove();
   if(tab==="plan"&&(planView==="month"||planView==="year"||planView==="day")){
     var fab=document.createElement("button");fab.id="todayFab";fab.className="todaybtn";fab.textContent="Today";
@@ -2095,7 +2191,7 @@ function render(){
   $("qsBtn").style.display = (tab==="plan") ? "" : "none";
   $("syncPill").style.display = (tab==="today") ? "" : "none";   // 同步标识只在首页显示
   // 悬浮按钮：图标随页面变化，一眼知道会加什么
-  var fabIc={money:"wallet",bday:"gift",cdown:"flag",habit:"flame",subs:"repeat",diary:"journal"}[tab]||"plus";
+  var fabIc={money:"wallet",bday:"gift",cdown:"flag",habit:"flame",subs:"repeat",diary:"journal",cook:"bowl"}[tab]||"plus";
   var fabEl=$("fab"); if(fabEl)fabEl.innerHTML=ico(fabIc,24);
   // 周视图整屏固定：锁住页面滚动，格子内部各自滚
   document.body.classList.toggle("lockv", tab==="plan" && planView==="week");
@@ -2233,7 +2329,7 @@ function vToday(){
       var tot=null;
       if(mf)ls.forEach(function(x){var q=fVal(mf,lvals(x)[mf.id]); if(q!=null)tot=(tot||0)+q;});
       var sub = tot!=null ? fnum(tot,1)+fUnit(mf)
-              : on ? (ls.length>1?ls.length+" 次":T("done"))
+              : on ? (ls.length>1?ls.length+" "+T("times"):T("done"))
               : "—";
       /* 底部一条近 7 天的迷你条，让卡片有内容 */
       var mini="";
@@ -2924,8 +3020,8 @@ function fmtField(f,v){
     : (v.s+" → "+v.e+"　"+clockHr(v)+"h");
   if(f.type==="number")return fnum(v,f.dec)+(f.unit||"");
   if(f.type==="rating")return '<em class="st5">'+"★".repeat(+v)+'</em>'+"★".repeat(Math.max(0,5-(+v)));
-  if(f.type==="bool")return v?"是":"否";
-  if(f.type==="multi")return (Array.isArray(v)?v:[]).join("、");
+  if(f.type==="bool")return v?T("Yes"):T("No");
+  if(f.type==="multi")return (Array.isArray(v)?v:[]).join(", ");
   return String(v);}
 
 /* 有值的字段才显示；bool 的 false 也算有值 */
@@ -2955,7 +3051,7 @@ function mainField(hb){
 function fVal(f,v){
   if(!f||!hasVal(f,v))return null;
   return f.type==="clock" ? clockHr(v) : +v;}
-function fUnit(f){return f&&f.type==="clock" ? "小时" : ((f&&f.unit)||"");}
+function fUnit(f){return f&&f.type==="clock" ? "hours" : ((f&&f.unit)||"");}
 
 /* 一天可能有多条 */
 function logsOn(hid,ds){
@@ -3064,7 +3160,7 @@ function bindDial(sMin,eMin,onChange){
     rg.innerHTML=karcRidge(st.s,st.e);
     place(gs,st.s); place(ge,st.e);
     var d=dur();
-    cu.textContent=Math.floor(d/60)+" 小时"+(d%60?" "+(d%60)+" 分":"");
+    cu.textContent=Math.floor(d/60)+" "+T("hours")+(d%60?" "+(d%60)+" "+T("minutes"):"");
     onChange(st.s,st.e,d);}
   function local(ev){
     var r=svg.getBoundingClientRect();
@@ -3180,167 +3276,199 @@ var hbDraft=null;
 /* ============ 多语言 ============
    源码一律写英文，中文挂在 ZH 词典里；默认英文。
    注意：账单分类正则、自然语言解析的关键词属于逻辑不是文案，不进词典。 */
-var LANG=(function(){try{return store.get("rec.lang")||"en"}catch(e){return "en"}})();
+var LANG=(function(){try{return "en";}catch(e){return "en"}})();
 var ZH={
+  /* Kitchen 厨房模块 */
+  "Kitchen":"Kitchen","For you":"For you","Fridge":"Fridge","Add ingredient":"Add ingredient","Import recipe":"Import recipe",
+  "A few starter dishes":"A few starter dishes","Add what is in your fridge to see dishes that fit":"Add what is in your fridge to see dishes that fit",
+  "Add ingredients now":"Add ingredients now","Import a recipe from link or text":"Import a recipe from link or text",
+  "All in your fridge":"All in your fridge","uses expiring items":"uses expiring items","Missing":"Missing","Needs shopping":"Needs shopping",
+  "min":"min","Imported":"Imported","Use this week":"Use this week","Meat & seafood":"Meat & seafood","Still fresh":"Still fresh",
+  "Bought today":"Bought today","Expired":"Expired","Expires today":"Expires today","days left":"days left"," expiry":" expiry","Bought":"Bought",
+  "Fridge is empty":"Fridge is empty","Add some ingredients to get started":"Add some ingredients to get started",
+  "Search ingredients":"Search ingredients","Nothing found — try the import instead?":"Nothing found — try the import instead?",
+  "Amount":"Amount","Today":"Today","Keeps for":"Keeps for","days":"days","Put in fridge":"Put in fridge","added to fridge":"added to fridge",
+  "Import a recipe":"Import a recipe","Paste a share text or a short-video link (Douyin, Xiaohongshu…) or any recipe text — I will pull out the dish, ingredients and steps.":"Paste a share text or a short-video link (Douyin, Xiaohongshu…) or any recipe text — I will pull out the dish, ingredients and steps.",
+  "Paste here…":"Paste here…","Recognize":"Recognize","Paste something first":"Paste something first","Reading the link…":"Reading the link…","Reading…":"Reading…",
+  "Could not recognize":"Could not recognize","Request blocked — if you are testing inside a preview sandbox, deploy and try on your real app":"Request blocked — if you are testing inside a preview sandbox, deploy and try on your real app","Could not find a recipe in that":"Could not find a recipe in that","imported":"imported",
+  "Back":"Back","cooked":"cooked","How many servings?":"How many servings?","Ingredients":"Ingredients","Steps":"Steps",
+  "not enough in fridge":"not enough in fridge","Imported from":"Imported from","Cooked it":"Cooked it",
+  "How much did you use?":"How much did you use?","None of these are in your fridge":"None of these are in your fridge",
+  "Just confirm to log the dish":"Just confirm to log the dish","Used":"Used","Left":"Left","Confirm":"Confirm","fridge updated":"fridge updated",
+  "My dishes":"My dishes","Ideas to try":"Ideas to try","Shuffle":"Shuffle",
+  "Import a recipe, or save the doable ones from the ideas below — your own dishes live here":"Import a recipe, or save the doable ones from the ideas below — your own dishes live here",
+  "Save to my dishes":"Save to my dishes","Added to my dishes":"Added to my dishes",
+  "Remove this dish from my list?":"Remove this dish from my list?",
+  "Breakfast":"Breakfast","Lunch":"Lunch","Dinner":"Dinner","Dessert":"Dessert","All":"All",
+  "Dish name":"Dish name","Category":"Category","Photo":"Photo","Upload photo":"Upload photo","Change photo":"Change photo",
+  "Ingredient":"Ingredient","Unit":"Unit","Add an ingredient":"Add an ingredient","Add a step":"Add a step",
+  "Name required":"Name required","Saved":"Saved",
+  "Drinks":"Drinks","Cuisine":"Cuisine","All cuisines":"All cuisines","New category":"New category",
+  "e.g. Japanese, Korean, bakery…":"e.g. Japanese, Korean, bakery…","e.g. Brunch, midnight snack…":"e.g. Brunch, midnight snack…",
+  "Keep it under 8 characters":"Keep it under 8 characters",
+  "Manage categories":"Manage categories","dishes use it":"dishes use it","Changes save automatically":"Changes save automatically",
+  "New":"New","Not in the catalog yet":"Not in the catalog yet","Create ingredient":"Create ingredient",
+  "New ingredient":"New ingredient","Keeps for (days)":"Keeps for (days)","How to store":"How to store","Expiry date":"Expiry date","Undo":"Undo","Fresh for":"Fresh for","Recipe calls for":"Recipe calls for","Units differ — set it yourself":"Units differ — set it yourself","Use this":"Use this","Applied":"Applied","Use soon":"Use soon","Edit ingredient":"Edit ingredient",
+  "Deleting a category only hides the chip — dishes keep their label. Add the same name again to bring it back.":"Deleting a category only hides the chip — dishes keep their label. Add the same name again to bring it back.",
   /* 通用 */
-  "Save":"保存","Cancel":"取消","Delete":"删除","Confirm delete":"确认删除","Edit":"编辑",
-  "Deleted":"已删除","Optional":"可留空","Untitled":"未命名","Other":"其他","Yes":"是","No":"否",
-  "Record":"记录","Type":"类型","Note":"备注","Required":"必填","Add":"添加",
+  "Save":"Save","Cancel":"Cancel","Delete":"Delete","Confirm delete":"Confirm delete","Edit":"Edit",
+  "Deleted":"Deleted","Optional":"Optional","Untitled":"Untitled","Other":"Other","Yes":"Yes","No":"No",
+  "Record":"Record","Type":"Type","Note":"Note","Required":"Required","Add":"Add",
   /* 习惯 */
-  "New habit":"新建习惯","Edit habit":"编辑习惯","Delete this habit":"删除这个习惯",
-  "Check in":"打卡","Edit entry":"编辑记录","Delete this entry":"删除这条记录",
-  "Add attribute":"添加属性","Edit attribute":"编辑属性","Delete this attribute":"删除这个属性",
-  "Check-in attributes":"打卡属性","Attribute name":"属性名","Unit":"单位",
-  "Options (comma separated)":"选项（逗号分隔）","Sub-items":"子项",
-  "Check-in color":"打卡颜色","No attributes yet · check-in only":"还没有属性，只记打卡也可以",
-  "Number":"数字","Rating":"评分","Switch":"开关","Multi":"多选","Text":"文本","Range":"时段",
-  "Start":"开始","End":"结束","Start label":"开始叫什么","End label":"结束叫什么",
-  "Bedtime":"就寝","Wake":"起床",
-  "Missing required:":"还差必填项：","Make-up entry":"补签",
-  "Today's records":"今天的记录","done":"已记","times":"次","segments":"段",
-  "＋ Check in":"＋ 打卡","Check in again":"再记一次","Checked in today":"今天已打卡",
-  "Last 28 days":"近 28 天","Last 7 days":"近 7 天","avg":"平均","total":"合计",
-  "Streak":"连续天数","Days checked":"打卡天数","This month":"本月天数",
-  "Longest streak":"最长连续","Check-ins":"打卡次数","Split days":"分散天数",
-  "Avg gap":"平均间隔","Basic stats":"基础统计","Attribute stats":"属性统计",
-  "Check-in trend":"打卡趋势","This month's check-ins":"本月打卡",
-  "No habits yet · tap + to create":"还没有习惯，点右下角 + 新建",
-  "No records this month":"这个月还没有记录","No records this week":"这一周还没有记录",
-  "Pick a template, or build your own":"选一个模板，或自己配",
+  "New habit":"New habit","Edit habit":"Edit habit","Delete this habit":"Delete this habit",
+  "Check in":"Check in","Edit entry":"Edit entry","Delete this entry":"Delete this entry",
+  "Add attribute":"Add attribute","Edit attribute":"Edit attribute","Delete this attribute":"Delete this attribute",
+  "Check-in attributes":"Check-in attributes","Attribute name":"Attribute name","Unit":"Unit",
+  "Options (comma separated)":"Options (comma separated)","Sub-items":"Sub-items",
+  "Check-in color":"Check-in color","No attributes yet · check-in only":"No attributes yet · check-in only",
+  "Number":"Number","Rating":"Rating","Switch":"Switch","Multi":"Multi","Text":"Text","Range":"Range",
+  "Start":"Start","End":"End","Start label":"Start label","End label":"End label",
+  "Bedtime":"Bedtime","Wake":"Wake",
+  "Missing required:":"Missing required:","Make-up entry":"Make-up entry",
+  "Today's records":"Today's records","done":"done","times":"times","segments":"segments",
+  "＋ Check in":"＋ Check in","Check in again":"Check in again","Checked in today":"Checked in today",
+  "Last 28 days":"Last 28 days","Last 7 days":"Last 7 days","avg":"avg","total":"total",
+  "Streak":"Streak","Days checked":"Days checked","This month":"This month",
+  "Longest streak":"Longest streak","Check-ins":"Check-ins","Split days":"Split days",
+  "Avg gap":"Avg gap","Basic stats":"Basic stats","Attribute stats":"Attribute stats",
+  "Check-in trend":"Check-in trend","This month's check-ins":"This month's check-ins",
+  "No habits yet · tap + to create":"No habits yet · tap + to create",
+  "No records this month":"No records this month","No records this week":"No records this week",
+  "Pick a template, or build your own":"Pick a template, or build your own",
   /* 习惯模板 */
-  "Sleep":"睡眠","Reading":"阅读","Skincare":"护肤","Water":"喝水","Exercise":"运动",
-  "Meditate":"冥想","Meals":"吃饭","Study":"学习",
-  "Duration":"时长","Sleep quality":"睡眠质量","Hard to fall asleep":"入睡困难",
-  "Book":"书名","Steps":"护肤步骤","Skin":"皮肤状态","Sunscreen":"防晒",
-  "Cups":"杯数","Sport":"运动类型","Intensity":"强度","Meal":"餐次","Cooked at home":"在家做",
-  "Subject":"科目","Focus":"专注度",
-  "Cleanser":"洁面","Toner":"爽肤水","Serum":"精华","Cream":"乳液/面霜","Mask":"面膜","Body lotion":"身体乳",
-  "Breakfast":"早餐","Lunch":"午餐","Dinner":"晚餐","Snack":"加餐",
-  "Running":"跑步","Strength":"力量","Yoga":"瑜伽","Swimming":"游泳","Cycling":"骑行","Ball games":"球类",
-  "Major":"专业课","English":"英语","Certification":"考证",
-  "hours":"小时","minutes":"分钟","cups":"杯",
+  "Sleep":"Sleep","Reading":"Reading","Skincare":"Skincare","Water":"Water","Exercise":"Exercise",
+  "Meditate":"Meditate","Meals":"Meals","Study":"Study",
+  "Duration":"Duration","Sleep quality":"Sleep quality","Hard to fall asleep":"Hard to fall asleep",
+  "Book":"Book","Steps":"Steps","Skin":"Skin","Sunscreen":"Sunscreen",
+  "Cups":"Cups","Sport":"Sport","Intensity":"Intensity","Meal":"Meal","Cooked at home":"Cooked at home",
+  "Subject":"Subject","Focus":"Focus",
+  "Cleanser":"Cleanser","Toner":"Toner","Serum":"Serum","Cream":"Cream","Mask":"Mask","Body lotion":"Body lotion",
+  "Breakfast":"Breakfast","Lunch":"Lunch","Dinner":"Dinner","Snack":"Snack",
+  "Running":"Running","Strength":"Strength","Yoga":"Yoga","Swimming":"Swimming","Cycling":"Cycling","Ball games":"Ball games",
+  "Major":"Major","English":"English","Certification":"Certification",
+  "hours":"hours","minutes":"minutes","cups":"cups",
   /* 订阅 */
-  "My subscriptions":"我的订阅","Total spent":"总消费","Spent this month":"本月支出",
-  "Subscriptions":"订阅数量","Daily cost":"每日成本","left":"还有","Ended":"已结束",
-  "No subscriptions yet":"还没有订阅","Add subscription":"添加订阅","Edit subscription":"编辑订阅",
-  "Delete this subscription":"删除这个订阅",
-  "Name":"名称","Amount":"金额","Currency":"币种","Cycle":"周期",
-  "Start date":"开始日期","End date":"结束日期","Charge date":"扣费日期",
-  "Monthly":"每月","Quarterly":"每季","Yearly":"每年","Weekly":"每周","Fixed date (one-off)":"固定日期",
-  "Charged once on that day, then marked as ended":"只在这一天扣一次，之后自动标记为已结束",
-  "Repeats on the same day each cycle as the start date":"按开始日期那天推算，比如 15 号开始就每期 15 号扣",
+  "My subscriptions":"My subscriptions","Total spent":"Total spent","Spent this month":"Spent this month",
+  "Subscriptions":"Subscriptions","Daily cost":"Daily cost","left":"left","Ended":"Ended",
+  "No subscriptions yet":"No subscriptions yet","Add subscription":"Add subscription","Edit subscription":"Edit subscription",
+  "Delete this subscription":"Delete this subscription",
+  "Name":"Name","Amount":"Amount","Currency":"Currency","Cycle":"Cycle",
+  "Start date":"Start date","End date":"End date","Charge date":"Charge date",
+  "Monthly":"Monthly","Quarterly":"Quarterly","Yearly":"Yearly","Weekly":"Weekly","Fixed date (one-off)":"Fixed date (one-off)",
+  "Charged once on that day, then marked as ended":"Charged once on that day, then marked as ended",
+  "Repeats on the same day each cycle as the start date":"Repeats on the same day each cycle as the start date",
   /* 记账 */
-  "New entry":"新增记录","Expense":"支出","Income":"收入","Category":"分类","Date":"日期",
-  "Import":"导入",
+  "New entry":"New entry","Expense":"Expense","Income":"Income","Category":"Category","Date":"Date",
+  "Import":"Import",
   /* 属性类型 */
-  "Range":"时段","Number":"数字","Rating":"评分","Switch":"开关","Multi":"多选","Text":"文本",
+  "Range":"Range","Number":"Number","Rating":"Rating","Switch":"Switch","Multi":"Multi","Text":"Text",
   /* 统计 */
-  "Avg":"平均","Min":"最小","Max":"最大","Sum":"总计","Filled":"填写次数","Fill rate":"填写率",
-  "Avg score":"平均分","Unit:":"单位：","No data this month":"这个月还没有数据",
-  "Checked in":"已打卡","Total":"合计","seg":"段","Streak:":"连续",
-  "days split into multiple segments":"天分成了多段，作息偏碎","There are":"有",
-  "entries today, this is #":"条记录，这是第",
+  "Avg":"Avg","Min":"Min","Max":"Max","Sum":"Sum","Filled":"Filled","Fill rate":"Fill rate",
+  "Avg score":"Avg score","Unit:":"Unit:","No data this month":"No data this month",
+  "Checked in":"Checked in","Total":"Total","seg":"seg","Streak:":"Streak:",
+  "days split into multiple segments":"days split into multiple segments","There are":"There are",
+  "entries today, this is #":"entries today, this is #",
   /* 占位符 */
-  "Sleep / Reading / Skincare":"睡眠 / 阅读 / 护肤",
-  "Duration / Quality / Note":"时长 / 睡眠质量 / 备注",
-  "hours / minutes / cups":"小时 / 分钟 / 杯",
-  "Cleanser, Toner, Serum":"洁面，爽肤水，精华",
-  "Enter":"请输入","Bedtime":"就寝","Wake":"起床",
+  "Sleep / Reading / Skincare":"Sleep / Reading / Skincare",
+  "Duration / Quality / Note":"Duration / Quality / Note",
+  "hours / minutes / cups":"hours / minutes / cups",
+  "Cleanser, Toner, Serum":"Cleanser, Toner, Serum",
+  "Enter":"Enter","Bedtime":"Bedtime","Wake":"Wake",
   /* 日历表头 */
-  "wd0":"日","wd1":"一","wd2":"二","wd3":"三","wd4":"四","wd5":"五","wd6":"六",
+  "wd0":"wd0","wd1":"wd1","wd2":"wd2","wd3":"wd3","wd4":"wd4","wd5":"wd5","wd6":"wd6",
   /* 底栏与菜单 */
-  "Today":"今天","Plan":"计划","Rituals":"习惯","Menu":"菜单","Settings":"设置",
-  "Schedule":"日程","Journal":"日记","Spending":"记账","Recurring":"订阅",
-  "Occasions":"生日","Milestones":"倒计时","Insights":"回顾","Habit":"习惯",
-  "Appearance":"外观","Sync":"同步","Export Backup":"导出备份","Restore Backup":"恢复备份",
-  "Export Calendar":"导出日历","Import Bills":"导入账单",
+  "Today":"Today","Plan":"Plan","Rituals":"Habits","Menu":"Menu","Settings":"Settings",
+  "Schedule":"Schedule","Journal":"Journal","Spending":"Spending","Recurring":"Recurring",
+  "Occasions":"Birthdays","Milestones":"Milestones","Insights":"Insights","Habit":"Habits",
+  "Appearance":"Appearance","Sync":"Sync","Export Backup":"Export Backup","Restore Backup":"Restore Backup",
+  "Export Calendar":"Export Calendar","Import Bills":"Import Bills",
   /* 首页 */
-  "To-do":"待办","Done":"已完成","All clear":"都清空了","Countdown":"倒计时",
-  "Spent today":"今日支出","Diary":"日记","Task":"任务","Cost":"记账",
-  "No timed events · tap + to plan one":"今天没有安排 · 点 + 添加",
-  "Late night":"深夜","Good morning":"早上好","Good afternoon":"下午好","Good evening":"晚上好",
-  "Nothing on today":"今天没有安排","to do":"件待办","habits":"个习惯","overdue":"件逾期",
+  "To-do":"To-do","Done":"Done","All clear":"All clear","Countdown":"Countdown",
+  "Spent today":"Spent today","Diary":"Diary","Task":"Task","Cost":"Cost",
+  "No timed events · tap + to plan one":"No timed events · tap + to plan one",
+  "Late night":"Late night","Good morning":"Good morning","Good afternoon":"Good afternoon","Good evening":"Good evening",
+  "Nothing on today":"Nothing on today","to do":"to do","habits":"habits","overdue":"overdue",
   /* 计划 */
-  "Week of":"本周","Carried over":"顺延","Nothing scheduled":"没有安排",
-  "Nothing overdue":"没有逾期","Undated":"无日期","Overdue":"已逾期",
+  "Week of":"Week of","Carried over":"Carried over","Nothing scheduled":"Nothing scheduled",
+  "Nothing overdue":"Nothing overdue","Undated":"Undated","Overdue":"Overdue",
   /* 记账 */
-  "By category":"分类占比","transactions":"笔记录",
-  "Whole month":"看整月","Spent":"支出",
-  "Scan":"扫小票","Items":"商品明细","Item":"商品","Sum → amount":"合计填入总额",
-  "Currency & rates":"币种与汇率","Show totals in":"合计用哪个币种显示",
-  "Rates · 1 USD =":"汇率 · 1 美元 =","Only USD in use so far":"目前只用到美元",
-  "Refresh from network":"联网刷新","Updated":"更新于","Fetching…":"正在获取…","Fetched":"已更新",
-  "Could not fetch · type them in by hand":"获取失败 · 可以手动填","Could not fetch":"获取失败",
-  "This is a new AQ. style key; some Google endpoints still reject it. Try creating an AIza… key in AI Studio.":"这是新版 AQ. 格式的 key，部分 Google 接口还不认。去 AI Studio 建一个 AIza… 开头的试试。",
-  "Opened as a local file: the browser sends Origin null and Google refuses it. Put the page on https.":"当前是本地文件打开的，浏览器会把 Origin 报成 null，Google 会拒绝。把页面放到 https 上再试。",
-  "Rates are only used for display totals. Each entry keeps the currency you typed.":"汇率只用于合计显示，每条记录本身仍保留你填的币种。",
-  "One-off":"一次性","day":"天","days":"天",
-  "Write":"写","Stats":"统计","Days written":"写了几天","Current streak":"当前连续",
-  "Longest streak":"最长连续","Words this month":"本月字数","All entries":"全部篇数",
-  "Average length":"平均长度","Mood this month":"本月心情","Written in total":"累计写了",
-  "characters":"字","d":"天",
-  "No items yet":"还没有明细","items":"件",
-  "Receipt scan":"小票识别","Model":"模型",
-  "The key is kept in this device only. It never goes into the file or into sync.":"key 只存在这台设备上，不会写进文件，也不参与同步。",
-  "Each receipt costs a fraction of a cent. Scanning needs a network connection.":"每张小票花费不到一分钱，识别需要联网。",
-  "Receipt scan is ready":"小票识别已就绪","Key cleared":"已清除 key",
-  "Reading the receipt…":"正在识别小票…","Receipt read":"小票已识别","Read":"识别出",
-  "Could not read that image":"这张图片读不出来",
-  "Could not read that receipt · fill it in by hand":"这张小票认不出来 · 请手动填写",
-  "Scan failed":"识别失败",
-  "Service":"识别服务","Load models":"拉取模型","models":"个可用模型","Switched to":"已换成","Diagnose":"诊断","inside an iframe":"在 iframe 里",
-  "Same-origin request failed too — the page is not running from a normal web address, or fetch is overridden.":"连同源请求都失败 —— 页面不是从正常网址运行的，或者 fetch 被改写了。",
-  "This page can make requests at all":"页面本身能发请求",
-  "Even same-page requests fail — something blocks fetch entirely":"连同源请求都失败，fetch 被整体挡住了",
-  "Reached Google and read the reply":"能连上 Google 并读到回应",
-  "Google answered with an error":"Google 回了错误",
-  "Cross-origin request failed":"跨域请求失败",
-  "The request did leave the browser, but CORS blocked the reply. The page origin is what Google refuses.":"请求确实发出去了，但回应被跨域策略挡住 —— Google 不接受当前页面的来源。",
-  "Blocked by a Content-Security-Policy on the page — your host adds it, not this file.":"被页面的 CSP 拦住了 —— 是你托管的那个网站加的，不是这个文件本身。",
-  "The request never left the browser: an extension, VPN or network filter is blocking googleapis.com. Try a private window, another browser, or your phone.":"请求根本没发出去：浏览器扩展、VPN 或网络在拦 googleapis.com。试试无痕窗口、换个浏览器，或者用手机。","Not callable on this account":"这个账号调不通",
-  "Billed per use in the Claude Console. A receipt costs a fraction of a cent.":"在 Claude Console 按量付费，一张小票不到一分钱。",
-  "Free tier needs no card. Google may use free-tier content to improve their models — avoid it for sensitive receipts.":"免费额度不用绑卡。但免费档的内容 Google 可能用于改进模型，敏感小票别走这条。",
-  "Model name not accepted":"模型名不对",
-  "That model name was not accepted. Tap Load models and pick one from the list.":"这个模型名用不了。点「拉取模型」从列表里选一个。",
-  "Out of quota":"额度用完了",
-  "Out of credit or over the free-tier limit. Free quota resets daily — or switch service / top up.":"余额不足，或超出免费额度。免费额度每天会重置 —— 也可以换一家或者充值。",
-  "Test this key":"测试这个 key","Checking…":"正在检查…","Key works":"key 可用",
-  "Not working":"用不了","Enter a key first":"先填一个 key","Could not reach the API":"连不上 API",
-  "API key was rejected":"API key 被拒绝","API credit ran out":"API 余额不足",
-  "The key was rejected — it may have expired or been revoked. Paste a new one.":"这个 key 被拒绝了 —— 可能已过期或被吊销，换一个新的粘进来。",
-  "The API account is out of credit, or hit a rate limit. Top it up in the Console, or paste a different key.":"API 账户余额不足，或者撞到了速率限制。去 Console 充值，或者换一个 key。",
-  "Nothing on this day · tap ＋ to add":"这天还没有记账 · 点右下角 ＋ 补记",
+  "By category":"By category","transactions":"transactions",
+  "Whole month":"Whole month","Spent":"Spent",
+  "Scan":"Scan","Items":"Items","Item":"Item","Sum → amount":"Sum → amount",
+  "Currency & rates":"Currency & rates","Show totals in":"Show totals in",
+  "Rates · 1 USD =":"Rates · 1 USD =","Only USD in use so far":"Only USD in use so far",
+  "Refresh from network":"Refresh from network","Updated":"Updated","Fetching…":"Fetching…","Fetched":"Fetched",
+  "Could not fetch · type them in by hand":"Could not fetch · type them in by hand","Could not fetch":"Could not fetch",
+  "This is a new AQ. style key; some Google endpoints still reject it. Try creating an AIza… key in AI Studio.":"This is a new AQ. style key; some Google endpoints still reject it. Try creating an AIza… key in AI Studio.",
+  "Opened as a local file: the browser sends Origin null and Google refuses it. Put the page on https.":"Opened as a local file: the browser sends Origin null and Google refuses it. Put the page on https.",
+  "Rates are only used for display totals. Each entry keeps the currency you typed.":"Rates are only used for display totals. Each entry keeps the currency you typed.",
+  "One-off":"One-off","day":"day","days":"days",
+  "Write":"Write","Stats":"Stats","Days written":"Days written","Current streak":"Current streak",
+  "Longest streak":"Longest streak","Words this month":"Words this month","All entries":"All entries",
+  "Average length":"Average length","Mood this month":"Mood this month","Written in total":"Written in total",
+  "characters":"characters","d":"d",
+  "No items yet":"No items yet","items":"items",
+  "Receipt scan":"Receipt scan","Model":"Model",
+  "The key is kept in this device only. It never goes into the file or into sync.":"The key is kept in this device only. It never goes into the file or into sync.",
+  "Each receipt costs a fraction of a cent. Scanning needs a network connection.":"Each receipt costs a fraction of a cent. Scanning needs a network connection.",
+  "Receipt scan is ready":"Receipt scan is ready","Key cleared":"Key cleared",
+  "Reading the receipt…":"Reading the receipt…","Receipt read":"Receipt read","Read":"Read",
+  "Could not read that image":"Could not read that image",
+  "Could not read that receipt · fill it in by hand":"Could not read that receipt · fill it in by hand",
+  "Scan failed":"Scan failed",
+  "Service":"Service","Load models":"Load models","models":"models","Switched to":"Switched to","Diagnose":"Diagnose","inside an iframe":"inside an iframe",
+  "Same-origin request failed too — the page is not running from a normal web address, or fetch is overridden.":"Same-origin request failed too — the page is not running from a normal web address, or fetch is overridden.",
+  "This page can make requests at all":"This page can make requests at all",
+  "Even same-page requests fail — something blocks fetch entirely":"Even same-page requests fail — something blocks fetch entirely",
+  "Reached Google and read the reply":"Reached Google and read the reply",
+  "Google answered with an error":"Google answered with an error",
+  "Cross-origin request failed":"Cross-origin request failed",
+  "The request did leave the browser, but CORS blocked the reply. The page origin is what Google refuses.":"The request did leave the browser, but CORS blocked the reply. The page origin is what Google refuses.",
+  "Blocked by a Content-Security-Policy on the page — your host adds it, not this file.":"Blocked by a Content-Security-Policy on the page — your host adds it, not this file.",
+  "The request never left the browser: an extension, VPN or network filter is blocking googleapis.com. Try a private window, another browser, or your phone.":"The request never left the browser: an extension, VPN or network filter is blocking googleapis.com. Try a private window, another browser, or your phone.","Not callable on this account":"Not callable on this account",
+  "Billed per use in the Claude Console. A receipt costs a fraction of a cent.":"Billed per use in the Claude Console. A receipt costs a fraction of a cent.",
+  "Free tier needs no card. Google may use free-tier content to improve their models — avoid it for sensitive receipts.":"Free tier needs no card. Google may use free-tier content to improve their models — avoid it for sensitive receipts.",
+  "Model name not accepted":"Model name not accepted",
+  "That model name was not accepted. Tap Load models and pick one from the list.":"That model name was not accepted. Tap Load models and pick one from the list.",
+  "Out of quota":"Out of quota",
+  "Out of credit or over the free-tier limit. Free quota resets daily — or switch service / top up.":"Out of credit or over the free-tier limit. Free quota resets daily — or switch service / top up.",
+  "Test this key":"Test this key","Checking…":"Checking…","Key works":"Key works",
+  "Not working":"Not working","Enter a key first":"Enter a key first","Could not reach the API":"Could not reach the API",
+  "API key was rejected":"API key was rejected","API credit ran out":"API credit ran out",
+  "The key was rejected — it may have expired or been revoked. Paste a new one.":"The key was rejected — it may have expired or been revoked. Paste a new one.",
+  "The API account is out of credit, or hit a rate limit. Top it up in the Console, or paste a different key.":"The API account is out of credit, or hit a rate limit. Top it up in the Console, or paste a different key.",
+  "Nothing on this day · tap ＋ to add":"Nothing on this day · tap ＋ to add",
   /* 习惯：某一天的详情 */
-  "Rest of this week":"本周其它记录","Tap a card to edit":"点卡片可以修改",
-  "Tap ＋ to check in this day":"点右下角 ＋ 补签这天","Not checked in":"这天没有打卡",
-  "Edit this record":"修改这条","Add another":"再记一段","Check in this day":"补签这天",
-  "split into":"分成",
+  "Rest of this week":"Rest of this week","Tap a card to edit":"Tap a card to edit",
+  "Tap ＋ to check in this day":"Tap ＋ to check in this day","Not checked in":"Not checked in",
+  "Edit this record":"Edit this record","Add another":"Add another","Check in this day":"Check in this day",
+  "split into":"split into",
   /* 其他页 */
-  "Counting down":"倒数","Counting up":"正数","Passed":"已过","Past entries":"过往记录",
-  "Consistency · last 26 weeks":"坚持度 · 近 26 周",
-  "No birthdays":"还没有生日","No countdowns":"还没有倒计时",
-  "Search tasks, diary entries and costs":"搜索待办、日记和账目",
-  "What matters most this week?":"这周最重要的是什么？",
-  "What happened today?":"今天发生了什么？",
+  "Counting down":"Counting down","Counting up":"Counting up","Passed":"Passed","Past entries":"Past entries",
+  "Consistency · last 26 weeks":"Consistency · last 26 weeks",
+  "No birthdays":"No birthdays","No countdowns":"No countdowns",
+  "Search tasks, diary entries and costs":"Search tasks, diary entries and costs",
+  "What matters most this week?":"What matters most this week?",
+  "What happened today?":"What happened today?",
   /* 通用 */
-  "Add":"添加","Close":"关闭","Search":"搜索","Time":"时间","Location":"地点","Notes":"备注",
-  "Title":"标题","What":"什么事","New event":"新建日程","More":"更多","Temperature":"温度",
+  "Add":"Add","Close":"Close","Search":"Search","Time":"Time","Location":"Location","Notes":"Notes",
+  "Title":"Title","What":"What","New event":"New event","More":"More","Temperature":"Temperature",
   /* 长期计划 */
-  "Long-term":"长期计划","Long-term plan":"长期计划","New plan":"新建计划","Edit plan":"编辑计划",
-  "Delete this plan":"删除这个计划","Add item":"添加条目","Edit item":"编辑条目",
-  "Item name":"条目名称","Enter a name":"请输入名称","Completed":"完成于","No items yet":"还没有条目",
-  "No plans yet · tap + to create":"还没有计划，点右下角 + 新建",
-  "Left":"还有","items":"个","Icon":"图标","Color":"颜色",
-  "Travel / Reading list":"旅行 / 书单",
-  "Add sub-item":"添加子项","Completion follows its sub-items":"完成状态由子项自动推导",
+  "Long-term":"Long-term","Long-term plan":"Long-term plan","New plan":"New plan","Edit plan":"Edit plan",
+  "Delete this plan":"Delete this plan","Add item":"Add item","Edit item":"Edit item",
+  "Item name":"Item name","Enter a name":"Enter a name","Completed":"Completed","No items yet":"No items yet",
+  "No plans yet · tap + to create":"No plans yet · tap + to create",
+  "Left":"Left","items":"items","Icon":"Icon","Color":"Color",
+  "Travel / Reading list":"Travel / Reading list",
+  "Add sub-item":"Add sub-item","Completion follows its sub-items":"Completion follows its sub-items",
   /* 设置 */
-  "Language":"语言"
+  "Language":"Language"
 };
 function calHead(){
   return '<div class="hcalh">'+[0,1,2,3,4,5,6].map(function(i){
     return '<span>'+(LANG==="zh"?ZH["wd"+i]:["S","M","T","W","T","F","S"][i])+'</span>';}).join("")+'</div>';}
 function T(k){return (LANG==="zh"&&ZH[k])?ZH[k]:k;}
-function setLang(v){LANG=v;try{store.set("rec.lang",v)}catch(e){}render();}
+function setLang(v){LANG=v==="zh"?"en":"en";try{store.set("rec.lang",LANG)}catch(e){}render();}
 /* 待办和习惯共用同一套标记色 */
 /* 待办的标记色：必须和 CSS 里的 .c0~.c5 保持一致 */
 var COLORS={c0:"#EF4444",c1:"#F59E0B",c2:"#10B981",c3:"#3B82F6",c4:"#8B5CF6",c5:"#EC4899"};
@@ -3366,7 +3494,7 @@ function habitSheet(hb,tpl,resume){
   var d=hbDraft;
 
   openSheet('<h2>'+esc(d.title)+'</h2>'+
-    '<label class="fl">名称</label>'+
+    '<label class="fl">'+T("Name")+'</label>'+
     '<input class="inp" id="hn" maxlength="40" value="'+esc(d.name)+'" placeholder="'+T("Sleep / Reading / Skincare")+'">'+
     '<label class="fl">'+T("Check-in color")+'</label><div class="cpal" id="hcp">'+
       '<label class="cpcus'+(/^#/.test(d.color)?" on":"")+'" id="hcw" style="--cc:'+hcol(d)+'">'+
@@ -3400,7 +3528,7 @@ function habitSheet(hb,tpl,resume){
         '<span class="fldic">'+FIC[f.type]+'</span>'+
         '<span class="fldb"><b>'+esc(f.label||T("Untitled"))+
           (f.req?'<em class="req">'+T("Required")+'</em>':"")+'</b>'+
-          '<i>'+FTY[f.type]+'类型'+(f.type==="number"&&f.unit?' · '+esc(f.unit):"")+'</i></span>'+
+          '<i>'+FTY[f.type]+' '+T("Type")+(f.type==="number"&&f.unit?' · '+esc(f.unit):"")+'</i></span>'+ 
         '<span class="fldc">›</span></div>';}).join("");
     $("hfl").querySelectorAll("[data-fe]").forEach(function(el){
       el.onclick=function(){sync();fieldSheet(+el.dataset.fe);};});}
@@ -3441,7 +3569,7 @@ function fieldSheet(idx){
 
   function draw(){
     openSheet('<h2>'+(isNew?T("Add attribute"):T("Edit attribute"))+'</h2>'+
-      '<label class="fl">属性名</label>'+
+      '<label class="fl">Attribute name</label>'+ 
       '<input class="inp" id="fn" maxlength="20" value="'+esc(f.label||"")+'" placeholder="'+T("Duration / Quality / Note")+'">'+
       '<label class="fl">'+T("Type")+'</label><div class="ftyg" id="fty">'+FTYL.map(function(r){
         return '<button data-fv="'+r[0]+'"'+(r[0]===f.type?' class="on"':'')+'>'+
@@ -3477,9 +3605,9 @@ function fieldSheet(idx){
     $("fok").onclick=function(){
       f.label=$("fn").value.trim();
       if(!f.label){$("fn").focus();return;}
-      if(f.type==="number"){f.unit=($("fu").value||"").trim();
-        f.dec=/小时|kg|km|公斤|升/.test(f.unit)?1:0;}
-      if(f.type==="clock"){f.slab=($("fsl").value||"").trim()||"开始";f.elab=($("fel").value||"").trim()||"结束";}
+        if(f.type==="number"){f.unit=($("fu").value||"").trim();
+          f.dec=/小时|kg|km|公斤|升/.test(f.unit)?1:0;}
+      if(f.type==="clock"){f.slab=($("fsl").value||"").trim()||T("Start");f.elab=($("fel").value||"").trim()||T("Wake");}
       if(f.type==="multi")f.opts=($("fo").value||"").split(/[,，]/).map(function(x){return x.trim()}).filter(Boolean);
       if(isNew)hbDraft.fields.push(f); else hbDraft.fields[idx]=f;
       back();};}
@@ -3527,8 +3655,8 @@ function logSheet(hb,ds,logId){
       else if(typeof v==="number"){ev2=(sv+Math.round(v*60))%1440;}
       return lab+'<div class="kbox">'+
         '<div class="khead">'+
-          '<div><span>'+ico("bed",13)+esc(f.slab||"就寝")+'</span><b id="dst">'+m2t(sv)+'</b></div>'+
-          '<div><span>'+ico("alarm",13)+esc(f.elab||"起床")+'</span><b id="det">'+m2t(ev2)+'</b></div>'+
+          '<div><span>'+ico("bed",13)+esc(f.slab||T("Bedtime"))+'</span><b id="dst">'+m2t(sv)+'</b></div>'+
+          '<div><span>'+ico("alarm",13)+esc(f.elab||T("Wake"))+'</span><b id="det">'+m2t(ev2)+'</b></div>'+
         '</div>'+
         dialSVG(sv,ev2,hcol(hb))+
         '<div class="kdur" id="kdur">—</div></div>';}
@@ -3550,9 +3678,11 @@ function logSheet(hb,ds,logId){
   var same=logsOn(hb.id,ds).filter(function(x){return !l||x.id!==l.id});
   openSheet('<div class="lgttl"><b>'+(exists?T("Edit entry"):T("Check in"))+'</b>'+
     '<i>'+hicon(hb,13)+esc(hb.name)+'</i></div>'+
-    (same.length?'<div class="lgnote">这天已经有 '+same.length+' 条记录，这是第 '+(same.length+1)+' 条</div>':"")+
-    (ds!==todayStr()?'<div class="lgback">补签 · '+
-      esc((parse(ds).getMonth()+1)+"月"+parse(ds).getDate()+"日")+'</div>':"")+
+    (same.length?'<div class="lgnote">'+same.length+' '+
+      (same.length>1?T("past records"):(same.length===1?T("record"):T("records")))+
+      ' · '+T("this is")+' '+(same.length+1)+T("th one")+'</div>':"")+
+    (ds!==todayStr()?'<div class="lgback">'+T("Backfill")+" · "+
+      esc((parse(ds).getMonth()+1)+"/"+parse(ds).getDate())+'</div>':"")+
     (fs.length?fs.map(fieldHTML).join(""):'<div class="hdone" style="margin-top:16px">'+ckSVG(true)+'<span>'+T("Check in")+'</span></div>')+
     '<div class="lgerr" id="lgerr"></div>'+
     '<div class="row" style="margin-top:18px">'+
@@ -3600,7 +3730,7 @@ function logSheet(hb,ds,logId){
       if(v!=null)out[f.id]=v;
       else if(f.req)miss.push(f.label);});
     if(miss.length){
-      $("lgerr").textContent=T("Missing required:")+miss.join("、");
+      $("lgerr").textContent=T("Missing required:")+miss.join(", ");
       $("lgerr").classList.add("on");return;}
     var st = hasClock ? ((out[(fs.filter(function(f){return f.type==="clock"})[0]||{}).id]||{}).s || tm) : tm;
     var id = l ? l.id : (hb.id+"_"+ds+(logsOn(hb.id,ds).length?"_"+Math.random().toString(36).slice(2,7):""));
@@ -3644,19 +3774,19 @@ function vHabit(){
     var mf=mainField(hb), tot=null;
     if(mf&&ls.length>1){tot=0;ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]);if(vv!=null)tot+=vv;});}
     return '<div class="hrw" data-hpress="'+hb.id+'">'+
-      '<button class="hdel" data-hdel="'+hb.id+'">删除</button>'+
+      '<button class="hdel" data-hdel="'+hb.id+'">'+T("Delete")+'</button>'+
       '<div class="hcard" data-hopen="'+hb.id+'" style="--hc:'+c+'">'+
       '<div class="hch"><span class="hcn">'+hicon(hb,18)+esc(hb.name)+'</span>'+
-      '<span class="hcm">连续 '+st+' 天</span></div>'+
+      '<span class="hcm">Streak '+st+'</span></div>'+
       '<div class="'+(l?"hdone":"hcta")+'" data-hl="'+hb.id+'|'+ts+'">'+
-        (l?ckSVG(true)+'<span>'+T("Checked in today")+''+(ls.length>1?' · '+ls.length+' 段':'')+'</span>':T("＋ Check in"))+
+        (l?ckSVG(true)+'<span>'+T("Checked in today")+''+(ls.length>1?' · '+ls.length+' '+T("records"):'')+'</span>':T("＋ Check in"))+
         (isMulti(hb)&&l?'<em class="hadd">'+T("Check in again")+'</em>':"")+'</div>'+
-      (tot!=null?'<div class="hcsum">合计 '+esc(fnum(tot,1)+fUnit(mf))+
-        '<em class="'+(mf&&mf.type==="clock"?"warn":"cnt")+'">'+ls.length+' 段</em></div>'
+      (tot!=null?'<div class="hcsum">'+T("Total")+" "+esc(fnum(tot,1)+fUnit(mf))+
+        '<em class="'+(mf&&mf.type==="clock"?"warn":"cnt")+'">'+ls.length+' '+T("records")+'</em></div>'
         :(sm?'<div class="hcsum">'+esc(sm)+'</div>':""))+
-      (function(){var bs=barStrip(hb), mf2=mainField(hb);
-        return '<div class="hcs">'+T("Last 28 days")+''+
-          (bs.avg!=null?'<em>平均 '+esc(fnum(bs.avg,1)+fUnit(mf2))+'</em>':"")+'</div>'+
+    (function(){var bs=barStrip(hb), mf2=mainField(hb);
+      return '<div class="hcs">'+T("Last 28 days")+''+
+          (bs.avg!=null?'<em>'+T("Avg")+" "+esc(fnum(bs.avg,1)+fUnit(mf2))+'</em>':"")+'</div>'+
           '<div class="hbar'+(bs.chart?" chart":"")+'">'+bs.html+'</div>';})()+
     '</div></div>';}).join("")+'</div>';}
 
@@ -3722,8 +3852,8 @@ function tlRow(hb,r){
   return '<div class="tli">'+
     '<div class="tld">'+pad(r.d.getMonth()+1)+'-'+pad(r.d.getDate())+
       ' <small>'+WDE[r.d.getDay()]+'</small>'+
-      (r.ls.length>1?'<em class="split">分 '+r.ls.length+' 段'+
-        (tt!=null?' · 合计 '+esc(fnum(tt,1)+fUnit(mf)):"")+'</em>':"")+'</div>'+
+      (r.ls.length>1?'<em class="split">'+T("split into")+" "+r.ls.length+" "+T("segments")+
+        (tt!=null?' · '+T("Total")+' '+esc(fnum(tt,1)+fUnit(mf)):"")+'</em>':"")+'</div>'+ 
     r.ls.map(function(x){
       return '<div class="tlc" data-hedid="'+x.id+'">'+
         (x.start_time?'<span class="tlt">'+esc(x.start_time)+'</span>':"")+
@@ -3767,8 +3897,8 @@ function hDaySheet(hb,ds){
 
 function vHabitOne(hb){
   var h='<div class="hseg"><div class="sw">'+
-    '<button data-hm="log"'+(habitMode==="log"?' class="on"':'')+'>记录</button>'+
-    '<button data-hm="stat"'+(habitMode==="stat"?' class="on"':'')+'>统计</button></div>'+
+    '<button data-hm="log"'+(habitMode==="log"?' class="on"':'')+'>'+T("Record")+'</button>'+ 
+    '<button data-hm="stat"'+(habitMode==="stat"?' class="on"':'')+'>'+T("Stats")+'</button></div>'+ 
     '<button class="pill" data-hedit="'+hb.id+'">'+T("Edit")+'</button></div>';
   if(habitMode==="stat")
     h+='<div class="hmon"><button class="pill" data-hmn="-1">‹</button>'+
@@ -3828,13 +3958,13 @@ function hStat(hb,rows,last){
 
   var h='<div class="sec">'+T("Basic stats")+'</div><div class="stg">'+
     '<div class="stc"><div class="k">'+T("Days checked")+'</div><div class="v">'+tot+'<small>/'+days+'</small></div></div>'+
-    '<div class="stc"><div class="k">'+T("Check-ins")+'</div><div class="v">'+hits+'<small>次</small></div></div>'+
-    '<div class="stc"><div class="k">'+T("Longest streak")+'</div><div class="v">'+best+'<small>天</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Check-ins")+'</div><div class="v">'+hits+'<small>'+T("records")+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Longest streak")+'</div><div class="v">'+best+'<small>'+T("days")+'</small></div></div>'+
     (hasClockF
-      ? '<div class="stc'+(split?" warn":"")+'"><div class="k">'+T("Split days")+'</div><div class="v">'+split+'<small>天</small></div></div>'
-      : '<div class="stc"><div class="k">'+T("Avg gap")+'</div><div class="v">'+(gap?gap.toFixed(1):"—")+'<small>天</small></div></div>')+
+      ? '<div class="stc'+(split?" warn":"")+'"><div class="k">'+T("Split days")+'</div><div class="v">'+split+'<small>'+T("days")+'</small></div></div>'
+      : '<div class="stc"><div class="k">'+T("Avg gap")+'</div><div class="v">'+(gap?gap.toFixed(1):"—")+'<small>'+T("days")+'</small></div></div>')+
     '</div>'+
-    (hasClockF&&split?'<div class="stnote">有 '+split+' 天分成了多段，作息偏碎</div>':"");
+    (hasClockF&&split?'<div class="stnote">'+T("Some days have multiple segments; schedule is fragmented")+'</div>':"");
 
   var fs=hfields(hb);
   if(fs.length){
@@ -3888,17 +4018,17 @@ function hStat(hb,rows,last){
            '<span class="p">'+rt[n]+'</span></div>';});
     }else if(f.type==="bool"){
       var bn=yes+no||1;
-      h+='<div class="stl"><span class="n">是</span><span class="b"><i style="width:'+Math.round(yes/bn*100)+'%"></i></span>'+
-         '<span class="p">'+yes+'次 '+Math.round(yes/bn*100)+'%</span></div>'+
-         '<div class="stl"><span class="n">否</span><span class="b"><i style="width:'+Math.round(no/bn*100)+'%"></i></span>'+
-         '<span class="p">'+no+'次 '+Math.round(no/bn*100)+'%</span></div>';
+      h+='<div class="stl"><span class="n">'+T("Yes")+'</span><span class="b"><i style="width:'+Math.round(yes/bn*100)+'%"></i></span>'+
+         '<span class="p">'+yes+' '+T("times")+' '+Math.round(yes/bn*100)+'%</span></div>'+
+         '<div class="stl"><span class="n">'+T("No")+'</span><span class="b"><i style="width:'+Math.round(no/bn*100)+'%"></i></span>'+
+         '<span class="p">'+no+' '+T("times")+' '+Math.round(no/bn*100)+'%</span></div>';
     }else if(f.type==="multi"){
       var ks=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
       if(!ks.length)h+='<div class="empty" style="padding:14px 0">'+T("No data this month")+'</div>';
       else ks.forEach(function(n){var pc=tot?Math.round(cnt[n]/tot*100):0;
         h+='<div class="stl"><span class="n">'+esc(n)+'</span>'+
            '<span class="b"><i style="width:'+pc+'%"></i></span>'+
-           '<span class="p">'+cnt[n]+'次 '+pc+'%</span></div>';});
+           '<span class="p">'+cnt[n]+' '+T("times")+' '+pc+'%</span></div>';});
     }else{
       h+='<div class="f4" style="grid-template-columns:1fr 1fr">'+
          '<div><i>'+T("Filled")+'</i><b>'+filled+'</b></div>'+
@@ -4661,10 +4791,10 @@ function vMoney(){
         (oth[d2]?" mix":"")+'" data-mday="'+ds2+'">'+
         '<b>'+d2+'</b>'+(av?'<i>'+(v>0?"+":"−")+(av>=1000?(Math.round(av/100)/10)+"k":Math.round(av))+'</i>':"")+'</div>';}
     h+='<div class="card" style="padding:12px 12px 14px;margin-bottom:12px">'+
-       calHead()+
-       '<div class="hcal scal mcal">'+out+'</div>'+
-       '<div class="mcleg"><span>支出</span><i class="neg lv4"></i><i class="neg lv2"></i>'+
-       '<i class="lv0"></i><i class="pos lv2"></i><i class="pos lv4"></i><span>收入</span></div></div>';})();
+	       calHead()+
+	       '<div class="hcal scal mcal">'+out+'</div>'+
+	       '<div class="mcleg"><span>Expense</span><i class="neg lv4"></i><i class="neg lv2"></i>'+
+	       '<i class="lv0"></i><i class="pos lv2"></i><i class="pos lv4"></i><span>Income</span></div></div>';})();
 
   // 分类占比：只算主币种，不同币种混在一起算比例没意义
   var byCat={};
@@ -4750,7 +4880,7 @@ function ledSheet(rec,defDate,pre){
     '<button class="pill" id="liadd" style="margin-bottom:4px">＋ '+T("Add item")+'</button>'+
     '<div class="row" style="margin-top:14px"><button class="btn" id="lv" style="flex:1">'+T("Save")+'</button><button class="btn g" id="lx">'+T("Cancel")+'</button></div>'+
     (ed?'<button class="btn g" id="ldel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete this entry")+'</button>':""));
-  var kind=(ed&&ed.kind)||"expense", cat=(ed&&ed.category)||(pre&&pre.category)||"餐饮";
+  var kind=(ed&&ed.kind)||"expense", cat=(ed&&ed.category)||(pre&&pre.category)||"Food";
   $("lc").value = ed ? rowCur(ed) : ((pre&&pre.currency)||defCur());   // 新记录默认美金（或上次用过的）
 
   /* 小票明细：可改可删，改完总额可以一键取合计 */
@@ -5281,6 +5411,7 @@ var MENU_MAIN=[
   {k:"habit", ic:"✅", n:"Habit"}
 ];
 var MENU=[
+  {k:"cook",   ic:"bowl",     n:"Menu"},
   {k:"bday",   ic:"gift",     n:"Occasions"},
   {k:"habit",  ic:"flame",    n:"Rituals"},
   {k:"money",  ic:"wallet",   n:"Spending"},
@@ -5322,7 +5453,7 @@ function openDrawer(){$("dwlist").innerHTML=drawerHTML();bindDrawer();
 function closeDrawer(){$("drawer").classList.remove("on");$("scrim").classList.remove("on");}
 function bindDrawer(){
   document.querySelectorAll("[data-go]").forEach(function(el){
-    el.onclick=function(){tab=el.dataset.go;habitOpen=null;planOpen=null;closeDrawer();window.scrollTo(0,0);setTab();render();};});
+    el.onclick=function(){tab=el.dataset.go;habitOpen=null;planOpen=null;if(typeof ckOpen!=="undefined"){if(ckMode==="edit")ckCommitEdit(ckOpen,true);ckOpen=null;ckMode="";ckDraft=null;}closeDrawer();window.scrollTo(0,0);setTab();render();};});
   document.querySelectorAll("[data-act]").forEach(function(el){
     el.onclick=function(){var a=el.dataset.act;closeDrawer();
       setTimeout(function(){
@@ -5932,7 +6063,7 @@ function newTodoSheet(ds,st,et,md,wk,lock){
 
 function subSheet(rec,defDate){
   var ed=rec||null;
-  openSheet('<h2>'+(ed?T("Edit subscription"):T("Add subscription"))+'</h2><label class="fl">名称</label><input class="inp" id="sn" placeholder="Netflix / iCloud" value="'+(ed?esc(ed.name):"")+'">'+
+  openSheet('<h2>'+(ed?T("Edit subscription"):T("Add subscription"))+'</h2><label class="fl">'+T("Name")+'</label><input class="inp" id="sn" placeholder="Netflix / iCloud" value="'+(ed?esc(ed.name):"")+'">'+
     '<div class="row" style="gap:8px"><div style="flex:1"><label class="fl">'+T("Amount")+'</label><input class="inp" id="sp" type="number" step="0.01" placeholder="0.00" value="'+(ed?esc(ed.price):"")+'"></div>'+
     '<div style="flex:1"><label class="fl">'+T("Currency")+'</label><select class="inp" id="sc">'+
       CURS.map(function(c){return '<option value="'+c[0]+'">'+curP(c[0])+' '+c[0]+'</option>';}).join("")+
@@ -5952,7 +6083,7 @@ function subSheet(rec,defDate){
   if(ed)$("sy").value=ed.cycle||"monthly";
   function syncCyc(){
     var once=$("sy").value==="once";
-    $("ssl").textContent = once?T("Charge date"):"开始日期";
+    $("ssl").textContent = once?T("Charge date"):T("Start date");
     $("sew").style.display = once?"none":"";
     $("scn").textContent = once?T("Charged once on that day, then marked as ended")
       :T("Repeats on the same day each cycle as the start date");}
@@ -6198,7 +6329,7 @@ function bdSheet(rec){
   function preview(){
     var st=$("bs"), r=bdParse(q.value);
     if(!q.value.trim()){st.className="st";st.textContent="";return null;}
-    if(!r){st.className="st bad";st.textContent="e.g. 张三 19900101 0730";return null;}
+    if(!r){st.className="st bad";st.textContent="e.g. Jordan 19900101 0730";return null;}
     var d=parse(r.date);
     st.className="st good";
     st.textContent=r.name+" · "+MONS[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear()+(r.time?"  "+r.time:"");
@@ -6220,7 +6351,7 @@ function bdSheet(rec){
 function langSheet(){
   openSheet('<h2>Language</h2>'+
     '<div class="seg" id="lgSeg">'+
-      [["en","English"],["zh","中文"]].map(function(r){
+      [["en","English"],["zh","Chinese"]].map(function(r){
         return '<button data-lg="'+r[0]+'" class="'+(LANG===r[0]?"on":"")+'">'+r[1]+'</button>';}).join("")+
     '</div>'+
     '<div class="note" style="margin:12px 0 0">Habit names and attribute labels you already created stay as typed.</div>'+
@@ -6299,7 +6430,7 @@ function cfgSheet(){
     '<input class="inp" id="ck" placeholder="sb_publishable_..." value="'+(cfg?esc(cfg.key):"")+'" autocapitalize="off" spellcheck="false">'+
     '<div class="st" id="cs"></div>'+
     '<div class="row"><button class="btn" id="cc" style="flex:1">Connect</button><button class="btn g" id="cx">Close</button></div>'+
-    '<div class="note">Run 建表-v2.sql in the Supabase SQL Editor before first use. Enter these once per device.</div>');
+    '<div class="note">Run SQL migration v2.sql in the Supabase SQL Editor before first use. Enter these once per device.</div>');
   $("cx").onclick=closeSheet;
   $("cc").onclick=function(){var u=$("cu").value.trim(),k=$("ck").value.trim();
     if(!/^https:\/\//.test(u)||!k){$("cs").textContent="Enter a valid URL and key";$("cs").className="st bad";return}
@@ -6367,6 +6498,898 @@ document.addEventListener("click",function(e){
     c.classList.remove("armed");c.classList.remove("armL");
     var b=c.querySelector("[data-hdel],[data-pdel]");
     if(b){b.dataset.armed="0";b.textContent=T("Delete");}});},true);
+
+/* ==================== Menu 菜单:冰箱 + 菜谱 + AI 导入 ==================== */
+/* 本模块内容天生中文(菜名/食材/分类),无视全局语言设置,直接查中文词典 */
+function TT(k){return ZH[k]||k}
+/* 数据表:pantry(冰箱食材) recipes(菜谱库),走 push/drop 的 outbox 同步管线 */
+if(!Array.isArray(D.pantry))D.pantry=[];
+if(!Array.isArray(D.recipes))D.recipes=[];
+
+/* ---- 食材目录:名称/图标/单位/冷藏保质期(天) ---- */
+var CKCAT=[
+ {k:"veg",name:"Vegetables",dot:"#1C6B57",items:[
+  ["土豆","🥔","lb",21,"阴凉避光,别进冰箱"],["番茄","🍅","个",10,"室温催熟,熟后冷藏"],["青菜","🥬","把",5,"厨房纸包好冷藏"],["黄瓜","🥒","根",9,"保鲜袋冷藏"],
+  ["胡萝卜","🥕","根",14,"去缨保鲜袋冷藏"],["洋葱","🧅","个",30,"阴凉通风,别装袋"],["西兰花","🥦","lb",7,"保鲜膜包好冷藏"],["白菜","🥬","棵",10,"报纸包好放阴凉处"],
+  ["娃娃菜","🥬","棵",10,"保鲜袋冷藏"],["青椒","🫑","个",7,"保鲜袋冷藏"],["丝瓜","🥒","根",5,"室温尽快吃"],["蒜","🧄","瓣",30,"阴凉通风干燥"],
+  ["小葱","🌿","根",5,"湿纸包根部冷藏"],["姜","🫚","块",21,"阴凉干燥,切开后冷藏"]]},
+ {k:"fruit",name:"Fruits",dot:"#C2703D",items:[
+  ["苹果","🍎","个",30,"冷藏更脆"],["香蕉","🍌","根",5,"室温,别进冰箱"],["橙子","🍊","个",21,"阴凉或冷藏"],["柠檬","🍋","个",21,"冷藏保存"],
+  ["蓝莓","🫐","盒",7,"冷藏,吃前再洗"]]},
+ {k:"protein",name:"Meat & Protein",dot:"#B4443B",items:[
+  ["猪排","🥩","lb",3,"冷藏保鲜,久放冷冻"],["排骨","🍖","lb",3,"冷藏保鲜,久放冷冻"],["猪肉糜","🥩","lb",2,"当天用不完就冷冻"],["五花肉","🥓","lb",3,"冷藏保鲜,久放冷冻"],
+  ["牛排","🥩","lb",3,"冷藏保鲜,久放冷冻"],["牛肉糜","🥩","lb",2,"当天用不完就冷冻"],["鸡胸肉","🍗","lb",2,"冷藏保鲜,久放冷冻"],["鸡腿","🍗","个",2,"冷藏保鲜,久放冷冻"],
+  ["鸡翅","🍗","lb",2,"冷藏保鲜,久放冷冻"],["羊肉","🥩","lb",3,"冷藏保鲜,久放冷冻"],["虾","🦐","lb",2,"冷冻更保鲜"],["三文鱼","🐟","lb",2,"冰鲜冷藏,尽快吃"],
+  ["鸡蛋","🥚","颗",21,"冷藏,尖头朝下"],["牛奶","🥛","盒",7,"开封后冷藏 3 天内"],["豆腐","🍢","块",5,"泡水冷藏,每天换水"]]},
+ {k:"staple",name:"Staple foods",dot:"#8A6317",items:[
+  ["米饭","🍚","碗",2,"放凉密封冷藏"],["面条","🍜","把",90,"干燥密封存放"],["面包","🍞","片",4,"密封室温,久放冷冻"]]},
+ {k:"other",name:"Others",dot:"#8A7BC8",items:[
+  ["盐","🧂","g",365,"干燥密封"],["糖","🍬","g",365,"干燥密封"],["生抽","🍶","ml",365,"阴凉避光"],["老抽","🍶","ml",365,"阴凉避光"],
+  ["料酒","🍶","ml",365,"阴凉避光"],["胡椒粉","🫙","g",365,"干燥密封"],["芝麻油","🫗","ml",180,"阴凉避光"],["蘸料","🥣","份",14,"冷藏尽快用"]]}
+];
+/* 旧分组名迁移(老数据里的 meat/base) */
+function ckGrpOf(c){return c==="meat"?"protein":c==="base"?"staple":
+  (c==="veg"||c==="fruit"||c==="protein"||c==="staple"||c==="other")?c:"other"}
+function ckCatOf(n){for(var i=0;i<CKCAT.length;i++){var a=CKCAT[i].items;
+  for(var j=0;j<a.length;j++)if(a[j][0]===n)return{cat:CKCAT[i].k,e:a[j][1],u:a[j][2],life:a[j][3],s:a[j][4]||""};}
+  var cs=ckCustIngs();
+  for(var k=0;k<cs.length;k++)if(cs[k].n===n)return{cat:cs[k].c||"protein",e:cs[k].e,u:cs[k].u,life:cs[k].l,s:cs[k].s||""};
+  return null;}
+function ckIsBuiltinIng(n){for(var i=0;i<CKCAT.length;i++){var a=CKCAT[i].items;
+  for(var j=0;j<a.length;j++)if(a[j][0]===n)return true}return false}
+/* 自定义食材:存本地;冰箱里出现过但目录没有的,也自动派生进来(跨设备同步自然打通) */
+function ckCustIngs(){
+  var out=[],seen={};
+  CKCAT.forEach(function(c){c.items.forEach(function(a){seen[a[0]]=1})});
+  var hid=ckCust("ck.hings");
+  var st=[];try{st=JSON.parse(store.get("ck.cings")||"[]")}catch(e){}
+  (Array.isArray(st)?st:[]).forEach(function(o){
+    if(o&&o.n&&!seen[o.n]&&hid.indexOf(o.n)<0){seen[o.n]=1;
+      out.push({n:o.n,e:o.e||"🧺",u:o.u||"个",l:(+o.l>0)?+o.l:7,s:o.s||"",c:ckGrpOf(o.c)})}});
+  D.pantry.forEach(function(i){
+    if(i.name&&!seen[i.name]&&hid.indexOf(i.name)<0){seen[i.name]=1;
+      out.push({n:i.name,e:i.emoji||"🧺",u:i.unit||"个",l:7,s:i.keep||"",c:ckGrpOf(i.cat)})}});
+  return out;}
+function ckKeepOf(n){try{var m=JSON.parse(store.get("ck.keeps")||"{}");if(n in m)return m[n]||"";}catch(e){}
+  var c=ckCatOf(n);return (c&&c.s)||"";}
+function ckKeepSet(n,v){try{var m=JSON.parse(store.get("ck.keeps")||"{}");m[n]=v;store.set("ck.keeps",JSON.stringify(m))}catch(e){}}
+function ckCustIngAdd(o){
+  var st=[];try{st=JSON.parse(store.get("ck.cings")||"[]")}catch(e){}
+  if(!Array.isArray(st))st=[];
+  st=st.filter(function(x){return x&&x.n!==o.n});st.push(o);
+  try{store.set("ck.cings",JSON.stringify(st))}catch(e){}
+  ckCustDel("ck.hings",o.n);}   /* 同名重建 → 取消隐藏 */
+function ckEmojiFor(n){var c=ckCatOf(n);if(c)return c.e;
+  var m=[["奶茶","🧋"],["汤","🍲"],["酒","🍸"],["茶","🍵"],["咖啡","☕"],["虾","🦐"],["鱼","🐟"],["鸡","🍗"],["蛋","🍳"],["面","🍜"],["饭","🍚"],["肉","🍖"],["菜","🥬"],["豆腐","🍢"]];
+  for(var i=0;i<m.length;i++)if(n.indexOf(m[i][0])>=0)return m[i][1];return"🧺";}
+
+/* ---- 内置起步菜谱(收藏或做过后会存入 recipes 表跟着同步) ---- */
+function ckR(id,n,t,lv,e,base,desc,ing,steps){return{id:id,name:n,time_min:t,level:lv,emoji:e,base_serv:base,
+  descr:desc,ing:ing,steps:steps,source:"",fav:false,cooked:0,builtin:true};}
+var CKBUILTIN=[
+ ckR("ckb1","番茄蛋花汤",20,"懒人友好","🍲",2,"汤鲜暖胃,番茄酸甜开胃",
+  [["番茄",1,"个"],["鸡蛋",1,"颗"],["小葱",1,"根"]],
+  ["番茄切小块,鸡蛋打散,小葱切末。","热锅少油,番茄中火炒出汁约 2 分钟。","加两碗热水,煮开转小火 3 分钟。","转圈淋入蛋液,数 5 秒再轻推。","加盐,撒葱花出锅。"]),
+ ckR("ckb2","小葱炒鸡蛋",10,"懒人友好","🍳",1,"蛋香葱香,简单快手",
+  [["鸡蛋",2,"颗"],["小葱",2,"根"]],
+  ["鸡蛋打散加盐,葱末拌进蛋液。","热锅热油,油微冒烟下蛋液。","大火 10 秒定型,推散。","刚凝固就关火,余温翻两下出锅。"]),
+ ckR("ckb3","虾仁炒蛋",15,"懒人友好","🍤",2,"虾嫩蛋滑,一锅到底",
+  [["虾",0.5,"lb"],["鸡蛋",1,"颗"],["洋葱",0.5,"个"]],
+  ["虾去壳去肠线,洋葱切碎,鸡蛋打散。","热锅下油,虾炒至变色约 2-3 分钟盛出。","补油,洋葱炒软炒香。","倒蛋液,半凝固时虾回锅。","轻翻拌匀,加盐和白胡椒。","关火装盘。"]),
+ ckR("ckb4","红烧肉",50,"中等难度","🍖",3,"软糯入味,周末硬菜",
+  [["五花肉",1,"lb"],["姜",1,"块"],["小葱",1,"根"]],
+  ["五花肉切块,冷水下锅焯 3 分钟。","少油小火,两勺糖炒到枣红。","下肉翻炒上色,加姜片葱段。","生抽两勺老抽半勺,热水没过肉。","小火炖 40 分钟。","大火收汁出锅。"]),
+ ckR("ckb5","番茄炒蛋",12,"懒人友好","🍳",2,"国民下饭菜,酸甜一绝",
+  [["番茄",2,"个"],["鸡蛋",2,"颗"]],
+  ["番茄切块,鸡蛋打散加盐。","热油炒蛋,凝固就盛出。","补油下番茄,炒出沙。","蛋回锅,加半勺糖一点盐。","翻匀出锅。"]),
+ ckR("ckb6","可乐鸡翅",30,"懒人友好","🍗",2,"甜咸油亮,零失败",
+  [["鸡翅",1,"lb"],["姜",1,"块"]],
+  ["鸡翅划两刀,冷水焯 2 分钟。","少油两面煎微黄。","加姜片、生抽两勺,可乐没过鸡翅。","中火 15 分钟。","大火收汁到挂壁。"]),
+ ckR("ckb7","蒜蓉西兰花",12,"懒人友好","🥦",2,"清爽解腻,绿油油有食欲",
+  [["西兰花",1,"lb"],["蒜",2,"瓣"]],
+  ["西兰花掰小朵,盐水泡 5 分钟。","水开加盐和油,焯 1 分半捞出。","热油爆香蒜末。","大火翻炒 1 分钟。","盐+蚝油,翻匀出锅。"]),
+ ckR("ckb8","拍黄瓜",8,"懒人友好","🥒",2,"不开火,冰凉爽脆",
+  [["黄瓜",2,"根"],["蒜",2,"瓣"]],
+  ["黄瓜拍裂切段,一勺盐腌 5 分钟。","倒掉腌出的水。","蒜末+两勺醋+一勺生抽+香油。","拌匀,冷藏更好吃。"]),
+ ckR("ckb9","白灼虾",10,"懒人友好","🦐",2,"原汁原味,零厨艺门槛",
+  [["虾",1,"lb"],["姜",1,"块"],["小葱",1,"根"]],
+  ["水里放姜片葱段烧开。","虾下锅煮到变红弯身约 2 分钟。","捞出过凉水更弹。","生抽+姜末蘸着吃。"]),
+ ckR("ckb10","香煎三文鱼",15,"懒人友好","🐟",1,"外焦里嫩,一口锅的事",
+  [["三文鱼",0.5,"lb"]],
+  ["鱼身擦干,抹盐和黑胡椒静置 5 分钟。","中火少油,皮朝下先煎。","3 分钟别动它,让皮酥脆。","翻面 2 分钟,侧面变色即可。","挤点柠檬汁出锅。"]),
+ ckR("ckb11","金汤力",5,"懒人友好","🍸",1,"清爽入门,气泡感拉满",
+  [["金酒",45,"ml"],["汤力水",120,"ml"],["青柠",0.25,"个"]],
+  ["杯子装满冰块,越满越好。","倒入金酒。","沿杯壁缓缓倒入汤力水,别搅散气泡。","轻轻提拉一下,挤一角青柠投入。"]),
+ ckR("ckb12","莫吉托",8,"懒人友好","🍹",1,"薄荷青柠,夏天救星",
+  [["白朗姆",50,"ml"],["青柠",0.5,"个"],["薄荷叶",1,"把"],["苏打水",100,"ml"]],
+  ["青柠切块和一勺糖放杯底,捣出汁。","薄荷叶手掌拍一下放进去,别捣碎。","加冰到满,倒朗姆酒。","补苏打水,轻搅两下插吸管。"]),
+ ckR("ckb13","珍珠奶茶",25,"懒人友好","🧋",1,"珍珠自己煮,比店里实在",
+  [["木薯珍珠",50,"g"],["红茶",2,"包"],["牛奶",250,"ml"]],
+  ["水开下珍珠,中火煮 20 分钟,关火焖 5 分钟。","捞出过凉水,拌一勺糖防粘。","红茶包用小半杯热水浓泡 5 分钟。","杯里放珍珠加冰,倒牛奶和茶,按口味加糖浆。"]),
+ ckR("ckb14","功夫泡乌龙",10,"懒人友好","🍵",1,"一泡一泡慢慢喝",
+  [["乌龙茶",8,"g"]],
+  ["水烧到 95℃ 左右,冒蟹眼泡就行。","开水涮一遍盖碗和杯子温杯。","茶叶入碗,第一泡 5 秒倒掉洗茶。","第二泡起 10-15 秒出汤,每泡递增 5 秒。","好茶能泡七八道,不急。"])
+];
+var MEAL_I18N={"晚餐":"Dinner","早餐":"Breakfast","午餐":"Lunch","甜点":"Dessert","饮品":"Drinks"};
+var CUI_I18N={"中餐":"Chinese","西餐":"Western","法餐":"French","意餐":"Italian","泰餐":"Thai","日料":"Japanese"};
+var LEVEL_I18N={"懒人友好":"Easy","中等难度":"Medium","大工程":"Complex"};
+var CKMEAL={ckb1:"Dinner",ckb2:"Breakfast",ckb3:"Lunch",ckb4:"Dinner",ckb5:"Lunch",ckb6:"Dinner",ckb7:"Dinner",ckb8:"Lunch",ckb9:"Dinner",ckb10:"Dinner",ckb11:"Drinks",ckb12:"Drinks",ckb13:"Drinks",ckb14:"Drinks"};
+var CKCUI={ckb1:"Chinese",ckb2:"Chinese",ckb3:"Chinese",ckb4:"Chinese",ckb5:"Chinese",ckb6:"Chinese",ckb7:"Chinese",ckb8:"Chinese",ckb9:"Chinese",ckb10:"Western"};
+function ckMealNorm(v){return MEAL_I18N[v]||v;}
+function ckCuiNorm(v){return CUI_I18N[v]||v;}
+function ckLevelNorm(v){return LEVEL_I18N[v]||v;}
+CKBUILTIN.forEach(function(r){
+  r.meal=ckMealNorm(CKMEAL[r.id]||"");
+  r.cuisine=ckCuiNorm(CKCUI[r.id]||"");
+  r.level=ckLevelNorm(r.level||"");
+});
+var CKMEALS=[["","All"],["Breakfast","Breakfast"],["Lunch","Lunch"],["Dinner","Dinner"],["Dessert","Dessert"],["Drinks","Drinks"]];
+var CKCUIS=["Chinese","French","Italian","Thai","Japanese"];
+/* 自定义分类:存本地;另外任何菜谱行里出现过的分类值都会自动长成 chip(同步设备间自然打通) */
+function ckCust(k){try{var v=JSON.parse(store.get(k)||"[]");return Array.isArray(v)?v:[]}catch(e){return[]}}
+function ckCustAdd(k,v){var a=ckCust(k);if(a.indexOf(v)<0){a.push(v);try{store.set(k,JSON.stringify(a))}catch(e){}}}
+function ckCustDel(k,v){var a=ckCust(k).filter(function(x){return x!==v});try{store.set(k,JSON.stringify(a))}catch(e){}}
+function ckMealList(){
+  var hid=ckCust("ck.hmeals"),out=[],seen={};
+  CKMEALS.slice(1).forEach(function(m){var v=ckMealNorm(m[0]);seen[v]=1;
+    if(hid.indexOf(v)<0)out.push({v:v,l:TT(m[1])})});
+  ckCust("ck.cmeals").concat(D.recipes.map(function(r){return ckMealNorm(r.meal||"")}))
+    .forEach(function(v){if(v&&!seen[v]&&hid.indexOf(v)<0){seen[v]=1;out.push({v:v,l:v})}});
+  return out;}
+function ckCuiList(){
+  var hid=ckCust("ck.hcuis"),out=[],seen={};
+  CKCUIS.forEach(function(v){var n=ckCuiNorm(v);seen[n]=1;if(hid.indexOf(n)<0)out.push(n)});
+  ckCust("ck.ccuis")
+    .concat(D.recipes.map(function(r){return r.cuisine||""}))
+    .concat(CKBUILTIN.map(function(r){return r.cuisine||""}))
+    .forEach(function(v){v=ckCuiNorm(v);if(v&&!seen[v]&&hid.indexOf(v)<0){seen[v]=1;out.push(v)}});
+  return out;}
+function ckAllRecipes(){var ids={},out=[];
+  D.recipes.slice().sort(function(a,b){return String(b.updated_at||"")<String(a.updated_at||"")?-1:1})
+    .forEach(function(r){if(!ids[r.id]){ids[r.id]=1;out.push(r)}});
+  CKBUILTIN.forEach(function(r){if(!ids[r.id])out.push(r)});
+  return out;}
+function ckRecipeById(id){var a=ckAllRecipes();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null}
+/* 对内置菜做收藏/做完等操作时,落成一条真实记录,从此可同步可改 */
+function ckMaterialize(r){if(!r.builtin)return r;
+  var row=JSON.parse(JSON.stringify(r));delete row.builtin;row.updated_at=new Date().toISOString();
+  push("recipes",row);return row;}
+
+/* ---- 日期/数量小工具 ---- */
+function ckToday(){return todayStr()}
+function ckAddDays(ds,n){return fmt(addDays(parse(ds),n))}
+function ckDaysLeft(exp){return Math.round((parse(exp)-parse(ckToday()))/864e5)}
+function ckMD(s){var a=String(s||"").split("-");return a.length===3?(+a[1])+"/"+(+a[2]):s}
+function ckQ(v){v=Math.round(v*100)/100;return String(v)}
+function ckStep(u){return (u==="g"||u==="ml")?50:0.5}
+function ckStock(n){var q=0;D.pantry.forEach(function(i){if(i.name===n)q+=(+i.qty||0)});return q}
+/* 按指定单位统计库存(只数同单位的条目) */
+function ckStockU(n,u){var q=0;D.pantry.forEach(function(i){if(i.name===n&&(i.unit||"")===u)q+=(+i.qty||0)});return q}
+/* 质量单位 → 克;非质量单位返回 0 */
+function ckMassG(u){return u==="g"?1:u==="kg"?1000:u==="lb"?454:0}
+/* 常见食材件重(约),用于 颗/个/根… ↔ 克 折算 */
+var CKPW={"鸡蛋":50,"蒜":5,"番茄":150,"洋葱":150,"青椒":100,"黄瓜":200,"胡萝卜":100,"柠檬":100,"橙子":200,
+  "苹果":200,"香蕉":120,"蓝莓":125,"鸡腿":150,"豆腐":400,"娃娃菜":200,"白菜":1000,"青菜":250,"小葱":10,
+  "姜":30,"米饭":200,"面包":30,"面条":100};
+/* 把 q(from 单位) 换成 to 单位;换不了返回 null */
+function ckConvQ(q,from,to,name){
+  from=from||"";to=to||"";
+  if(from===to)return q;
+  var mf=ckMassG(from),mt=ckMassG(to);
+  if(mf&&mt)return q*mf/mt;                       /* g/kg/lb 精确互转 */
+  var pw=CKPW[name]||0;
+  if(pw&&mt&&!mf)return q*pw/mt;                  /* 件 → 质量 */
+  if(pw&&mf&&!mt)return q*mf/pw;                  /* 质量 → 件 */
+  return null;}
+/* 库存折算到某个单位后的总量(折不动的条目忽略) */
+function ckStockIn(n,u){var q=0;
+  D.pantry.forEach(function(i){if(i.name!==n)return;
+    var v=ckConvQ(+i.qty||0,i.unit||"",u,n);
+    if(v!=null)q+=v;});
+  return Math.round(q*100)/100;}
+function ckFirst(n){var r=null;D.pantry.forEach(function(i){if(i.name===n&&(!r||i.expire_date<r.expire_date))r=i});return r}
+
+/* ---- 状态 ---- */
+var ckView="rec", ckOpen=null, ckMode="", ckServ={}, ckCons=null, ckAddQ="", ckMeal="", ckCui="", ckCatCtx=null, ckArmDel=null, ckDraft=null;
+
+/* ---- 主视图 ---- */
+function vCook(){
+  if(ckOpen&&ckMode==="edit")return ckEditHTML(ckOpen);
+  if(ckOpen&&ckMode==="consume")return ckConsumeHTML(ckOpen);
+  if(ckOpen)return ckRecipeHTML(ckOpen);
+  var h='<div class="ckseg">'+
+    '<button class="'+(ckView==="rec"?"on":"")+'" data-ck="seg" data-v="rec">'+TT("For you")+'</button>'+
+    '<button class="'+(ckView==="fridge"?"on":"")+'" data-ck="seg" data-v="fridge">'+TT("Fridge")+'</button></div>';
+  return h+(ckView==="fridge"?ckFridgeHTML():ckRecHTML());
+}
+
+/* ---- 推荐列表 ---- */
+function ckScore(r){var have=0,expUse=0,miss=[];
+  r.ing.forEach(function(g){var n=g[0]||g.name;
+    if(ckStock(n)>0){have++;var it=ckFirst(n);if(it&&ckDaysLeft(it.expire_date)<=3)expUse++;}
+    else miss.push(n);});
+  return{have:have,total:r.ing.length,miss:miss,expUse:expUse,
+    score:(r.ing.length?have/r.ing.length*2:0)+expUse*3-miss.length*.6-((r.cooked||0)?.2:0)-(r.time_min||30)/200
+      +(r.fav?.3:0)+(r.source?.4:0)};}
+var ckRandIds=null;
+function ckRandPool(pool){
+  var n=Math.min(3,pool.length);
+  if(ckRandIds){var keep=pool.filter(function(r){return ckRandIds.indexOf(r.id)>=0});
+    if(keep.length===n)return keep;}
+  var arr=pool.slice();
+  for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}
+  arr=arr.slice(0,n);ckRandIds=arr.map(function(r){return r.id});return arr;}
+function ckMealOk(r){return (!ckMeal||(ckMealNorm(r.meal||"")===(ckMeal||"")))&&(!ckCui||(ckCuiNorm(r.cuisine||"")===(ckCui||"")))}
+function ckChip(sel,txt,attrs){
+  return '<button '+attrs+' style="flex:0 0 auto;border:0;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer;'+
+    (sel?'background:var(--accent);color:#fff':'background:var(--card2);color:var(--sub)')+'">'+txt+'</button>';}
+function ckRecHTML(){
+  var h="";
+  if(!D.pantry.length)
+    h+='<div class="ckr" style="cursor:default;display:block">'+
+       '<div class="nm">🌟 '+TT("A few starter dishes")+'</div>'+
+       '<div class="mt" style="margin:6px 0 12px">'+TT("Add what is in your fridge to see dishes that fit")+'</div>'+
+       '<button class="ckbig" style="margin:0" data-ck="add">+ '+TT("Add ingredients now")+'</button></div>';
+  /* 双筛选:餐段 × 菜系,均可自定义 */
+  h+='<div style="display:flex;gap:8px;overflow-x:auto;margin:0 0 8px;-webkit-overflow-scrolling:touch">';
+  h+=ckChip(ckMeal==="",TT("All"),'data-ck="meal" data-m=""');
+  ckMealList().forEach(function(m){h+=ckChip(ckMeal===m.v,esc(m.l),'data-ck="meal" data-m="'+esc(m.v)+'"')});
+  h+=ckChip(false,"+",'data-ck="catadd" data-k="meal" data-f="filter"');
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;overflow-x:auto;margin:0 0 12px;-webkit-overflow-scrolling:touch">';
+  h+=ckChip(ckCui==="",TT("All cuisines"),'data-ck="cui" data-m=""');
+  ckCuiList().forEach(function(v){h+=ckChip(ckCui===v,esc(v),'data-ck="cui" data-m="'+esc(v)+'"')});
+  h+=ckChip(false,"+",'data-ck="catadd" data-k="cui" data-f="filter"');
+  h+='</div>';
+  /* 我的菜:自己导入 / 收藏 / 做过的,允许删除 */
+  var ids={},mine=[];
+  D.recipes.slice().sort(function(a,b){return String(b.updated_at||"")<String(a.updated_at||"")?-1:1})
+    .forEach(function(r){if(!ids[r.id]){ids[r.id]=1;if(ckMealOk(r))mine.push(r)}});
+  var pool=CKBUILTIN.filter(function(r){return !ids[r.id]&&ckMealOk(r)});
+  h+='<div class="cksect"><span class="d" style="background:var(--accent)"></span>'+TT("My dishes")+
+     ' <span class="c">'+mine.length+'</span></div>';
+  if(!mine.length)
+    h+='<div class="ckempty" style="padding:22px 16px">'+TT("Import a recipe, or save the doable ones from the ideas below — your own dishes live here")+'</div>';
+  else mine.map(function(r){return{r:r,s:ckScore(r)}})
+    .sort(function(a,b){return b.s.score-a.s.score})
+    .forEach(function(x){h+=ckRcard(x.r,x.s,{del:true})});
+  h+='<button class="ckbig sec" style="margin-top:6px" data-ck="import">🔗 '+TT("Import a recipe from link or text")+'</button>';
+  /* 随便试试:未收编的内置菜里随机抽 3 道 */
+  if(pool.length){
+    h+='<div class="cksect"><span class="d" style="background:var(--amber)"></span>'+TT("Ideas to try")+
+       '<button data-ck="shuffle" style="margin-left:auto;border:0;background:none;color:var(--accent);font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--font);padding:4px">↻ '+TT("Shuffle")+'</button></div>';
+    ckRandPool(pool).forEach(function(r){h+=ckRcard(r,ckScore(r),{save:true})});}
+  return h;}
+function ckRcard(r,s){var tag="";
+  if(D.pantry.length){
+    if(s.total&&s.have===s.total)tag='<div class="hv">✓ '+TT("All in your fridge")+(s.expUse?' · '+TT("uses expiring items"):"")+'</div>';
+    else if(s.have>0)tag='<div class="ms">'+TT("Missing")+' '+s.miss.map(esc).join(", ")+'</div>';
+    else tag='<div class="ms">'+TT("Needs shopping")+'</div>';}
+  var opt=arguments[2]||{};
+  var armed=ckArmDel===r.id;
+  return '<div class="ckr" data-ck="open" data-id="'+r.id+'" style="position:relative">'+
+    (opt.del?'<button data-ck="rdel" data-id="'+r.id+'" style="position:absolute;top:8px;right:10px;border:0;background:'+(armed?'var(--danger)':'none')+';color:'+(armed?'#fff':'var(--faint)')+';font-size:'+(armed?'11.5px':'13px')+';font-weight:700;padding:'+(armed?'5px 10px':'5px')+';border-radius:999px;cursor:pointer;font-family:var(--font)">'+(armed?TT("Confirm delete"):"✕")+'</button>':"")+
+    '<div class="L"><div class="nm">'+esc(r.name)+'</div>'+
+    '<div class="mt">'+(r.time_min||"?")+' '+TT("min")+' · '+esc(r.level||"")+(r.meal?' · '+esc(r.meal):"")+(r.cuisine?' · '+esc(r.cuisine):"")+'</div>'+
+    (r.descr?'<div class="ds">'+esc(r.descr)+'</div>':"")+tag+
+    (r.source?'<div class="src">🔗 '+TT("Imported")+'</div>':"")+
+    (opt.save?'<button data-ck="radd" data-id="'+r.id+'" style="margin-top:8px;border:0;background:var(--soft);color:var(--accent);font-size:12px;font-weight:700;border-radius:999px;padding:6px 12px;cursor:pointer;font-family:var(--font)">+ '+TT("Save to my dishes")+'</button>':"")+'</div>'+
+    '<div class="pic">'+(r.img?'<img src="'+r.img+'" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:12px">':(r.emoji||"🍽"))+'</div></div>';}
+
+/* ---- 冰箱 ---- */
+function ckFridgeHTML(){
+  var h='<button class="ckbig sec" style="margin:0 0 14px" data-ck="add">+ '+TT("Add ingredient")+'</button>';
+  if(!D.pantry.length)return h+'<div class="ckempty">'+TT("Fridge is empty")+' 🧊<br>'+TT("Add some ingredients to get started")+'</div>';
+  var urgent=[],groups={veg:[],fruit:[],protein:[],staple:[],other:[]};
+  D.pantry.slice().sort(function(a,b){return a.expire_date<b.expire_date?-1:1}).forEach(function(i){
+    var dl=ckDaysLeft(i.expire_date);
+    if(dl<=2){urgent.push(i);return;}          /* ≤2 天或已过期:置顶红区 */
+    var c=ckCatOf(i.name);
+    groups[ckGrpOf(i.cat||(c&&c.cat))].push(i);});
+  function sec(t,dot,arr){if(!arr.length)return"";
+    var s='<div class="cksect"><span class="d" style="background:'+dot+'"></span>'+t+' <span class="c">'+arr.length+'</span></div><div class="ckgrid2">';
+    arr.forEach(function(i){s+=ckFitem(i)});return s+'</div>';}
+  h+=sec(TT("Use soon"),"var(--danger)",urgent);
+  CKCAT.forEach(function(c){h+=sec(esc(c.name),c.dot,groups[c.k])});
+  return h;}
+function ckFitem(i){var dl=ckDaysLeft(i.expire_date),e;
+  if(dl<0)e='<div class="e dead">'+TT("Expired")+'</div>';
+  else if(dl===0)e='<div class="e dead">'+TT("Expires today")+'</div>';
+  else if(dl<=2)e='<div class="e dead">'+TT("Fresh for")+' '+dl+' '+TT("days")+'</div>';
+  else if(dl<=7)e='<div class="e warn">'+TT("Fresh for")+' '+dl+' '+TT("days")+'</div>';
+  else e='<div class="e ok">'+TT("Fresh for")+' '+dl+' '+TT("days")+'</div>';
+  return '<div class="ckf" data-ck="fedit" data-id="'+i.id+'" style="cursor:pointer"><button class="x" data-ck="del" data-id="'+i.id+'">✕</button>'+
+    '<div class="em">'+(i.emoji||"🧺")+'</div><div class="nm">'+esc(i.name)+'</div>'+
+    '<div class="q">'+ckQ(+i.qty||0)+' '+esc(i.unit||"")+'</div>'+
+    '<div class="b">'+TT("Bought")+' '+ckMD(i.buy_date)+'</div>'+e+
+    (i.keep?'<div class="b" style="margin-top:3px;font-size:10px;line-height:1.4">💡 '+esc(i.keep)+'</div>':"")+'</div>';}
+function ckDel(id){
+  var it=D.pantry.filter(function(x){return x.id===id})[0];
+  drop("pantry",id);render();
+  if(it)toast((it.emoji||"")+" "+it.name+" "+TT("Deleted"),function(){push("pantry",it);render();},TT("Undo"));}
+/* 冰箱条目编辑:改数量 / 调到期 / 删除 */
+var ckFeId=null,ckFeExp="";
+function ckFeSheet(id){
+  var i=D.pantry.filter(function(x){return x.id===id})[0];if(!i)return;
+  ckFeId=id;ckFeExp=i.expire_date;
+  var st=ckStep(i.unit||"个");
+  openSheet('<h2 style="display:flex;gap:8px;align-items:center"><span style="font-size:24px">'+(i.emoji||"🧺")+'</span>'+esc(i.name)+'</h2>'+
+    '<div class="cksrv" style="box-shadow:none;background:var(--card2)">'+TT("Amount")+
+      '<span class="ckstep"><button data-ck="festep" data-d="-1">−</button>'+
+      '<input id="ckFeQ" value="'+ckQ(+i.qty||0)+'" inputmode="decimal" style="width:74px;text-align:center;border:0;background:none;font-size:17px;font-weight:700;color:var(--ink);font-family:var(--font);outline:none">'+
+      '<span style="font-size:13px;color:var(--sub)">'+esc(i.unit||"")+'</span>'+
+      '<button data-ck="festep" data-d="1">+</button></span></div>'+
+    '<div class="cksrv" style="box-shadow:none;background:var(--card2);margin-top:10px">'+TT("Expiry date")+
+      '<span class="ckstep"><button data-ck="feexp" data-d="-1">−</button><span class="v" id="ckFeEV" style="min-width:64px">'+ckMD(ckFeExp)+'</span><button data-ck="feexp" data-d="1">+</button></span></div>'+
+    '<input id="ckFeS" value="'+esc(i.keep||ckKeepOf(i.name))+'" placeholder="💡 '+TT("How to store")+' · '+TT("Optional")+'" style="width:100%;margin-top:10px;'+CKIN+'" maxlength="14">'+
+    '<button class="ckbig" data-ck="fesave">'+TT("Done")+'</button>'+
+    '<button class="ckbig sec" style="margin-top:8px" data-ck="fedel2">'+TT("Delete")+'</button>');}
+function ckFeSave(){
+  var i=D.pantry.filter(function(x){return x.id===ckFeId})[0];if(!i){closeSheet();return;}
+  var q=parseFloat(($("ckFeQ")&&$("ckFeQ").value||"").replace(",","."));
+  if(!isFinite(q))q=+i.qty||0;
+  q=Math.round(q*100)/100;
+  if(q<=0){closeSheet();ckDel(i.id);return;}   /* 改到 0 = 吃完了,删除并给撤销 */
+  var kv=($("ckFeS")&&String($("ckFeS").value||"").trim().slice(0,14));
+  if(kv!=null&&kv!==undefined){i.keep=kv;ckKeepSet(i.name,kv);}
+  i.qty=q;i.expire_date=ckFeExp;i.updated_at=new Date().toISOString();
+  push("pantry",i);closeSheet();render();}
+
+/* ---- 添加食材(sheet) ---- */
+function ckAddSheet(){ckAddQ="";
+  openSheet('<h2>'+TT("Add ingredient")+'</h2>'+
+    '<div class="cksearch">🔍<input id="ckq" placeholder="'+TT("Search ingredients")+'" autocomplete="off"></div>'+
+    '<div id="ckGridWrap"></div>');
+  ckDrawGrid();
+  var q=$("ckq"),comp=false;
+  q.addEventListener("compositionstart",function(){comp=true});
+  q.addEventListener("compositionend",function(){comp=false;ckAddQ=q.value;ckDrawGrid()});
+  q.addEventListener("input",function(){if(comp)return;ckAddQ=q.value;ckDrawGrid()});}
+var ckArmIng=null;
+function ckDrawGrid(){var w=$("ckGridWrap");if(!w)return;
+  var q=ckAddQ.trim(),h="",hit=false;
+  /* 内置 + 自定义合并进四类分组 */
+  var groups={veg:[],fruit:[],protein:[],staple:[],other:[]};
+  CKCAT.forEach(function(c){c.items.forEach(function(a){groups[c.k].push({n:a[0],e:a[1],cust:false})})});
+  ckCustIngs().forEach(function(o){groups[ckGrpOf(o.c)].push({n:o.n,e:o.e,cust:true})});
+  CKCAT.forEach(function(c){
+    var items=groups[c.k];
+    if(q)items=items.filter(function(o){return o.n.indexOf(q)>=0});
+    if(!items.length)return;hit=true;
+    h+='<div class="cksect"><span class="d" style="background:'+c.dot+'"></span>'+esc(c.name)+'</div><div class="ckgrid">';
+    items.forEach(function(o){
+      var tile='<button class="cki" style="width:100%" data-ck="qty" data-n="'+esc(o.n)+'"><span class="em">'+o.e+'</span><span class="nm">'+esc(o.n)+'</span></button>';
+      if(o.cust){var armed=ckArmIng===o.n;
+        tile='<div style="position:relative">'+tile+
+          '<button data-ck="ingdel" data-n="'+esc(o.n)+'" style="position:absolute;top:2px;right:4px;border:0;border-radius:999px;cursor:pointer;font-family:var(--font);'+
+          (armed?'background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:3px 7px':'background:none;color:var(--faint);font-size:11px;padding:4px 6px')+'">'+
+          (armed?TT("Confirm delete"):"✕")+'</button></div>';}
+      h+=tile;});
+    h+='</div>';});
+  var exact=!!ckCatOf(q);
+  if(q&&!exact){
+    if(!hit)h='<div class="ckempty" style="padding:22px 16px 10px">'+TT("Not in the catalog yet")+'</div>';
+    h+='<button class="ckbig sec" style="margin-top:10px" data-ck="ingnew" data-n="'+esc(q)+'">+ '+TT("Create ingredient")+' 「'+esc(q)+'」</button>';}
+  if(!q)h+='<button class="ckbig sec" style="margin-top:14px" data-ck="ingnew">➕ '+TT("New ingredient")+'</button>';
+  w.innerHTML=h;}
+
+/* 新建食材:名称 / 图标(可选) / 单位 / 保质期 → 存目录 → 直接进数量弹层 */
+var ckNiU="个",ckNiL=7,ckNiQ=1,ckNiC="veg",ckNiEdit=null,ckNiPre=null,CKUNITS=["个","lb","kg","g","ml","根","棵","颗","瓣","块","把","盒","包","片"];
+function ckNewIngSheet(pref,keep){
+  if(!keep&&!ckNiPre){ckNiU="个";ckNiL=7;}
+  var oldN=keep?($("ckNiN")&&$("ckNiN").value||""):(ckNiPre?ckNiPre.n:(pref||""));
+  var oldE=keep?($("ckNiE")&&$("ckNiE").value||""):(ckNiPre?ckNiPre.e:"");
+  var oldS=keep?($("ckNiS")&&$("ckNiS").value||""):(ckNiPre?ckNiPre.s:"");
+  if(ckNiPre&&!keep)ckNiPre=null;
+  var h='<h2>'+(ckNiEdit?"✎ "+TT("Edit ingredient"):TT("New ingredient"))+'</h2>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input id="ckNiN" value="'+esc(oldN)+'" placeholder="'+TT("Ingredient")+'" style="flex:1;'+CKIN+'" maxlength="12">'+
+    '<input id="ckNiE" value="'+esc(oldE)+'" placeholder="🧺" style="flex:0 0 64px;text-align:center;'+CKIN+'" maxlength="2"></div>'+
+    '<input id="ckNiS" value="'+esc(oldS)+'" placeholder="'+TT("How to store")+' · '+TT("Optional")+'" style="width:100%;margin-top:8px;'+CKIN+'" maxlength="14">';
+  h+='<div class="ckh2" style="margin-top:14px">'+TT("Category")+'</div><div style="display:flex;gap:8px;flex-wrap:wrap">';
+  CKCAT.forEach(function(c){h+=ckChip(ckNiC===c.k,esc(c.name),'data-ck="nic" data-c="'+c.k+'"')});
+  h+='</div>';
+  h+='<div class="ckh2" style="margin-top:14px">'+TT("Unit")+'</div><div style="display:flex;gap:8px;flex-wrap:wrap">';
+  CKUNITS.forEach(function(u){h+=ckChip(ckNiU===u,esc(u),'data-ck="niu" data-u="'+u+'"')});
+  h+='</div>';
+  h+='<div class="cksrv" style="box-shadow:none;background:var(--card2);margin-top:14px">'+TT("Keeps for (days)")+
+     '<span class="ckstep"><button data-ck="nil" data-d="-1">−</button><span class="v">'+ckNiL+'</span><button data-ck="nil" data-d="1">+</button></span></div>';
+  if(!ckNiEdit)
+    h+='<div class="cksrv" style="box-shadow:none;background:var(--card2);margin-top:10px">'+TT("Amount")+
+       '<span class="ckstep"><button data-ck="niq" data-d="-1">−</button><span class="v" id="ckNiQV">'+ckQ(ckNiQ)+' '+esc(ckNiU)+'</span><button data-ck="niq" data-d="1">+</button></span></div>';
+  h+='<button class="ckbig" data-ck="nisave">'+(ckNiEdit?TT("Save"):TT("Put in fridge"))+'</button>';
+  openSheet(h);
+  if(!keep){var el=$("ckNiN");if(el&&!pref)setTimeout(function(){el.focus()},80);}}
+function ckNiSave(){
+  var n=($("ckNiN")&&$("ckNiN").value||"").trim().slice(0,12);
+  if(!n){toast(TT("Name required"));return;}
+  if(ckNiEdit){                          /* 编辑已有自定义食材:更新定义 + 冰箱条目跟着归位 */
+    var e2=($("ckNiE")&&$("ckNiE").value||"").trim()||ckEmojiFor(n);
+    var s2=($("ckNiS")&&$("ckNiS").value||"").trim().slice(0,14);
+    var old=ckNiEdit;ckNiEdit=null;
+    if(old!==n){try{var stx=JSON.parse(store.get("ck.cings")||"[]");
+      stx=(Array.isArray(stx)?stx:[]).filter(function(x){return x&&x.n!==old});
+      store.set("ck.cings",JSON.stringify(stx));}catch(err){}}
+    ckCustIngAdd({n:n,e:e2,u:ckNiU,l:ckNiL,s:s2,c:ckNiC});
+    D.pantry.forEach(function(i){if(i.name!==old)return;
+      i.name=n;i.cat=ckNiC;i.emoji=e2;i.keep=s2||i.keep;
+      i.updated_at=new Date().toISOString();push("pantry",i);});
+    closeSheet();toast(TT("Saved"));render();return;}
+  if(!ckCatOf(n)){                       /* 目录里没有才新建;有就沿用现有定义 */
+    var e=($("ckNiE")&&$("ckNiE").value||"").trim()||ckEmojiFor(n);
+    var s=($("ckNiS")&&$("ckNiS").value||"").trim().slice(0,14);
+    ckCustIngAdd({n:n,e:e,u:ckNiU,l:ckNiL,s:s,c:ckNiC});}
+  if(ckNiRow!=null&&ckDraft&&ckDraft.ing[ckNiRow]){   /* 从菜谱编辑进来:建完回填那一行,不入冰箱 */
+    ckDraft.ing[ckNiRow][0]=n;
+    ckDraft.ing[ckNiRow][2]=(ckCatOf(n)||{u:ckNiU}).u;
+    ckNiRow=null;closeSheet();render();return;}
+  ckShName=n;ckShQ=ckNiQ>0?ckNiQ:1;      /* 一步入冰箱,不再跳数量弹层 */
+  ckShAdd();}
+
+var ckShQ=1,ckShName="";
+function ckQtySheet(n){ckShName=n;var c=ckCatOf(n);if(!c)return;
+  ckShQ=c.u==="g"?100:c.u==="ml"?250:1;   /* kg 等其它单位默认 1 */
+  openSheet('<h2 style="display:flex;gap:8px;align-items:center"><span style="font-size:24px">'+c.e+'</span>'+esc(n)+'</h2>'+
+    '<div class="cksrv" style="box-shadow:none;background:var(--card2)">'+TT("Amount")+
+      '<span class="ckstep"><button data-ck="shstep" data-d="-1">−</button><span class="v" id="ckShV">'+ckQ(ckShQ)+' '+esc(c.u)+'</span><button data-ck="shstep" data-d="1">+</button></span></div>'+
+    '<div class="ckir" style="box-shadow:none;background:var(--card2)"><span class="nm" style="color:var(--sub);font-weight:500">'+TT("Bought")+'</span><span class="q">'+TT("Today")+'</span></div>'+
+    '<div class="ckir" style="box-shadow:none;background:var(--card2)"><span class="nm" style="color:var(--sub);font-weight:500">'+TT("Keeps for")+'</span><span class="q">~'+c.life+' '+TT("days")+' · '+ckMD(ckAddDays(ckToday(),c.life))+TT(" expiry")+'</span></div>'+
+    '<input id="ckShS" value="'+esc(ckKeepOf(n))+'" placeholder="💡 '+TT("How to store")+' · '+TT("Optional")+'" style="width:100%;margin:8px 0 0;'+CKIN+'" maxlength="14">'+
+    '<button class="ckbig" data-ck="shadd">'+TT("Put in fridge")+'</button>'+
+    (ckIsBuiltinIng(n)?"":'<button class="ckbig sec" style="margin-top:8px" data-ck="ingedit" data-n="'+esc(n)+'">✎ '+TT("Edit ingredient")+'</button>'));}
+function ckShStep(d){var c=ckCatOf(ckShName);if(!c)return;var st=ckStep(c.u);
+  ckShQ=Math.max(st,Math.round((ckShQ+d*st)*100)/100);
+  var el=$("ckShV");if(el)el.textContent=ckQ(ckShQ)+" "+c.u;}
+function ckShAdd(){var c=ckCatOf(ckShName),td=ckToday();
+  var sEl=$("ckShS");
+  var ks=sEl?String(sEl.value||"").trim().slice(0,14):ckKeepOf(ckShName);
+  if(sEl)ckKeepSet(ckShName,ks);          /* 记住:下次加同名食材自动带出 */
+  var same=D.pantry.filter(function(i){return i.name===ckShName&&i.buy_date===td})[0];
+  if(same){same.qty=(+same.qty||0)+ckShQ;same.keep=ks;same.updated_at=new Date().toISOString();push("pantry",same);}
+  else push("pantry",{id:uid(),name:ckShName,emoji:c.e,unit:c.u,qty:ckShQ,cat:c.cat,
+    keep:ks,buy_date:td,expire_date:ckAddDays(td,c.life),updated_at:new Date().toISOString()});
+  closeSheet();toast(c.e+" "+ckShName+" "+TT("added to fridge"));tab="cook";ckView="fridge";render();}
+
+/* ---- AI 导入:文字 / 短视频链接 → 菜名+食材+步骤 ---- */
+function ckImportSheet(){
+  if(!aiReady()){aiSheet();return;}
+  openSheet('<h2>🔗 '+TT("Import a recipe")+'</h2>'+
+    '<div class="note" style="margin:0 0 10px">'+TT("Paste a share text or a short-video link (Douyin, Xiaohongshu…) or any recipe text — I will pull out the dish, ingredients and steps.")+'</div>'+
+    '<textarea class="ckta" id="ckImpIn" placeholder="'+TT("Paste here…")+'"></textarea>'+
+    '<div class="st" id="ckImpSt"></div>'+
+    '<button class="ckbig" id="ckImpGo" data-ck="impgo">'+TT("Recognize")+'</button>');}
+var CKPROMPT='Extract one recipe from the text below and output JSON only. Return JSON only, no markdown.\n'+
+'{"name":"dish name","time_min":integer minutes,"level":"Easy|Medium|Complex","desc":"short appetizing description",'+
+'"meal":"Breakfast|Lunch|Dinner|Dessert|Drinks","cuisine":"Cuisine, e.g. Chinese|French|Italian|Thai|Japanese","base_serv":servings,"ingredients":[{"name":"ingredient","qty":number,"unit":"lb|g|kg|ml|个|根|棵|颗|瓣|块|把|盒|包|片|碗"}],'+
+'"steps":["step 1","step 2"]}\nRules:\n'+
+'1. If this is short-video copy or a link: use linked content when accessible; otherwise infer the most common home-cook version from the title and general knowledge.\n'+
+'2. Do not put basic seasonings in ingredients; place them directly in steps.\n'+
+'3. Keep each step short and conversational, mention key heat and timing.\n'+
+'4. If cannot parse, return {"error":"reason"}.\nContent:\n';
+function ckImportGo(){
+  var inp=($("ckImpIn").value||"").trim();
+  if(!inp){$("ckImpSt").className="st bad";$("ckImpSt").textContent=TT("Paste something first");return;}
+  var hasUrl=/https?:\/\/\S+/.test(inp);
+  $("ckImpGo").disabled=true;
+  $("ckImpSt").className="st";$("ckImpSt").textContent=hasUrl?TT("Reading the link…"):TT("Reading…");
+  ckAiText(CKPROMPT+inp,hasUrl).then(function(tx){
+    tx=String(tx||"").replace(/^```(?:json)?/,"").replace(/```\s*$/,"").trim();
+    var m=tx.match(/\{[\s\S]*\}/); if(m)tx=m[0];
+    var p=JSON.parse(tx);
+    if(p.error)throw new Error(p.error);
+    var ing=(Array.isArray(p.ingredients)?p.ingredients:[]).map(function(g){
+      var n=String(g&&g.name||"").slice(0,30);
+      var q=(g&&isFinite(+g.qty)&&+g.qty>0)?+g.qty:1;
+      var c=ckCatOf(n);
+      return[n,q,String(g&&g.unit||(c?c.u:"份")).slice(0,6)];
+    }).filter(function(a){return a[0]});
+    var row={id:uid(),name:String(p.name||"").slice(0,40)||TT("Untitled"),
+      time_min:isFinite(+p.time_min)?+p.time_min:20,
+      level:(function(v){v=ckMealNorm(v);return(v==="Easy"||v==="Medium"||v==="Complex")?v:"Easy";})(p.level),
+      meal:(function(v){v=ckMealNorm(v);return["Breakfast","Lunch","Dinner","Dessert","Drinks"].indexOf(v)>=0?v:"";})(p.meal),
+      cuisine:ckCuiNorm(String(p.cuisine||"").trim().slice(0,16)),
+      emoji:ckEmojiFor(String(p.name||"")),descr:String(p.desc||"").slice(0,40),
+      base_serv:(isFinite(+p.base_serv)&&+p.base_serv>0)?+p.base_serv:2,
+      ing:ing,steps:(Array.isArray(p.steps)?p.steps:[]).map(function(s){return String(s).slice(0,140)}).slice(0,12),
+      source:inp.slice(0,300),fav:false,cooked:0,updated_at:new Date().toISOString()};
+    if(!row.ing.length&&!row.steps.length)throw new Error(TT("Could not find a recipe in that"));
+    push("recipes",row);
+    closeSheet();tab="cook";ckView="rec";ckOpen=row.id;ckMode="";render();
+    toast("🍳 "+row.name+" "+TT("imported"));
+  }).catch(function(e){
+    var g=$("ckImpGo");if(g)g.disabled=false;
+    var s=$("ckImpSt");if(s){s.className="st bad";
+      var msg=String(e&&e.message||"network");
+      if(/failed to fetch|load failed|networkerror/i.test(msg))msg=TT("Request blocked — if you are testing inside a preview sandbox, deploy and try on your real app");
+      s.textContent=TT("Could not recognize")+": "+msg.slice(0,110);}
+  });}
+/* 纯文本 AI 调用:Claude 可带 web_search 读链接;Gemini 带 google_search */
+function ckAiText(prompt,useSearch){
+  if(AIPROV==="gemini"){
+    var mdl=GMODEL||"gemini-2.5-flash";
+    var body={contents:[{parts:[{text:prompt}]}]};
+    if(useSearch)body.tools=[{google_search:{}}];
+    return fetch(GBASE+"models/"+mdl+":generateContent?key="+GKEY,{
+      method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        if(d&&d.error){var er=new Error(d.error.message||"api error");er.kind=d.error.status||"";throw er;}
+        var ps=d&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts||[];
+        return ps.map(function(x){return x.text||""}).join("").trim();});}
+  var body2={model:AIMODEL,max_tokens:2000,messages:[{role:"user",content:prompt}]};
+  if(useSearch)body2.tools=[{type:"web_search_20250305",name:"web_search",max_uses:3}];
+  return fetch("https://api.anthropic.com/v1/messages",{method:"POST",
+    headers:{"x-api-key":AIKEY,"anthropic-version":"2023-06-01","content-type":"application/json",
+             "anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify(body2)})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d&&d.error){var er=new Error(d.error.message||"api error");er.kind=d.error.type||"";throw er;}
+      return (d&&d.content||[]).filter(function(c){return c.type==="text"})
+        .map(function(c){return c.text||""}).join("").trim();});}
+
+/* ---- 菜谱详情 ---- */
+function ckIngName(g){return g[0]!==undefined?g[0]:g.name}
+function ckIngQty(g){return g[1]!==undefined?+g[1]:+g.qty}
+function ckIngUnit(g){return g[2]!==undefined?g[2]:g.unit}
+function ckScale(q,serv,base){return Math.round(q*serv/(base||1)*4)/4}
+function ckRecipeHTML(id){var r=ckRecipeById(id);
+  if(!r){ckOpen=null;return ckRecHTML();}
+  var serv=ckServ[id]||r.base_serv||2;
+  var h='<button class="ckback" data-ck="back">‹ '+TT("Back")+'</button>';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'+
+     '<div style="font-size:22px;font-weight:800;flex:1;min-width:0">'+esc(r.name)+'</div>'+
+     '<button class="ckfav" style="font-size:17px" data-ck="edit" data-id="'+id+'">✎</button>'+
+     '<button class="ckfav'+(r.fav?" on":"")+'" data-ck="fav" data-id="'+id+'">'+(r.fav?"★":"☆")+'</button></div>';
+  h+='<div class="ckhero">'+(r.img?'<img src="'+r.img+'" alt="" style="width:172px;height:172px;object-fit:cover;border-radius:22px;box-shadow:var(--sh)">':(r.emoji||"🍽"))+'</div>';
+  h+='<div class="ckmeta">⏱ '+(r.time_min||"?")+' '+TT("min")+' · '+esc(ckLevelNorm(r.level)||"")+(r.meal?' · '+esc(r.meal):"")+(r.cuisine?' · '+esc(r.cuisine):"")+((r.cooked||0)?' · '+TT("cooked")+' ×'+r.cooked:"")+'</div>';
+  h+='<div class="cksrv">'+TT("How many servings?")+'<span class="ckstep">'+
+     '<button data-ck="serv" data-id="'+id+'" data-d="-1" '+(serv<=1?"disabled":"")+'>−</button>'+
+     '<span class="v">'+serv+'</span>'+
+     '<button data-ck="serv" data-id="'+id+'" data-d="1" '+(serv>=8?"disabled":"")+'>+</button></span></div>';
+  h+='<div class="ckh2">'+TT("Ingredients")+'</div>';
+  r.ing.forEach(function(g){var n=ckIngName(g),q=ckScale(ckIngQty(g),serv,r.base_serv);
+    var avail=ckStockIn(n,ckIngUnit(g));
+    var lack=(avail>0?avail:ckStock(n)>0?q:0)<q;   /* 能折算就按折算量比;完全折不动就只看有没有 */
+    h+='<div class="ckir'+(lack&&D.pantry.length?" lack":"")+'"><span class="gd"></span>'+
+       '<span class="nm">'+esc(n)+(lack&&D.pantry.length?'<span style="font-size:11px;font-weight:500"> · '+TT("not enough in fridge")+'</span>':"")+'</span>'+
+       '<span class="q">'+ckQ(q)+' '+esc(ckIngUnit(g))+'</span></div>';});
+  h+='<div class="ckh2">'+TT("Steps")+' ('+r.steps.length+')</div>';
+  r.steps.forEach(function(s,i){h+='<div class="ckst"><span class="n">'+(i+1)+'</span><span class="t">'+esc(s)+'</span></div>';});
+  if(r.source)h+='<div class="note">'+TT("Imported from")+': '+esc(r.source.slice(0,120))+(r.source.length>120?"…":"")+'</div>';
+  h+='<button class="ckbig" data-ck="cook" data-id="'+id+'" data-serv="'+serv+'">'+TT("Cooked it")+'</button>';
+  return h;}
+function ckChgServ(id,d){var r=ckRecipeById(id);
+  ckServ[id]=Math.min(8,Math.max(1,(ckServ[id]||r.base_serv||2)+d));render()}
+function ckFav(id){var r=ckRecipeById(id);r=ckMaterialize(r);
+  r.fav=!r.fav;r.updated_at=new Date().toISOString();push("recipes",r);render();}
+
+/* ---- 做完了 → 消耗 ---- */
+var ckConsU={},ckConsHint={},ckConsSug={};
+function ckStartConsume(id,serv){
+  var r=ckRecipeById(id);ckCons={};ckConsU={};ckConsHint={};ckConsSug={};
+  r.ing.forEach(function(g){
+    var n=ckIngName(g);if(ckStock(n)<=0)return;
+    var first=ckFirst(n),pu=(first&&first.unit)||"";    /* 以最先过期那批的单位为准 */
+    var ru=ckIngUnit(g),rq=ckScale(ckIngQty(g),serv,r.base_serv);
+    var stockU=ckStockU(n,pu);
+    ckConsU[n]=pu;
+    if(ru===pu){ckCons[n]=Math.min(stockU,rq);return;}   /* 同单位:照旧预填 */
+    var conv=ckConvQ(rq,ru,pu,n);
+    ckCons[n]=0;                                         /* 涉及换算:不替你做主 */
+    if(conv==null){ckConsHint[n]="?";return;}            /* 折不动:请手动拨 */
+    var v=Math.round(conv*100)/100;
+    if(pu==="g"&&v>=5)v=Math.round(v/5)*5;               /* 克取整到 5 */
+    ckConsSug[n]={v:Math.min(stockU,v),txt:ckQ(rq)+" "+ru};  /* 折算值仅作建议,点了才采用 */
+  });
+  ckMode="consume";window.scrollTo(0,0);render();}
+function ckConsumeHTML(id){var r=ckRecipeById(id);
+  var h='<button class="ckback" data-ck="consback">‹ '+esc(r.name)+'</button>';
+  h+='<div style="font-size:19px;font-weight:800;text-align:center;margin:4px 0 16px">'+TT("How much did you use?")+'</div>';
+  var names=Object.keys(ckCons);
+  if(!names.length)h+='<div class="ckempty">'+TT("None of these are in your fridge")+'<br>'+TT("Just confirm to log the dish")+' 👇</div>';
+  names.forEach(function(n){
+    var u=ckConsU[n]||"",stock=ckStockU(n,u),c=ckCons[n],cat=ckCatOf(n);
+    var hint=ckConsHint[n]||"";
+    h+='<div class="ckcons"><div class="h"><span class="em">'+(cat?cat.e:(ckFirst(n)&&ckFirst(n).emoji)||"🧺")+'</span>'+ 
+       '<span class="nm">'+esc(n)+'</span><span class="st">'+TT("Fridge")+' '+ckQ(stock)+' '+esc(u)+'</span></div>'+ 
+       '<div class="b"><span class="l">'+TT("Used")+'</span><span class="ckstep">'+
+       '<button data-ck="cons" data-n="'+n+'" data-d="-1" data-max="'+stock+'" '+(c<=0?"disabled":"")+'>−</button>'+ 
+       '<input class="cknum" type="number" inputmode="decimal" step="0.01" min="0" data-ckq="'+esc(n)+'" value="'+ckQ(c)+'">'+
+       '<span class="v">'+esc(u)+'</span>'+ 
+       '<button data-ck="cons" data-n="'+n+'" data-d="1" data-max="'+stock+'" '+(c>=stock?"disabled":"")+'>+</button></span></div>'+ 
+       (hint==="?"?'<div class="lf" style="text-align:left;color:var(--amber)">'+TT("Units differ — set it yourself")+'</div>':
+        (ckConsSug[n]?'<div style="margin-top:8px"><button data-ck="consuse" data-n="'+esc(n)+'" style="border:0;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);'+
+          (c===ckConsSug[n].v&&c>0?'background:var(--accent);color:#fff':'background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)')+'">'+
+          TT("Recipe calls for")+' '+esc(ckConsSug[n].txt)+' ≈ '+ckQ(ckConsSug[n].v)+' '+esc(u)+' · '+(c===ckConsSug[n].v&&c>0?TT("Applied"):TT("Use this"))+'</button></div>':""))+
+       '<div class="lf">'+TT("Left")+' '+ckQ(Math.max(0,stock-c))+' '+esc(u)+'</div></div>';});
+  h+='<button class="ckbig" data-ck="do" data-id="'+id+'">✅ '+TT("Confirm")+'</button>';
+  return h;}
+function ckConsStep(n,d,max){var st=ckStep(ckConsU[n]||"份");
+  ckCons[n]=Math.min(max,Math.max(0,Math.round((ckCons[n]+d*st)*100)/100));render();}
+function ckSetConsumeQty(n,v,max){
+  if(!ckCons||ckCons[n]==null)return;
+  var x=parseFloat(String(v).replace(",","."));
+  if(!isFinite(x))x=0;
+  if(max!=null&&isFinite(+max))x=Math.min(x,+max);
+  ckCons[n]=Math.max(0,Math.round(x*100)/100);
+}
+function ckDoConsume(id){
+  Object.keys(ckCons||{}).forEach(function(n){
+    var need=ckCons[n];if(need<=0)return;
+    var pu=ckConsU[n]||"";
+    D.pantry.slice().sort(function(a,b){return a.expire_date<b.expire_date?-1:1}).forEach(function(i){
+      if(i.name!==n||(i.unit||"")!==pu||need<=0)return;
+      var take=Math.min(+i.qty||0,need);
+      i.qty=Math.round(((+i.qty||0)-take)*100)/100;need=Math.round((need-take)*100)/100;
+      i.updated_at=new Date().toISOString();
+      if(i.qty>0.001)push("pantry",i);else drop("pantry",i.id);});});
+  var r=ckMaterialize(ckRecipeById(id));
+  r.cooked=(r.cooked||0)+1;r.updated_at=new Date().toISOString();push("recipes",r);
+  ckCons=null;ckMode="";ckOpen=null;ckView="fridge";render();
+  toast("🍽 "+r.name+" · "+TT("fridge updated"));}
+
+/* ---- FAB:厨房页的快捷添加 ---- */
+function ckFabSheet(){
+  openSheet('<h2>'+TT("Menu")+'</h2><div class="ckcap">'+
+    '<button class="man" data-ck="add"><span class="big">🧺</span>'+TT("Add ingredient")+'</button>'+
+    '<button class="ai" data-ck="import"><span class="big">🔗</span>'+TT("Import recipe")+'</button></div>');}
+
+/* ---- 编辑菜谱:名称 / 分类 / 图片 / 食材 / 步骤 全可改 ---- */
+function ckEnterEdit(id){var r=ckRecipeById(id);if(!r)return;
+  ckOpen=id;   /* 锚定当前编辑对象:退后台/切走模块的自动保存都依赖它 */
+  ckDraft={name:r.name||"",meal:ckMealNorm(r.meal||""),cuisine:ckCuiNorm(r.cuisine||""),img:r.img||"",emoji:r.emoji||"🍽",
+    ing:r.ing.map(function(g){return[ckIngName(g),String(ckIngQty(g)),ckIngUnit(g)]}),
+    steps:r.steps.slice()};
+  ckMode="edit";window.scrollTo(0,0);render();}
+var CKIN='border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:9px 10px;font-size:16px;font-family:var(--font);box-sizing:border-box;outline:none;';
+/* 食材名下拉:五类分组 + 自定义 + 新建入口;当前值不在目录也保留 */
+function ckIngOptions(cur){
+  var h="",used={};
+  CKCAT.forEach(function(c){h+='<optgroup label="'+esc(c.name)+'">';
+    c.items.forEach(function(a){used[a[0]]=1;
+      h+='<option value="'+esc(a[0])+'"'+(cur===a[0]?" selected":"")+'>'+a[1]+' '+esc(a[0])+'</option>';});
+    h+='</optgroup>';});
+  var cust=ckCustIngs().filter(function(o){return !used[o.n]});
+  if(cust.length){h+='<optgroup label="'+TT("Custom")+'">';
+    cust.forEach(function(o){used[o.n]=1;
+      h+='<option value="'+esc(o.n)+'"'+(cur===o.n?" selected":"")+'>'+o.e+' '+esc(o.n)+'</option>';});
+    h+='</optgroup>';}
+  if(cur&&!used[cur])h='<option value="'+esc(cur)+'" selected>'+esc(cur)+'</option>'+h;
+  if(!cur)h='<option value="" selected disabled>'+TT("Ingredient")+'…</option>'+h;
+  h+='<option value="__new">＋ '+TT("New ingredient")+'…</option>';
+  return h;}
+function ckUnitOptions(cur){
+  var list=CKUNITS.concat(["份"]),h="";
+  if(cur&&list.indexOf(cur)<0)h+='<option value="'+esc(cur)+'" selected>'+esc(cur)+'</option>';
+  list.forEach(function(u){h+='<option value="'+u+'"'+(cur===u?" selected":"")+'>'+u+'</option>'});
+  return h;}
+function ckEditHTML(id){var d=ckDraft;if(!d){ckMode="";return ckRecipeHTML(id);}
+  var h='<button class="ckback" data-ck="edone">‹ '+TT("Done")+'</button>'+
+    '<div class="note" style="margin:-4px 0 4px">'+TT("Changes save automatically")+'</div>';
+  h+='<div class="ckh2" style="margin-top:4px">'+TT("Dish name")+'</div>'+
+     '<input data-ce="name" value="'+esc(d.name)+'" style="width:100%;'+CKIN+'">';
+  h+='<div class="ckh2">'+TT("Category")+'</div><div style="display:flex;gap:8px;flex-wrap:wrap">';
+  ckMealList().forEach(function(m){h+=ckChip(d.meal===m.v,esc(m.l),'data-ck="emeal" data-m="'+esc(m.v)+'"')});
+  h+=ckChip(false,"+",'data-ck="catadd" data-k="meal" data-f="edit"');
+  h+='</div>';
+  h+='<div class="ckh2">'+TT("Cuisine")+'</div><div style="display:flex;gap:8px;flex-wrap:wrap">';
+  ckCuiList().forEach(function(v){h+=ckChip(d.cuisine===v,esc(v),'data-ck="ecui" data-m="'+esc(v)+'"')});
+  h+=ckChip(false,"+",'data-ck="catadd" data-k="cui" data-f="edit"');
+  h+='</div>';
+  h+='<div class="ckh2">'+TT("Photo")+'</div>'+
+     '<div style="display:flex;align-items:center;gap:14px">'+
+     (d.img?'<img src="'+d.img+'" alt="" style="width:76px;height:76px;object-fit:cover;border-radius:14px;box-shadow:var(--sh)">'
+           :'<div style="width:76px;height:76px;border-radius:14px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:38px">'+d.emoji+'</div>')+
+     '<button data-ck="eimg" style="border:0;background:var(--soft);color:var(--accent);font-size:13px;font-weight:700;border-radius:999px;padding:9px 16px;cursor:pointer;font-family:var(--font)">'+
+       (d.img?TT("Change photo"):TT("Upload photo"))+'</button>'+
+     (d.img?'<button data-ck="eimgdel" style="border:0;background:none;color:var(--faint);font-size:13px;cursor:pointer;font-family:var(--font)">'+TT("Delete")+'</button>':"")+
+     '</div><input type="file" id="ckImgIn" accept="image/*" style="display:none">';
+  h+='<div class="ckh2">'+TT("Ingredients")+'</div>';
+  d.ing.forEach(function(g,i){
+    h+='<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">'+
+       '<select class="ckselect" data-ce="in" data-i="'+i+'" style="flex:2;min-width:0;'+CKIN+'">'+ckIngOptions(g[0])+'</select>'+ 
+       '<input data-ce="iq" data-i="'+i+'" value="'+esc(g[1])+'" inputmode="decimal" style="flex:0 0 56px;text-align:center;'+CKIN+'">'+
+       '<select class="ckselect" data-ce="iu" data-i="'+i+'" style="flex:0 0 72px;text-align:center;'+CKIN+'">'+ckUnitOptions(g[2])+'</select>'+ 
+       '<button data-ck="edel" data-i="'+i+'" style="border:0;background:none;color:var(--faint);font-size:14px;padding:6px;cursor:pointer">✕</button></div>';});
+  h+='<button data-ck="eadd" style="border:1px dashed var(--line);background:none;color:var(--sub);width:100%;border-radius:10px;padding:10px 0;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--font)">+ '+TT("Add an ingredient")+'</button>';
+  h+='<div class="ckh2">'+TT("Steps")+'</div>';
+  d.steps.forEach(function(s,i){
+    h+='<div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start">'+
+       '<span class="n" style="flex:0 0 27px;width:27px;height:27px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-top:6px">'+(i+1)+'</span>'+
+       '<textarea data-ce="st" data-i="'+i+'" rows="2" style="flex:1;resize:vertical;'+CKIN+'">'+esc(s)+'</textarea>'+
+       '<button data-ck="esdel" data-i="'+i+'" style="border:0;background:none;color:var(--faint);font-size:14px;padding:6px;margin-top:6px;cursor:pointer">✕</button></div>';});
+  h+='<button data-ck="esadd" style="border:1px dashed var(--line);background:none;color:var(--sub);width:100%;border-radius:10px;padding:10px 0;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--font)">+ '+TT("Add a step")+'</button>';
+  h+='<button class="ckbig" data-ck="edone" data-id="'+id+'">'+TT("Done")+'</button>';
+  return h;}
+/* 自动保存:退出编辑 / 切走模块 / app 退后台 时提交草稿;silent=true 保留编辑状态 */
+function ckCommitEdit(id,silent){
+  var d=ckDraft;if(!d||!id)return;
+  var r=ckRecipeById(id);
+  if(!r){if(!silent){ckDraft=null;ckMode="";render();}return;}
+  r=ckMaterialize(r);
+  var name=(d.name||"").trim();
+  r.name=(name||r.name||TT("Untitled")).slice(0,40);   /* 名字被清空就沿用原名,不打断退出 */
+  r.meal=d.meal||"";
+  r.cuisine=d.cuisine||"";
+  r.img=d.img||"";
+  if(!r.img)r.emoji=ckEmojiFor(r.name);
+  r.ing=d.ing.map(function(g){var q=parseFloat(g[1]);
+      return[String(g[0]||"").trim().slice(0,30),(isFinite(q)&&q>0)?q:1,String(g[2]||"份").trim().slice(0,6)];})
+    .filter(function(g){return g[0]});
+  r.steps=d.steps.map(function(s){return String(s||"").trim().slice(0,200)})
+    .filter(function(s){return s});
+  r.updated_at=new Date().toISOString();
+  push("recipes",r);
+  if(!silent){ckDraft=null;ckMode="";toast(TT("Saved"));render();}}
+/* 分类管理:新建 + 删除(删除只隐藏 chip,不动菜谱;同名重建会复活) */
+var ckArmCat=null;
+function ckCatUse(k,v){var n=0;ckAllRecipes().forEach(function(r){
+  if(String(k==="cui"?(r.cuisine||""):(r.meal||""))===v)n++});return n;}
+function ckCatSheet(keep){
+  var ctx=ckCatCtx||{k:"meal",from:"filter"};
+  var old=keep?($("ckCatIn")&&$("ckCatIn").value||""):"";
+  var h='<h2>'+TT("Manage categories")+'</h2>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input id="ckCatIn" value="'+esc(old)+'" placeholder="'+TT(ctx.k==="cui"?"e.g. Japanese, Korean, bakery…":"e.g. Brunch, midnight snack…")+'" style="flex:1;'+CKIN+'" maxlength="8">'+
+    '<button data-ck="catsave" style="border:0;background:var(--accent);color:#fff;border-radius:10px;padding:0 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">'+TT("Save")+'</button></div>';
+  var items=ctx.k==="cui"?ckCuiList().map(function(v){return{v:v,l:v}}):ckMealList();
+  if(items.length)h+='<div style="margin-top:14px">';
+  items.forEach(function(o){
+    var armed=ckArmCat===o.v,use=ckCatUse(ctx.k,o.v);
+    h+='<div style="display:flex;align-items:center;gap:8px;padding:11px 2px;border-bottom:1px solid var(--line)">'+
+       '<span style="font-size:15px;font-weight:600;flex:1">'+esc(o.l)+
+       (use?' <span style="color:var(--faint);font-size:11.5px;font-weight:500">'+use+' '+TT("dishes use it")+'</span>':"")+'</span>'+
+       '<button data-ck="catdel" data-v="'+esc(o.v)+'" style="border:0;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);'+
+       (armed?'background:var(--danger);color:#fff':'background:none;color:var(--faint)')+'">'+
+       (armed?TT("Confirm delete"):TT("Delete"))+'</button></div>';});
+  if(items.length)h+='</div>';
+  h+='<div class="note">'+TT("Deleting a category only hides the chip — dishes keep their label. Add the same name again to bring it back.")+'</div>';
+  openSheet(h);}
+function ckCatSave(){
+  var el=$("ckCatIn"),v=(el&&el.value||"").trim();
+  if(!v){toast(TT("Name required"));return;}
+  if(v.length>8){toast(TT("Keep it under 8 characters"));return;}
+  var ctx=ckCatCtx||{k:"meal",from:"filter"};
+  var cui=ctx.k==="cui";
+  ckCustAdd(cui?"ck.ccuis":"ck.cmeals",v);
+  ckCustDel(cui?"ck.hcuis":"ck.hmeals",v);   /* 同名重建 → 取消隐藏 */
+  if(ctx.from==="edit"&&ckDraft){if(cui)ckDraft.cuisine=v;else ckDraft.meal=v;}
+  else{if(cui)ckCui=v;else ckMeal=v;ckRandIds=null;}
+  ckCatCtx=null;ckArmCat=null;closeSheet();render();}
+function ckCatDel(v){
+  var ctx=ckCatCtx||{k:"meal",from:"filter"},cui=ctx.k==="cui";
+  ckCustDel(cui?"ck.ccuis":"ck.cmeals",v);
+  ckCustAdd(cui?"ck.hcuis":"ck.hmeals",v);
+  if(cui&&ckCui===v)ckCui="";
+  if(!cui&&ckMeal===v)ckMeal="";
+  if(ckDraft){if(cui&&ckDraft.cuisine===v)ckDraft.cuisine="";
+    if(!cui&&ckDraft.meal===v)ckDraft.meal="";}
+  ckArmCat=null;ckRandIds=null;ckCatSheet(true);render();}
+/* 图片:压到最长边 640、jpeg 0.72,控制体积(存进菜谱行,随同步走) */
+function ckImgB64(file,cb){
+  var rd=new FileReader();
+  rd.onload=function(){var img=new Image();
+    img.onload=function(){var mx=640,sc=Math.min(1,mx/Math.max(img.width,img.height));
+      var c=document.createElement("canvas");
+      c.width=Math.max(1,Math.round(img.width*sc));c.height=Math.max(1,Math.round(img.height*sc));
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      try{cb(c.toDataURL("image/jpeg",0.72))}catch(e){cb(null)}};
+    img.onerror=function(){cb(null)};img.src=rd.result;};
+  rd.onerror=function(){cb(null)};rd.readAsDataURL(file);}
+
+/* ---- 事件委托:厨房模块所有交互都在闭包内分发,不依赖全局作用域 ---- */
+document.addEventListener("click",function(ev){
+  var el=ev.target.closest?ev.target.closest("[data-ck]"):null;
+  if(!el){if(ckArmDel){ckArmDel=null;render();}return;}
+  var a=el.dataset.ck;
+  if(a!=="rdel"&&ckArmDel)ckArmDel=null;   /* 点了别处就撤销待确认状态 */
+  if(a==="seg"){ckView=el.dataset.v;render();}
+  else if(a==="add")ckAddSheet();
+  else if(a==="import")ckImportSheet();
+  else if(a==="open"){ckOpen=el.dataset.id;ckMode="";window.scrollTo(0,0);render();}
+  else if(a==="del"){ev.stopPropagation();ckDel(el.dataset.id);}
+  else if(a==="fedit")ckFeSheet(el.dataset.id);
+  else if(a==="festep"){var fi=D.pantry.filter(function(x){return x.id===ckFeId})[0];
+    var fq=$("ckFeQ");if(fi&&fq){var fst=ckStep(fi.unit||"个");
+      var cur=parseFloat(String(fq.value).replace(",","."));if(!isFinite(cur))cur=+fi.qty||0;
+      fq.value=ckQ(Math.max(0,Math.round((cur+ +el.dataset.d*fst)*100)/100));}}
+  else if(a==="feexp"){ckFeExp=ckAddDays(ckFeExp,+el.dataset.d);
+    var fe=$("ckFeEV");if(fe)fe.textContent=ckMD(ckFeExp);}
+  else if(a==="fesave")ckFeSave();
+  else if(a==="fedel2"){var fid=ckFeId;closeSheet();ckDel(fid);}
+  else if(a==="qty")ckQtySheet(el.dataset.n);
+  else if(a==="ingnew"){ckNiQ=1;ckNiC="veg";ckNiRow=null;ckNiEdit=null;ckNiPre=null;ckNewIngSheet(el.dataset.n||"");}
+  else if(a==="ingedit"){var enm=el.dataset.n,edef=ckCatOf(enm);
+    if(edef){ckNiEdit=enm;ckNiRow=null;
+      ckNiU=edef.u;ckNiL=edef.life;ckNiC=ckGrpOf(edef.cat);
+      ckNiPre={n:enm,e:edef.e,s:edef.s||""};
+      ckNewIngSheet("");}}
+  else if(a==="nic"){ckNiC=el.dataset.c;ckNewIngSheet("",true);}
+  else if(a==="ingdel"){ev.stopPropagation();
+    if(ckArmIng!==el.dataset.n){ckArmIng=el.dataset.n;ckDrawGrid();}
+    else{var nm=el.dataset.n;
+      try{var stx=JSON.parse(store.get("ck.cings")||"[]");
+        stx=(Array.isArray(stx)?stx:[]).filter(function(x){return x&&x.n!==nm});
+        store.set("ck.cings",JSON.stringify(stx));}catch(e){}
+      ckCustAdd("ck.hings",nm);          /* 隐藏:冰箱里还有它也不会再派生回来 */
+      ckArmIng=null;ckDrawGrid();
+      toast(nm+" "+TT("Deleted"));}}
+  else if(a==="niu"){ckNiU=el.dataset.u;
+    ckNiQ=ckNiU==="g"?100:ckNiU==="ml"?250:1;ckNewIngSheet("",true);}
+  else if(a==="niq"){var nst=ckStep(ckNiU);
+    ckNiQ=Math.max(nst,Math.round((ckNiQ+ +el.dataset.d*nst)*100)/100);
+    var nqv=$("ckNiQV");if(nqv)nqv.textContent=ckQ(ckNiQ)+" "+ckNiU;}
+  else if(a==="nil"){ckNiL=Math.max(1,Math.min(365,ckNiL+ +el.dataset.d));ckNewIngSheet("",true);}
+  else if(a==="nisave")ckNiSave();
+  else if(a==="shstep")ckShStep(+el.dataset.d);
+  else if(a==="shadd")ckShAdd();
+  else if(a==="impgo")ckImportGo();
+  else if(a==="back"){ckOpen=null;ckMode="";render();}
+  else if(a==="consback"){ckMode="";render();}
+  else if(a==="fav")ckFav(el.dataset.id);
+  else if(a==="rdel"){ev.stopPropagation();
+    if(ckArmDel!==el.dataset.id){ckArmDel=el.dataset.id;render();}          /* 第一下:变成「确认删除」 */
+    else{drop("recipes",el.dataset.id);ckArmDel=null;ckRandIds=null;render();} /* 第二下:真删 */
+  }
+  else if(a==="radd"){var rr=ckRecipeById(el.dataset.id);if(rr){ckMaterialize(rr);ckRandIds=null;toast(TT("Added to my dishes"));render();}}
+  else if(a==="shuffle"){ckRandIds=null;render();}
+  else if(a==="meal"){ckMeal=ckMealNorm(el.dataset.m);ckRandIds=null;render();}
+  else if(a==="edit")ckEnterEdit(el.dataset.id);
+  else if(a==="edone")ckCommitEdit(el.dataset.id||ckOpen,false);
+  else if(a==="emeal"){if(ckDraft){ckDraft.meal=(ckDraft.meal===el.dataset.m?"":el.dataset.m);render();}}
+  else if(a==="ecui"){if(ckDraft){ckDraft.cuisine=(ckDraft.cuisine===el.dataset.m?"":el.dataset.m);render();}}
+  else if(a==="cui"){ckCui=ckCuiNorm(el.dataset.m);ckRandIds=null;render();}
+  else if(a==="catadd"){ckCatCtx={k:el.dataset.k,from:el.dataset.f};ckArmCat=null;ckCatSheet();}
+  else if(a==="catsave")ckCatSave();
+  else if(a==="catdel"){
+    if(ckArmCat!==el.dataset.v){ckArmCat=el.dataset.v;ckCatSheet(true);}
+    else ckCatDel(el.dataset.v);}
+  else if(a==="eimg"){var fi=$("ckImgIn");if(fi)fi.click();}
+  else if(a==="eimgdel"){if(ckDraft){ckDraft.img="";render();}}
+  else if(a==="eadd"){if(ckDraft){ckDraft.ing.push(["","1","个"]);render();}}
+  else if(a==="edel"){if(ckDraft){ckDraft.ing.splice(+el.dataset.i,1);render();}}
+  else if(a==="esadd"){if(ckDraft){ckDraft.steps.push("");render();}}
+  else if(a==="esdel"){if(ckDraft){ckDraft.steps.splice(+el.dataset.i,1);render();}}
+  else if(a==="serv")ckChgServ(el.dataset.id,+el.dataset.d);
+  else if(a==="cook")ckStartConsume(el.dataset.id,+el.dataset.serv);
+  else if(a==="cons")ckConsStep(el.dataset.n,+el.dataset.d,+el.dataset.max);
+  else if(a==="consuse"){var sg=ckConsSug[el.dataset.n];
+    if(sg){ckCons[el.dataset.n]=sg.v;render();}}
+  else if(a==="do")ckDoConsume(el.dataset.id);
+});
+/* 编辑输入:文本框只写草稿不重绘(中文输入法安全);下拉选择即刻生效并重绘 */
+var ckNiRow=null;   /* 从食材行的「新建」进入时,记住要回填哪一行 */
+function ckEditInput(el){
+  if(!el||!el.dataset||!el.dataset.ce||!ckDraft)return;
+  var ce=el.dataset.ce,i=+el.dataset.i;
+  if(ce==="name")ckDraft.name=el.value;
+  else if(ce==="in"&&ckDraft.ing[i]){
+    if(el.value==="__new"){ckNiRow=i;ckNiQ=1;render();ckNewIngSheet("");return;}
+    ckDraft.ing[i][0]=el.value;
+    var c=ckCatOf(el.value);if(c)ckDraft.ing[i][2]=c.u;   /* 选了名字,单位自动带出 */
+    render();}
+  else if(ce==="iq"&&ckDraft.ing[i])ckDraft.ing[i][1]=el.value;
+  else if(ce==="iu"&&ckDraft.ing[i]){ckDraft.ing[i][2]=el.value;
+    if(el.tagName==="SELECT")render();}
+  else if(ce==="st"&&i<ckDraft.steps.length)ckDraft.steps[i]=el.value;}
+document.addEventListener("input",function(ev){
+  var el=ev.target;
+  if(el&&el.dataset&&el.dataset.ckq){ckSetConsumeQty(el.dataset.ckq,el.value,el.dataset.max);render();return;}
+  ckEditInput(ev.target);
+});
+document.addEventListener("visibilitychange",function(){
+  if(document.hidden&&ckMode==="edit"&&ckDraft&&ckOpen)ckCommitEdit(ckOpen,true);});
+document.addEventListener("change",function(ev){
+  var el=ev.target;
+  if(el&&el.dataset&&el.dataset.ckq){ckSetConsumeQty(el.dataset.ckq,el.value,el.dataset.max);render();return;}
+  if(el&&el.dataset&&el.dataset.ce&&el.tagName==="SELECT"){ckEditInput(el);return;}
+  if(!el||el.id!=="ckImgIn")return;
+  var f=el.files&&el.files[0];if(!f)return;
+  ckImgB64(f,function(url){
+    if(!url){toast(TT("Could not read that image"));return;}
+    if(ckDraft){ckDraft.img=url;render();}});
+});
 $("menuBtn").onclick=openDrawer;
 $("scrim").onclick=closeDrawer;
 (function(){
@@ -6385,6 +7408,7 @@ $("scrim").onclick=closeDrawer;
 /* ---- 快速捕捉 / 搜索 的入口与快捷键 ---- */
 /* 悬浮 + 按当前页面决定加什么 */
 function fabAction(){
+  if(tab==="cook"){ckFabSheet();return;}
   if(tab==="plan"){
     if(planView==="day")newTodoSheet(fmt(cursor));    // 那一天的日程
     else newTodoSheet(todayStr());                    // Event / To-do 都能加
@@ -6625,14 +7649,14 @@ window.addEventListener("offline",function(){ if(cfg)setSync("offline"); });
   D.habits.slice().forEach(function(hb){
     if(hb.fields)return;                       // 已经是新模型
     var k=hb.kind||"check", fs=[];
-    if(k==="count")   fs.push({id:"v",label:"数量",type:"number",unit:hb.unit||"",dec:0});
-    if(k==="duration")fs.push({id:"v",label:"时长",type:"number",unit:"分钟",dec:0});
-    if(k==="range")   fs.push({id:"v",label:"时长",type:"number",unit:"小时",dec:1});
-    if(k==="scale")   fs.push({id:"v",label:"评分",type:"rating"});
+    if(k==="count")   fs.push({id:"v",label:"Count",type:"number",unit:hb.unit||"",dec:0});
+    if(k==="duration")fs.push({id:"v",label:"Duration",type:"number",unit:"minutes",dec:0});
+    if(k==="range")   fs.push({id:"v",label:"Duration",type:"number",unit:"hours",dec:1});
+    if(k==="scale")   fs.push({id:"v",label:"Score",type:"rating"});
     var its=jarr(hb.items);
-    if(its.length)    fs.push({id:"items",label:"子项",type:"multi",opts:its});
-    if(hb.has_scale)  fs.push({id:"scale",label:"状态",type:"rating"});
-    fs.push({id:"note",label:"备注",type:"text"});
+    if(its.length)    fs.push({id:"items",label:"Items",type:"multi",opts:its});
+    if(hb.has_scale)  fs.push({id:"scale",label:"Status",type:"rating"});
+    fs.push({id:"note",label:"Note",type:"text"});
     push("habits",Object.assign({},hb,{fields:JSON.stringify(fs),updated_at:new Date().toISOString()}));
     D.habit_logs.filter(function(l){return l.habit_id===hb.id&&!l.vals}).forEach(function(l){
       var v={};
