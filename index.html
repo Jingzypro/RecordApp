@@ -6688,13 +6688,6 @@ function vCook(){
 }
 
 /* ---- 推荐列表 ---- */
-function ckScore(r){var have=0,expUse=0,miss=[];
-  r.ing.forEach(function(g){var n=g[0]||g.name;
-    if(ckStock(n)>0){have++;var it=ckFirst(n);if(it&&ckDaysLeft(it.expire_date)<=3)expUse++;}
-    else miss.push(n);});
-  return{have:have,total:r.ing.length,miss:miss,expUse:expUse,
-    score:(r.ing.length?have/r.ing.length*2:0)+expUse*3-miss.length*.6-((r.cooked||0)?.2:0)-(r.time_min||30)/200
-      +(r.fav?.3:0)+(r.source?.4:0)};}
 var ckRandIds=null;
 function ckRandPool(pool){
   var n=Math.min(3,pool.length);
@@ -6709,11 +6702,6 @@ function ckChip(sel,txt,attrs){
     (sel?'background:var(--accent);color:#fff':'background:var(--card2);color:var(--sub)')+'">'+txt+'</button>';}
 function ckRecHTML(){
   var h="";
-  if(!D.pantry.length)
-    h+='<div class="ckr" style="cursor:default;display:block">'+
-       '<div class="nm">🌟 '+TT("A few starter dishes")+'</div>'+
-       '<div class="mt" style="margin:6px 0 12px">'+TT("Add what is in your fridge to see dishes that fit")+'</div>'+
-       '<button class="ckbig" style="margin:0" data-ck="add">+ '+TT("Add ingredients now")+'</button></div>';
   /* 双筛选:餐段 × 菜系,均可自定义 */
   h+='<div style="display:flex;gap:8px;overflow-x:auto;margin:0 0 8px;-webkit-overflow-scrolling:touch">';
   h+=ckChip(ckMeal==="",TT("All"),'data-ck="meal" data-m=""');
@@ -6734,21 +6722,14 @@ function ckRecHTML(){
      ' <span class="c">'+mine.length+'</span></div>';
   if(!mine.length)
     h+='<div class="ckempty" style="padding:22px 16px">'+TT("Import a recipe, or save the doable ones from the ideas below — your own dishes live here")+'</div>';
-  else mine.map(function(r){return{r:r,s:ckScore(r)}})
-    .sort(function(a,b){return b.s.score-a.s.score})
-    .forEach(function(x){h+=ckRcard(x.r,x.s,{del:true})});
+  else mine.forEach(function(r){h+=ckRcard(r,{del:true})});   /* mine 已按最近编辑排序:与冰箱无关 */
   /* 随便试试:未收编的内置菜里随机抽 3 道 */
   if(pool.length){
     h+='<div class="cksect"><span class="d" style="background:var(--amber)"></span>'+TT("Ideas to try")+
        '<button data-ck="shuffle" style="margin-left:auto;border:0;background:none;color:var(--accent);font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--font);padding:4px">↻ '+TT("Shuffle")+'</button></div>';
-    ckRandPool(pool).forEach(function(r){h+=ckRcard(r,ckScore(r),{save:true})});}
+    ckRandPool(pool).forEach(function(r){h+=ckRcard(r,{save:true})});}
   return h;}
-function ckRcard(r,s){var tag="";
-  if(D.pantry.length){
-    if(s.total&&s.have===s.total)tag='<div class="hv">✓ '+TT("All in your fridge")+(s.expUse?' · '+TT("uses expiring items"):"")+'</div>';
-    else if(s.have>0)tag='<div class="ms">'+TT("Missing")+' '+s.miss.map(esc).join("、")+'</div>';
-    else tag='<div class="ms">'+TT("Needs shopping")+'</div>';}
-  var opt=arguments[2]||{};
+function ckRcard(r,opt){opt=opt||{};var tag="";  /* Menu 与冰箱解耦:卡片不再显示库存提示 */
   var armed=ckArmDel===r.id;
   return '<div class="ckr" data-ck="open" data-id="'+r.id+'" style="position:relative">'+
     (opt.del?'<button data-ck="rdel" data-id="'+r.id+'" style="position:absolute;top:8px;right:10px;border:0;background:'+(armed?'var(--danger)':'none')+';color:'+(armed?'#fff':'var(--faint)')+';font-size:'+(armed?'11.5px':'13px')+';font-weight:700;padding:'+(armed?'5px 10px':'5px')+';border-radius:999px;cursor:pointer;font-family:var(--font)">'+(armed?TT("Confirm delete"):"✕")+'</button>':"")+
@@ -6959,6 +6940,7 @@ function ckManualCreate(){
     updated_at:new Date().toISOString()};
   push("recipes",row);
   closeSheet();tab="cook";ckView="rec";
+  ckMeal="";ckCui="";ckRandIds=null;   /* 重置筛选:别让当前筛选把新菜藏起来 */
   ckEnterEdit(row.id);                 /* 建完直接进编辑器填食材和步骤 */
   toast("✍️ "+n);}
 var CKPROMPT='从下面的内容里提取一份菜谱,只输出 JSON,不要任何其它文字或markdown代码块:\n'+
@@ -6998,7 +6980,8 @@ function ckImportGo(){
       source:inp.slice(0,300),fav:false,cooked:0,updated_at:new Date().toISOString()};
     if(!row.ing.length&&!row.steps.length)throw new Error(TT("Could not find a recipe in that"));
     push("recipes",row);
-    closeSheet();tab="cook";ckView="rec";ckOpen=row.id;ckMode="";render();
+    closeSheet();tab="cook";ckView="rec";ckOpen=row.id;ckMode="";
+    ckMeal="";ckCui="";ckRandIds=null;render();
     toast("🍳 "+row.name+" "+TT("imported"));
   }).catch(function(e){
     var g=$("ckImpGo");if(g)g.disabled=false;
@@ -7053,10 +7036,8 @@ function ckRecipeHTML(id){var r=ckRecipeById(id);
      '<button data-ck="serv" data-id="'+id+'" data-d="1" '+(serv>=8?"disabled":"")+'>+</button></span></div>';
   h+='<div class="ckh2">'+TT("Ingredients")+'</div>';
   r.ing.forEach(function(g){var n=ckIngName(g),q=ckScale(ckIngQty(g),serv,r.base_serv);
-    var avail=ckStockIn(n,ckIngUnit(g));
-    var lack=(avail>0?avail:ckStock(n)>0?q:0)<q;   /* 能折算就按折算量比;完全折不动就只看有没有 */
-    h+='<div class="ckir'+(lack&&D.pantry.length?" lack":"")+'"><span class="gd"></span>'+
-       '<span class="nm">'+esc(n)+(lack&&D.pantry.length?'<span style="font-size:11px;font-weight:500"> · '+TT("not enough in fridge")+'</span>':"")+'</span>'+
+    h+='<div class="ckir"><span class="gd"></span>'+
+       '<span class="nm">'+esc(n)+'</span>'+
        '<span class="q">'+ckQ(q)+' '+esc(ckIngUnit(g))+'</span></div>';});
   h+='<div class="ckh2">'+TT("Steps")+' ('+r.steps.length+')</div>';
   r.steps.forEach(function(s,i){h+='<div class="ckst"><span class="n">'+(i+1)+'</span><span class="t">'+esc(s)+'</span></div>';});
