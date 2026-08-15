@@ -318,6 +318,7 @@
   .star{flex:none;border:none;background:transparent;cursor:pointer;font-size:17px;line-height:1;
     color:var(--faint);padding:2px 4px 2px 0;font-family:inherit;transition:color .15s}
   .star.on{color:var(--amber)}
+  .star.sm{font-size:15px;padding:2px 2px}
   /* 首页倒计时 / 生日小卡：一行四个，多了换行（和习惯小卡一致）*/
   .cdstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:1px 0 2px}
   .cdcard{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;
@@ -1118,6 +1119,64 @@
   .plsr.done .plt b{color:var(--faint);text-decoration:line-through}
   .plck.sm{width:22px;height:22px;border-radius:7px}
   .plck.sm svg{width:13px;height:13px}
+  /* 首页：计划进度轮播（固定高度，卡内树状图自己滚，左右拖动跟手换卡） */
+  .pincar{position:relative;border-radius:var(--r);overflow:hidden;background:var(--card);
+    border:1px solid var(--line);box-shadow:var(--sh);height:156px;touch-action:pan-y}
+  .pincar .ptrack{display:flex;height:100%;transition:transform .38s cubic-bezier(.25,.8,.25,1)}
+  .pslide{flex:0 0 100%;min-width:0;display:flex;flex-direction:column;padding:10px 13px 15px}
+  .pinh{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+    color:var(--hc);cursor:pointer;margin-bottom:7px;flex:none}
+  .pinh span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pinh em{font-style:normal;color:var(--faint);font-size:13px}
+  .pinh .pgc{font-weight:800;color:var(--hc);opacity:.85;font-variant-numeric:tabular-nums}
+  .pinbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;position:relative}
+  .pinr{display:flex;align-items:center;gap:9px;padding:2px 0}
+  .pinr+.pinr,.pintree+.pinr{margin-top:5px}
+  .pinr>b{font-size:13.5px;font-weight:650;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .pinr.done>b{color:var(--faint);text-decoration:line-through}
+  .pinr.hot>b{color:var(--hc)}
+  /* 被钉的条目：浅色底衬 + 右侧琥珀星标（和 Plan 页点亮的 ★ 同一套语言） */
+  .pinr.hot,.pink.hot{background:color-mix(in srgb,var(--hc) 9%,transparent);
+    border-radius:8px;padding-left:5px;padding-right:7px;margin-left:-5px}
+  .pstar{flex:none;font-size:12px;color:var(--amber);line-height:1}
+  .pintree{margin:6px 0 0 12px;padding-left:13px;border-left:1.5px solid var(--line)}
+  .pink{display:flex;align-items:center;gap:8px;padding:4px 0;position:relative}
+  .pink::before{content:"";position:absolute;left:-13px;top:50%;width:9px;height:1.5px;background:var(--line)}
+  .pink>b{font-size:12.5px;font-weight:600;color:var(--sub);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .pink.done>b{color:var(--faint);text-decoration:line-through}
+  .pink.hot>b{color:var(--hc)}
+  .pdots{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;gap:5px}
+  .pdots i{width:5px;height:5px;border-radius:50%;background:var(--line);transition:all .3s;cursor:pointer}
+  .pdots i.on{background:var(--sub);width:14px;border-radius:3px}
+  /* 日记 Markdown 预览 */
+  .mdview{min-height:46vh;padding:4px 2px;font-size:15px;line-height:1.7;
+    color:var(--ink);word-break:break-word;user-select:text;-webkit-user-select:text}
+  .mdview h1{font-size:21px;margin:14px 0 6px;letter-spacing:-.02em}
+  .mdview h2{font-size:18px;margin:13px 0 5px;letter-spacing:-.015em}
+  .mdview h3{font-size:16px;margin:12px 0 4px}
+  .mdview h4{font-size:15px;margin:10px 0 4px;color:var(--sub)}
+  .mdview h1:first-child,.mdview h2:first-child,.mdview h3:first-child{margin-top:2px}
+  .mdview p{margin:6px 0}
+  .mdview ul,.mdview ol{margin:6px 0;padding-left:22px}
+  .mdview li{margin:3px 0}
+  .mdview li.task{list-style:none;margin-left:-20px}
+  .mdview li.task .tk{margin-right:6px;color:var(--sub)}
+  .mdview li.task.on{color:var(--faint);text-decoration:line-through}
+  .mdview li.task.on .tk{color:var(--accent);text-decoration:none;display:inline-block}
+  .mdview blockquote{margin:8px 0;padding:2px 0 2px 12px;border-left:3px solid var(--line);
+    color:var(--sub)}
+  .mdview code{background:var(--card2);border:1px solid var(--line2);border-radius:5px;
+    padding:1px 5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .mdview pre{background:var(--card2);border:1px solid var(--line2);border-radius:var(--r2);
+    padding:11px 13px;overflow-x:auto;margin:8px 0}
+  .mdview pre code{background:none;border:none;padding:0;font-size:12.5px;line-height:1.55}
+  .mdview a{color:var(--accent2);text-decoration:underline;text-underline-offset:2px}
+  .mdview hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+  .mdview s{color:var(--faint)}
+  /* 待办详情：备注展示 */
+  .tdnote{background:var(--card2);border-radius:var(--r2);padding:11px 13px;font-size:13px;
+    line-height:1.55;color:var(--ink);word-break:break-word;user-select:text;-webkit-user-select:text}
   .plsadd{border:1px dashed var(--line);background:transparent;color:var(--sub);
     border-radius:10px;padding:8px;font-size:12.5px;font-weight:650;cursor:pointer}
   .plsadd:active{background:var(--soft)}
@@ -1140,12 +1199,13 @@
   .lgdt button:disabled{opacity:.25}
   .lgdt b{font-size:12px;color:var(--faint);font-weight:650;min-width:56px;text-align:center}
   .lgback{margin:-8px 0 14px;font-size:11.5px;font-weight:650;color:var(--amber)}
-  .hcalh{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px}
+  .hcalh{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:8px}
   .hcalh span{text-align:center;font-size:10.5px;color:var(--faint);font-weight:700}
-  .hcal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .hcal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
   .hcz{aspect-ratio:1}
   .hcd{aspect-ratio:1;border-radius:12px;background:var(--card2);border:1.5px solid transparent;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    min-width:0;overflow:hidden;
     cursor:pointer;color:var(--sub)}
   .hcd b{font-size:16px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;
     letter-spacing:-.02em}
@@ -1513,7 +1573,7 @@
 
 <nav class="tabs" id="tabs">
   <button data-t="today"><i data-ti="sun"></i><span data-t9="Today">Today</span></button>
-  <button data-t="plan"><i data-ti="calendar"></i><span data-t9="Plan">Plan</span></button>
+  <button data-t="plan"><i data-ti="calendar"></i><span data-t9="Schedule">Schedule</span></button>
   <button data-t="habit"><i data-ti="flame"></i><span data-t9="Rituals">Rituals</span></button>
 </nav>
 <div class="qswrap" id="qswrap">
@@ -1923,7 +1983,7 @@ function vReview(){
        '<div class="rvd">'+(7-cur.diary)+' days unwritten</div></div>'+
      '</div>';
   h+='<div class="sec">'+T("Consistency · last 26 weeks")+'</div><div class="card" style="padding:14px 15px">'+heatmap(null)+'</div>';
-  var open=D.todos.filter(function(t){return !t.done&&t.due_date&&t.due_date<todayStr()});
+  var open=D.todos.filter(function(t){return !t.done&&t.due_date&&t.due_date<todayStr()&&!isEvent(t)});
   h+='<div class="sec">'+T("Carried over")+' ('+open.length+')</div>';
   h+='<div class="card">'+(open.length?'<ul class="list">'+open.slice(0,12).map(itemHTML).join("")+'</ul>'
      :'<div class="empty">'+T("Nothing overdue")+'</div>')+'</div>';
@@ -2036,6 +2096,9 @@ function setSync(s){var p=$("syncPill");
     s==="offline"?("Offline"+(n?" · "+n:"")):"Not linked";}
 
 /* ============ 待办 ============ */
+/* Event 与 To-do 的判定：新数据有 ev 标记；老数据凡带事件字段（时间/结束/地点/路程）都算 Event。
+   Overdue 只统计 To-do —— 过去的 Event 是「已发生」，不是「逾期」。 */
+function isEvent(t){return !!(t&&(t.ev||t.due_time||t.end_time||t.end_date||t.location||t.travel));}
 function addTodo(text,date,time){text=(text||"").trim();if(!text)return;
   push("todos",{id:uid(),text:text,done:false,sort:Date.now(),due_date:date||null,due_time:time||null,updated_at:new Date().toISOString()});}
 function nextDue(ds,rule){
@@ -2047,6 +2110,30 @@ function nextDue(ds,rule){
     var last=new Date(y,m+1,0).getDate();
     return fmt(new Date(y,m,Math.min(day,last)));}
   return null;}
+
+/* 长按拖起、又原地放下 → 当作「查看/编辑」：标题 / 时间地点 / 备注（可直接改） */
+function todoDetailSheet(id){
+  var sid=String(id).split("@")[0].split("~")[0];   // 重复实例 / 跨天实例都归到源记录
+  var t=D.todos.filter(function(x){return x.id===sid})[0]; if(!t)return;
+  var meta=[];
+  if(t.due_date)meta.push(esc(t.due_date)+(t.end_date?" → "+esc(t.end_date):""));
+  if(t.due_time)meta.push(esc(t.due_time)+(t.end_time?"–"+esc(t.end_time):""));
+  if(t.location)meta.push("◎ "+esc(t.location));
+  openSheet('<h2 style="word-break:break-word">'+esc(t.text)+'</h2>'+
+    (meta.length?'<div class="note" style="margin:2px 0 0">'+meta.join(" · ")+'</div>':"")+
+    '<label class="fl">'+T("Notes")+'</label>'+
+    '<textarea class="inp" id="tnnote" maxlength="500" style="height:110px;resize:none;line-height:1.5" '+
+      'placeholder="'+T("No notes")+'">'+(t.notes?esc(t.notes):"")+'</textarea>'+
+    '<div class="row" style="margin-top:16px;gap:8px">'+
+      '<button class="btn" id="tnv" style="flex:1">'+T("Save")+'</button>'+
+      '<button class="btn g" id="tnx" style="flex:1">'+T("Close")+'</button></div>');
+  $("tnx").onclick=closeSheet;
+  $("tnv").onclick=function(){
+    var cur=D.todos.filter(function(x){return x.id===sid})[0]; if(!cur){closeSheet();return;}
+    var v=$("tnnote").value.trim();
+    if((cur.notes||"")!==v)
+      push("todos",Object.assign({},cur,{notes:v||null,updated_at:new Date().toISOString()}));
+    closeSheet();toast(TT("Saved"));render();};}
 
 function toggleTodo(id){
   if(window.__noTap){window.__noTap=0;return;}   // 刚才是在滑动，不算点击
@@ -2163,8 +2250,16 @@ function render(){
     ttl.style.cssText="margin:0";
     ttl.innerHTML='<button class="ybtn" id="hBack">‹ '+esc(habitById(habitOpen).name)+'</button>';}
   else{ttl.style.cssText="";
-    var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones",plans:"Long-term",cook:"Menu"}[tab]||"Record";
+    var lbl={today:"Today",money:"Spending",diary:"Journal",habit:"Rituals",subs:"Recurring",bday:"Occasions",review:"Insights",cdown:"Milestones",plans:"Plan",cook:"Menu"}[tab]||"Record";
     ttl.innerHTML=esc(T(lbl))+(tab==="today"?wxChip():"");}
+  // Menu 页：点标题回到 Menu 首页（先自动保存正在编辑的菜谱）
+  if(tab==="cook"&&(ckOpen||ckMode||ckView!=="rec")){
+    ttl.style.cursor="pointer";
+    ttl.onclick=function(){
+      if(ckMode==="edit"&&ckDraft&&ckOpen)ckCommitEdit(ckOpen,true);
+      ckOpen=null;ckMode="";ckCons=null;ckDraft=null;ckView="rec";
+      window.scrollTo(0,0);render();};}
+  else{ttl.style.cursor="";ttl.onclick=null;}
   if(typeof setTab==="function")setTab();     // 视图切换时底栏高亮跟着变
   var v=$("view");
   v.innerHTML = tab==="today"?vToday() : tab==="plan"?vPlan() : tab==="money"?vMoney() :
@@ -2230,7 +2325,7 @@ function vToday(){
   var te=sumCur(tl,"expense"), tpc=primCur(tl);      // 没有汇率，按主币种显示
   var bd=D.birthdays.map(function(b){return{b:b,d:daysUntil(b.date.slice(5)||b.date)}})
           .filter(function(x){return x.d<=14}).sort(function(a,b){return a.d-b.d})[0];
-  var over=D.todos.filter(function(t){return !t.done&&t.due_date&&t.due_date<ds});
+  var over=D.todos.filter(function(t){return !t.done&&t.due_date&&t.due_date<ds&&!isEvent(t)});
   var now=d.getHours()*60+d.getMinutes();
 
   /* ── 主视觉：问候 / 日期 / 今日完成率 ── */
@@ -2262,7 +2357,7 @@ function vToday(){
      '<button class="qa" id="qaTask"><span class="i">✓</span><span class="n">'+T("Task")+'</span></button>'+
      '<button class="qa" id="qaCost"><span class="i">¥</span><span class="n">'+T("Cost")+'</span></button>'+
      '<button class="qa" id="qaDiary"><span class="i">✎</span><span class="n">'+T("Diary")+'</span></button>'+
-     '<button class="qa" id="qaPlan"><span class="i">◷</span><span class="n">'+T("Plan")+'</span></button>'+
+     '<button class="qa" id="qaPlan"><span class="i">◷</span><span class="n">'+T("Schedule")+'</span></button>'+
      '</div>';
 
   /* ── 今日时间线 ── */
@@ -2310,6 +2405,9 @@ function vToday(){
      '<div class="tdcol done"><div class="tdh">'+T("Done")+''+(tdDone.length?' <b>'+tdDone.length+'</b>':"")+'</div>'+
        tdBox(tdDone,"")+'</div>'+
      '</div>';
+
+  /* ── 长期进度：钉到主屏幕的长期计划条目（当前树状图） ── */
+  h+=pinnedPlansHTML();
 
   /* ── 打卡 ── */
   if(hs.length){
@@ -2878,7 +2976,52 @@ function bindYearCells(){
 
 /* ---- 日记 ---- */
 var MOODS=["😊","🙂","😐","😔","😤","🥱","🤩"];
-var diaryMode="write", diaryMon=new Date();
+var diaryMode="write", diaryMon=new Date(), diaryPrev=false;
+
+/* ---- 极简 Markdown 渲染（无外部依赖，离线可用）----
+   先整体转义 HTML 再做替换，正文里写 <script> 也只会原样显示，不会执行。
+   支持：# 标题、**粗**、*斜*、~~删~~、`行内码`、``` 代码块、- 列表、1. 有序、
+        - [ ] 任务、> 引用、[文字](http 链接)、--- 分割线 */
+function mdInline(s){
+  s=s.replace(/`([^`]+)`/g,function(_,c){return "<code>"+c+"</code>"});
+  s=s.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+  s=s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,"$1<i>$2</i>");
+  s=s.replace(/~~([^~]+)~~/g,"<s>$1</s>");
+  s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return s;}
+function md(src){
+  var esc0=function(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")};
+  var lines=String(src||"").split("\n"), out=[], inCode=false, code=[], list=null, m;
+  var closeList=function(){if(list){out.push(list==="ul"?"</ul>":"</ol>");list=null;}};
+  for(var i=0;i<lines.length;i++){
+    var raw=lines[i];
+    if(/^```/.test(raw)){
+      if(inCode){out.push("<pre><code>"+code.join("\n")+"</code></pre>");code=[];inCode=false;}
+      else{closeList();inCode=true;}
+      continue;}
+    if(inCode){code.push(esc0(raw));continue;}
+    var ln=esc0(raw);
+    if(m=ln.match(/^(#{1,4})\s+(.*)$/)){closeList();var lv=m[1].length;
+      out.push("<h"+lv+">"+mdInline(m[2])+"</h"+lv+">");continue;}
+    if(/^(-{3,}|\*{3,})\s*$/.test(ln)){closeList();out.push("<hr>");continue;}
+    if(m=ln.match(/^&gt;\s?(.*)$/)){closeList();
+      out.push("<blockquote>"+mdInline(m[1])+"</blockquote>");continue;}
+    if(m=ln.match(/^[-*+]\s+\[( |x|X)\]\s+(.*)$/)){
+      if(list!=="ul"){closeList();out.push("<ul>");list="ul";}
+      var ck=m[1].toLowerCase()==="x";
+      out.push('<li class="task'+(ck?" on":"")+'"><span class="tk">'+(ck?"☑":"☐")+'</span>'+mdInline(m[2])+"</li>");continue;}
+    if(m=ln.match(/^[-*+]\s+(.*)$/)){
+      if(list!=="ul"){closeList();out.push("<ul>");list="ul";}
+      out.push("<li>"+mdInline(m[1])+"</li>");continue;}
+    if(m=ln.match(/^\d+[.)]\s+(.*)$/)){
+      if(list!=="ol"){closeList();out.push("<ol>");list="ol";}
+      out.push("<li>"+mdInline(m[1])+"</li>");continue;}
+    if(!ln.trim()){closeList();continue;}
+    closeList();out.push("<p>"+mdInline(ln)+"</p>");}
+  if(inCode)out.push("<pre><code>"+code.join("\n")+"</code></pre>");
+  closeList();
+  return out.join("");}
 function diaryOn(ds){return D.diary.filter(function(x){return x.id===ds&&(x.text||x.mood)})[0]||null;}
 /* 连续写了几天：从今天（或最后一篇）往回数 */
 function diaryStreak(){
@@ -2959,9 +3102,15 @@ function vDiary(){
     '<button class="pill" data-dnav="1">›</button></div>';
   h+='<div class="card" style="padding:13px">'+
      '<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:10px">'+MOODS.map(function(m){
-       return '<button class="pill'+(cur.mood===m?" ok":"")+'" data-mood="'+m+'" style="font-size:16px;padding:5px 9px">'+m+'</button>';}).join("")+'</div>'+
-     '<textarea class="inp" id="dtxt" placeholder="'+T("What happened today?")+'">'+esc(cur.text)+'</textarea>'+
-     '<div class="muted" style="font-size:11.5px;margin-top:8px" id="dsave">Auto-saved</div></div>';
+       return '<button class="pill'+(cur.mood===m?" ok":"")+'" data-mood="'+m+'" style="font-size:16px;padding:5px 9px">'+m+'</button>';}).join("")+
+     '<span style="flex:1"></span>'+
+     '<button class="pill'+(diaryPrev?" ok":"")+'" id="dprev">'+(diaryPrev?T("Edit"):T("Preview"))+'</button></div>'+
+     (diaryPrev
+       ? '<div class="mdview">'+((cur.text||"").trim()?md(cur.text)
+           :'<p style="color:var(--faint)">'+T("Nothing written yet")+'</p>')+'</div>'
+       : '<textarea class="inp" id="dtxt" style="min-height:46vh" placeholder="'+T("What happened today?")+'">'+esc(cur.text)+'</textarea>')+
+     '<div class="muted" style="font-size:11.5px;margin-top:8px" id="dsave">'+
+       (diaryPrev?"Markdown":"Auto-saved · Markdown")+'</div></div>';
   var past=D.diary.filter(function(x){return x.text}).sort(function(a,b){return b.id.localeCompare(a.id)}).slice(0,30);
   if(past.length){h+='<div class="sec">'+T("Past entries")+' ('+past.length+')</div><div class="card">'+past.map(function(p){
     return '<div class="kv" data-diary="'+p.id+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+esc(p.id)+' '+esc(p.mood||"")+'</div>'+
@@ -3442,6 +3591,9 @@ var ZH={
   "What happened today?":"今天发生了什么？",
   /* 通用 */
   "Add":"添加","Close":"关闭","Search":"搜索","Time":"时间","Location":"地点","Notes":"备注",
+  "No notes":"没有备注","Show on Today":"添加到主屏幕","Plan progress":"计划进度",
+  "Short-term":"短期计划","Pinned to Today":"已添加到首页","Hidden from Today":"已从首页移除",
+  "Preview":"预览","Nothing written yet":"还没写内容",
   "Title":"标题","What":"什么事","New event":"新建日程","More":"更多","Temperature":"温度",
   /* 长期计划 */
   "Long-term":"长期计划","Long-term plan":"长期计划","New plan":"新建计划","Edit plan":"编辑计划",
@@ -4041,6 +4193,9 @@ function hStat(hb,rows,last){
    [{id, text, done, done_at, kids:[{id,text,done,done_at}]}]
    最多两层：有子项的父项不再自己打勾，完成与否由子项推导。 */
 var planOpen=null, planExp={};
+/* 长期 / 短期两个并列分区：结构功能完全一样，靠 plan.scope 区分（老数据默认 long） */
+var planScope=(function(){try{return store.get("rec.pscope")==="short"?"short":"long"}catch(e){return "long"}})();
+function pScope(p){return (p&&p.scope)==="short"?"short":"long";}
 function pitems(p){return jarr(p&&p.items);}
 function pkids(it){return (it&&Array.isArray(it.kids))?it.kids:[];}
 function planById(id){return D.plans.filter(function(x){return x.id===id})[0]||null;}
@@ -4062,17 +4217,20 @@ function planStat(p){
 
 function vPlans(){
   if(planOpen){var po=planById(planOpen); if(po)return vPlanOne(po); planOpen=null;}
+  var seg='<div class="seg" style="margin-bottom:12px">'+
+    '<button data-pscope="long"'+(planScope==="long"?' class="on"':'')+'>'+T("Long-term")+'</button>'+
+    '<button data-pscope="short"'+(planScope==="short"?' class="on"':'')+'>'+T("Short-term")+'</button></div>';
   /* 按图标排序：顺序跟新建计划时那排图标一致，图标相同的再按创建顺序 */
   var iRank=function(p){
     var i=PLICO.indexOf((p&&p.emoji)||"flag");
     return i<0?PLICO.length:i;};
-  var ps=D.plans.filter(function(x){return !x.archived})
+  var ps=D.plans.filter(function(x){return !x.archived&&pScope(x)===planScope})
                 .sort(function(a,b){
                   return iRank(a)-iRank(b) || (a.sort||0)-(b.sort||0);});
   if(!ps.length)
-    return '<div class="card"><div class="empty"><span class="e">🧭</span>'+
+    return seg+'<div class="card"><div class="empty"><span class="e">🧭</span>'+
       T("No plans yet · tap + to create")+'</div></div>';
-  return '<div class="hlist">'+ps.map(function(p){
+  return seg+'<div class="hlist">'+ps.map(function(p){
     var st=planStat(p), c=hcol(p);
     return '<div class="hrw" data-ppress="'+p.id+'">'+
       '<button class="hdel" data-pdel="'+p.id+'">'+T("Delete")+'</button>'+
@@ -4105,6 +4263,8 @@ function vPlanOne(p){
     var row='<div class="plr'+(dn?" done":"")+'" style="--hc:'+c+'">'+lead+
       '<div class="plt" data-pedit="'+p.id+'|'+x.id+'"><b>'+esc(x.text)+'</b>'+
         (dn&&when?'<i>'+T("Completed")+' '+esc(when)+'</i>':"")+'</div>'+
+      '<button class="star sm'+(x.pin?" on":"")+'" data-ppin="'+p.id+'|'+x.id+'"'+
+        ' title="'+(x.pin?"Showing on Today":"Tap to pin on Today")+'">'+(x.pin?"★":"☆")+'</button>'+
       '<button class="plexp'+(open?" on":"")+'" data-pexp="'+x.id+'">'+
         (kids.length?kids.length:"")+'<span>›</span></button>'+
       '<button class="x" data-pdrop="'+p.id+'|'+x.id+'">×</button></div>';
@@ -4115,10 +4275,122 @@ function vPlanOne(p){
             (k.done?ckSVG(true):"")+'</button>'+
           '<div class="plt" data-pkedit="'+p.id+'|'+x.id+'|'+k.id+'"><b>'+esc(k.text)+'</b>'+
             (k.done&&k.done_at?'<i>'+T("Completed")+' '+esc(k.done_at)+'</i>':"")+'</div>'+
+          '<button class="star sm'+(k.pin?" on":"")+'" data-pkpin="'+p.id+'|'+x.id+'|'+k.id+'"'+
+            ' title="'+(k.pin?"Showing on Today":"Tap to pin on Today")+'">'+(k.pin?"★":"☆")+'</button>'+
           '<button class="x" data-pkdrop="'+p.id+'|'+x.id+'|'+k.id+'">×</button></div>';}).join("")+
         '<button class="plsadd" data-pkadd="'+p.id+'|'+x.id+'">＋ '+T("Add sub-item")+'</button></div>';}
     return row;}).join("")+'</div>';
   return h+planFoot();}
+
+/* ---- 钉到主屏幕的计划进度：固定高度的轮播卡（参照生日页顶部轮播，但不自动播放） ----
+   一张卡一个被钉的一级条目；左右滑动换卡，树状图超出卡高就在卡内上下滚。
+   勾选按钮复用 data-ptog / data-pktog 的全局绑定，在首页也能直接打勾。 */
+var __pincar={i:0};
+function pinnedPlansHTML(){
+  var slides=[];
+  D.plans.filter(function(p){return !p.archived}).forEach(function(p){
+    var it=pitems(p);
+    /* 计划里只要有任何条目（一级或二级）被钉，就把整个计划的完整树挂上首页 */
+    var hasPin=it.some(function(x){
+      return x.pin||pkids(x).some(function(k){return k.pin});});
+    if(!hasPin)return;
+    var c=hcol(p), st=planStat(p);
+    var head='<div class="pinh" data-pingo="'+p.id+'">'+hicon(p,15)+
+      '<span>'+esc(p.name)+'</span><b class="pgc">'+st.done+'/'+st.n+'</b><em>›</em></div>';
+    var body=it.map(function(x){
+      var kids=pkids(x), dn=itemDone(x);
+      var kdone=kids.filter(function(k){return k.done}).length;
+      var lead = kids.length
+        ? '<span class="plpg'+(dn?" on":"")+'">'+kdone+'/'+kids.length+'</span>'
+        : '<button class="plck sm'+(dn?" on":"")+'" data-ptog="'+p.id+'|'+x.id+'">'+(dn?ckSVG(true):"")+'</button>';
+      var row='<div class="pinr'+(dn?" done":"")+(x.pin?" hot":"")+'">'+lead+'<b>'+esc(x.text)+'</b>'+
+        (x.pin?'<span class="pstar">★</span>':"")+'</div>';
+      if(kids.length)
+        row+='<div class="pintree">'+kids.map(function(k){
+          return '<div class="pink'+(k.done?" done":"")+(k.pin?" hot":"")+'">'+
+            '<button class="plck sm'+(k.done?" on":"")+'" data-pktog="'+p.id+'|'+x.id+'|'+k.id+'">'+
+              (k.done?ckSVG(true):"")+'</button>'+
+            '<b>'+esc(k.text)+'</b>'+(k.pin?'<span class="pstar">★</span>':"")+'</div>';}).join("")+'</div>';
+      return row;}).join("");
+    slides.push('<div class="pslide" style="--hc:'+c+'">'+head+
+      '<div class="pinbody">'+body+'</div></div>');});
+  if(!slides.length)return "";
+  if(__pincar.i>=slides.length)__pincar.i=slides.length-1;   // 取消钉选后位置回收
+  return '<div class="sec">'+T("Plan progress")+
+      (slides.length>1?' <span style="opacity:.5">· '+slides.length+'</span>':"")+'</div>'+
+    '<div class="pincar" id="pincar"><div class="ptrack" id="pincarT"'+
+      ' style="transform:translateX('+(-__pincar.i*100)+'%)">'+slides.join("")+'</div>'+
+    (slides.length>1?'<div class="pdots" id="pincarD">'+slides.map(function(_,i){
+      return '<i'+(i===__pincar.i?' class="on"':'')+'></i>'}).join("")+'</div>':"")+
+    '</div>';}
+
+function pincarBind(){
+  var wrap=$("pincar"); if(!wrap||wrap.__sw)return; wrap.__sw=1;
+  var tr=$("pincarT"), n=tr?tr.children.length:0; if(!tr)return;
+  /* 被钉的条目（一级或二级）自动滚到卡片可视区中间 */
+  wrap.querySelectorAll(".pinbody").forEach(function(bd){
+    var hot=bd.querySelector(".pinr.hot,.pink.hot");
+    if(hot)bd.scrollTop=Math.max(0,hot.offsetTop-bd.clientHeight/2+hot.clientHeight/2);});
+  if(n<2)return;
+  function setX(px){tr.style.transition="none";
+    tr.style.transform="translateX(calc("+(-__pincar.i*100)+"% + "+px+"px))";}
+  function go(i){
+    __pincar.i=Math.max(0,Math.min(n-1,i));
+    tr.style.transition="";
+    tr.style.transform="translateX("+(-__pincar.i*100)+"%)";
+    var d=$("pincarD"); if(d)d.querySelectorAll("i").forEach(function(x,k){
+      x.classList.toggle("on",k===__pincar.i)});}
+  function fin(dx,dir){
+    if(dir===1)wrap.__sup=Date.now();      // 刚拖完：抑制随后的误点
+    if(dir!==1){go(__pincar.i);return;}
+    var th=Math.min(70,wrap.clientWidth*0.22);
+    go(__pincar.i+(dx<-th?1:dx>th?-1:0));}
+  function damp(dx){        // 第一张往右 / 最后一张往左：加阻尼
+    return ((__pincar.i===0&&dx>0)||(__pincar.i===n-1&&dx<0))?dx*0.35:dx;}
+  /* 触摸：跟手位移，方向锁定（竖向交给树内部滚动） */
+  var x0=0,y0=0,dx=0,drag=false,dir=0;
+  wrap.addEventListener("touchstart",function(e){
+    if(e.touches.length!==1)return;
+    x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;drag=true;dir=0;},{passive:true});
+  wrap.addEventListener("touchmove",function(e){
+    if(!drag)return;
+    var t=e.touches[0]; dx=t.clientX-x0; var dy=t.clientY-y0;
+    if(!dir){
+      if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)*1.4)dir=1;
+      else if(Math.abs(dy)>8)dir=-1;
+      else return;}
+    if(dir<0)return;
+    e.preventDefault();                    // 横向拖卡时锁住页面竖向滚动
+    setX(damp(dx));},{passive:false});
+  wrap.addEventListener("touchend",function(){
+    if(!drag)return; drag=false; fin(dx,dir);},{passive:true});
+  wrap.addEventListener("touchcancel",function(){
+    if(!drag)return; drag=false; go(__pincar.i);},{passive:true});
+  /* 鼠标：桌面同样跟手（挂 document 才能拖出卡片区域；重绑前先摘旧的防止叠加） */
+  var mdown=false,mx0=0,my0=0,mdx=0,mdir=0;
+  wrap.addEventListener("pointerdown",function(e){
+    if(e.pointerType!=="mouse")return;
+    mdown=true;mx0=e.clientX;my0=e.clientY;mdx=0;mdir=0;});
+  if(window.__pcMV)document.removeEventListener("pointermove",window.__pcMV);
+  if(window.__pcUP)document.removeEventListener("pointerup",window.__pcUP);
+  window.__pcMV=function(e){
+    if(!mdown)return;
+    mdx=e.clientX-mx0; var dy=e.clientY-my0;
+    if(!mdir){
+      if(Math.abs(mdx)>6&&Math.abs(mdx)>Math.abs(dy)*1.4)mdir=1;
+      else if(Math.abs(dy)>6)mdir=-1;
+      else return;}
+    if(mdir<0)return;
+    setX(damp(mdx));};
+  window.__pcUP=function(){
+    if(!mdown)return; mdown=false; fin(mdx,mdir); mdir=0;};
+  document.addEventListener("pointermove",window.__pcMV);
+  document.addEventListener("pointerup",window.__pcUP);
+  /* 拖动后 350ms 内的点击一律吞掉，防止松手时误勾选 / 误跳转 */
+  wrap.addEventListener("click",function(e){
+    if(Date.now()-(wrap.__sup||0)<350){e.stopPropagation();e.preventDefault();}},true);
+  var d=$("pincarD");
+  if(d)d.querySelectorAll("i").forEach(function(x,k){x.onclick=function(){go(k)}});}
 
 function planFoot(){
   return '<div class="row" style="margin-top:16px;gap:8px">'+
@@ -4172,6 +4444,7 @@ function planSheet(rec){
     var v=$("pn").value.trim(); if(!v){$("pn").focus();return;}
     push("plans",Object.assign({},ed||{},{
       id:ed?ed.id:uid(), name:v, emoji:pick, color:col,
+      scope: ed?pScope(ed):planScope,
       note:$("pnote").value.trim()||null,
       items:ed?ed.items:"[]",
       sort:ed?ed.sort:Date.now(), archived:false,
@@ -4184,7 +4457,7 @@ function pitemSheet(planId,itemId,parentId){
   var arr=pitems(p);
   var host = parentId ? pkids(arr.filter(function(x){return x.id===parentId})[0]) : arr;
   var cur = itemId ? host.filter(function(x){return x.id===itemId})[0] : null;
-  var done=!!(cur&&cur.done);
+  var done=!!(cur&&cur.done), pin=!!(cur&&cur.pin);
   var hasKids = cur && !parentId && pkids(cur).length>0;
   openSheet('<h2>'+(cur?T("Edit item"):(parentId?T("Add sub-item"):T("Add item")))+'</h2>'+
     '<label class="fl">'+T("Item name")+'</label>'+
@@ -4193,10 +4466,14 @@ function pitemSheet(planId,itemId,parentId){
       ? '<div class="note" style="margin:14px 0 0">'+T("Completion follows its sub-items")+'</div>'
       : '<div class="lgbl" style="margin-top:16px"><span>'+T("Completed")+'</span>'+
         '<button class="atog'+(done?" on":"")+'" id="pid"></button></div>')+
+    '<div class="lgbl" style="margin-top:12px"><span>'+T("Show on Today")+'</span>'+
+      '<button class="atog'+(pin?" on":"")+'" id="pipin"></button></div>'+
     '<div class="row" style="margin-top:16px"><button class="btn" id="piv" style="flex:1">'+T("Save")+'</button>'+
     '<button class="btn g" id="pix">'+T("Cancel")+'</button></div>');
   var tg=$("pid");
   if(tg)tg.onclick=function(){done=!done;tg.classList.toggle("on",done);};
+  var pg=$("pipin");
+  if(pg)pg.onclick=function(){pin=!pin;pg.classList.toggle("on",pin);};
   $("pix").onclick=closeSheet;
   setTimeout(function(){if(!cur)$("pin").focus()},80);
   $("piv").onclick=function(){
@@ -4208,9 +4485,12 @@ function pitemSheet(planId,itemId,parentId){
         var o={id:x.id,text:v,done:hasKids?x.done:done,
                done_at:(hasKids?x.done_at:(done?(x.done_at||nowStamp()):null))};
         if(x.kids)o.kids=x.kids;
+        if(pin)o.pin=1;
         return o;});
-      coll.push({id:"p"+Date.now().toString(36)+Math.floor(Math.random()*1e3),
-                 text:v,done:done,done_at:done?nowStamp():null});
+      var no={id:"p"+Date.now().toString(36)+Math.floor(Math.random()*1e3),
+                 text:v,done:done,done_at:done?nowStamp():null};
+      if(pin)no.pin=1;
+      coll.push(no);
       return coll;}
     if(parentId){
       list=list.map(function(x){
@@ -4234,6 +4514,7 @@ function togglePItem(planId,itemId){
     var nd=!x.done;
     var o={id:x.id,text:x.text,done:nd,done_at:nd?nowStamp():null};
     if(x.kids)o.kids=x.kids;
+    if(x.pin)o.pin=1;
     return o;});
   savePlanItems(planId,arr);render();}
 function togglePKid(planId,parentId,kidId){
@@ -4243,9 +4524,34 @@ function togglePKid(planId,parentId,kidId){
     o.kids=pkids(x).map(function(k){
       if(k.id!==kidId)return k;
       var nd=!k.done;
-      return {id:k.id,text:k.text,done:nd,done_at:nd?nowStamp():null};});
+      var ko={id:k.id,text:k.text,done:nd,done_at:nd?nowStamp():null};
+      if(k.pin)ko.pin=1;
+      return ko;});
     return o;});
   savePlanItems(planId,arr);render();}
+function togglePinItem(planId,itemId){
+  var on=false;
+  var arr=pitems(planById(planId)).map(function(x){
+    if(x.id!==itemId)return x;
+    var o=Object.assign({},x);
+    if(o.pin){delete o.pin;}else{o.pin=1;on=true;}
+    return o;});
+  savePlanItems(planId,arr);
+  toast(on?T("Pinned to Today"):T("Hidden from Today"));render();}
+function togglePinKid(planId,parentId,kidId){
+  var on=false;
+  var arr=pitems(planById(planId)).map(function(x){
+    if(x.id!==parentId)return x;
+    var o=Object.assign({},x);
+    o.kids=pkids(x).map(function(k){
+      if(k.id!==kidId)return k;
+      var ko=Object.assign({},k);
+      if(ko.pin){delete ko.pin;}else{ko.pin=1;on=true;}
+      return ko;});
+    return o;});
+  savePlanItems(planId,arr);
+  toast(on?T("Pinned to Today"):T("Hidden from Today"));render();}
+
 function dropPKid(planId,parentId,kidId){
   var gone=null;
   var arr=pitems(planById(planId)).map(function(x){
@@ -5407,7 +5713,7 @@ var MENU=[
   {k:"plan",   ic:"calendar", n:"Schedule"},
   {k:"subs",   ic:"repeat",   n:"Recurring"},
   {k:"cdown",  ic:"flag",     n:"Milestones"},
-  {k:"plans",  ic:"compass",  n:"Long-term"},
+  {k:"plans",  ic:"compass",  n:"Plan"},
   {k:"review", ic:"chart",    n:"Insights"}
 ].sort(function(a,b){return a.n.localeCompare(b.n)});
 
@@ -5547,9 +5853,9 @@ function bindDrag(){
         clearTimeout(timer);
         if(started&&dragState){
           if(dragState.timer)clearInterval(dragState.timer);
-          var cell=dragState.cell;
+          var cell=dragState.cell, acted=false, did=dragState.id;
           if(cell&&cell.id==="dz"){
-            dropUndo("todos",dragState.id,"Task deleted");
+            dropUndo("todos",dragState.id,"Task deleted");acted=true;
           }else if(cell&&String(dragState.id).indexOf("@")>0){
             // 重复任务的某一次被拖走：原处跳过，新日期生成独立的一条
             var pp=String(dragState.id).split("@"), sid2=pp[0], ods=pp[1];
@@ -5561,20 +5867,22 @@ function bindDrag(){
               push("todos",{id:uid(),text:st2.text,done:false,sort:Date.now(),due_date:nds,
                 due_time:st2.due_time||null,end_time:st2.end_time||null,color:st2.color||null,
                 repeat:null,week:null,updated_at:new Date().toISOString()});
-              toast("Moved this one only");}
+              toast("Moved this one only");acted=true;}
             cell.classList.remove("over");
           }else if(cell){
             var t=D.todos.filter(function(x){return x.id===dragState.id})[0];
             var nd=cell.dataset.drop||null;
             var nw=nd?null:(cell.dataset.week||null);      // 落进 ToDo 格 → 归属那一周
             if(t&&((t.due_date||null)!==nd||(t.week||null)!==nw)){
-              push("todos",Object.assign({},t,{due_date:nd,week:nw,updated_at:new Date().toISOString()}));}
+              push("todos",Object.assign({},t,{due_date:nd,week:nw,updated_at:new Date().toISOString()}));acted=true;}
             cell.classList.remove("over");}
           $("dz").classList.remove("on","hot");
           dragState.ghost.remove();
           el.classList.remove("dragging");
           dragState=null; dragBlockClick=Date.now();
-          render();}
+          render();
+          // 拖起来又原地放下（没删除、没改期）→ 打开详情看备注
+          if(!acted)todoDetailSheet(did);}
         cleanup();}
       function cleanup(){
         if(started)window.__noTap=1;
@@ -5682,6 +5990,17 @@ function bind(){
   var pe=$("plEdit"); if(pe)pe.onclick=function(){var pp=planById(planOpen); if(pp)planSheet(pp)};
   document.querySelectorAll("[data-popen]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     planOpen=el.dataset.popen;window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-pingo]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    tab="plans";planOpen=el.dataset.pingo;setTab();window.scrollTo(0,0);render();}});
+  pincarBind();
+  document.querySelectorAll("[data-pscope]").forEach(function(el){el.onclick=function(){
+    planScope=el.dataset.pscope==="short"?"short":"long";
+    try{store.set("rec.pscope",planScope)}catch(e){}
+    render();}});
+  document.querySelectorAll("[data-ppin]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.ppin.split("|");togglePinItem(a[0],a[1]);}});
+  document.querySelectorAll("[data-pkpin]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var a=el.dataset.pkpin.split("|");togglePinKid(a[0],a[1],a[2]);}});
   document.querySelectorAll("[data-ptog]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var a=el.dataset.ptog.split("|");togglePItem(a[0],a[1]);}});
   document.querySelectorAll("[data-pedit]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
@@ -5798,6 +6117,11 @@ function bind(){
     dtxt.onblur=function(){clearTimeout(tm);saveDiary(dtxt.value);
       var s3=$("dsave");if(s3)s3.textContent="Saved ✓";};}
   if(dd)dd.onchange=function(){diaryDate=dd.value;render()};
+  var dpv=$("dprev");
+  if(dpv)dpv.onclick=function(){
+    var t=$("dtxt"); if(t)saveDiary(t.value);   // 切预览前先把没存的文字落盘
+    diaryPrev=!diaryPrev;render();
+    if(!diaryPrev)setTimeout(function(){var t2=$("dtxt");if(t2)t2.focus()},60);};
   document.querySelectorAll("[data-dm]").forEach(function(el){el.onclick=function(){
     diaryMode=el.dataset.dm;
     if(diaryMode==="stat")diaryMon=parse(diaryDate);
@@ -6033,6 +6357,7 @@ function newTodoSheet(ds,st,et,md,wk,lock){
     // 只有从 ToDo 收集箱（没带日期）建的才真正无日期
     var dv = ev ? ($("nd").value||null) : (ds||null);
     push("todos",{id:uid(),text:v,done:false,sort:Date.now(),
+      ev: ev?1:null,                    // 显式标记：全天 Event 没有时间字段，靠这个和 To-do 区分
       due_date:dv,
       week: (!dv&&wk)?wk:null,          // 无日期待办归属某一周；有日期就不需要
       end_date: (ev&&$("nd2").value&&dv&&$("nd2").value>dv)?$("nd2").value:null,
@@ -7456,7 +7781,7 @@ function qsRows(){
   if(qsTab==="undated")
     list=D.todos.filter(function(t){return !t.due_date&&!t.done});
   else
-    list=D.todos.filter(function(t){return t.due_date&&t.due_date<ts&&!t.done})
+    list=D.todos.filter(function(t){return t.due_date&&t.due_date<ts&&!t.done&&!isEvent(t)})
                 .sort(function(a,b){return a.due_date<b.due_date?-1:1});
   if(!list.length)
     return addBox+'<div class="empty">'+(qsTab==="undated"?"No unscheduled tasks":"Nothing overdue")+'</div>';
@@ -7520,7 +7845,7 @@ var __curTab="today";
     if(document.querySelector(".ov.show,.qswrap.on,.drawer.on"))return;   // 弹层打开时不响应
     if(tab==="plan"&&planView==="day")return;                            // 日视图交给它自己
     var t=e.target;
-    if(t.closest&&t.closest(".hcar,.hstrip,.tlscroll,.dtrack,.hrw,.cpal,.ftab,.tplg,.kdial,input,textarea"))return;
+    if(t.closest&&t.closest(".hcar,.pincar,.hstrip,.tlscroll,.dtrack,.hrw,.cpal,.ftab,.tplg,.kdial,input,textarea"))return;
     var X=e.touches[0].clientX, W=window.innerWidth;
     if(X<24||X>W-24)return;              // 贴边不接管，留给系统返回手势
     x0=X; y0=e.touches[0].clientY; act=true;},{passive:true});
