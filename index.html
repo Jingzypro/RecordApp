@@ -4195,7 +4195,18 @@ function hStat(hb,rows,last){
 var planOpen=null, planExp={};
 /* 长期 / 短期两个并列分区：结构功能完全一样，靠 plan.scope 区分（老数据默认 long） */
 var planScope=(function(){try{return store.get("rec.pscope")==="short"?"short":"long"}catch(e){return "long"}})();
-function pScope(p){return (p&&p.scope)==="short"?"short":"long";}
+/* 本地兜底：服务器 plans 表若没有 scope 列，flush() 会把该字段剥掉重发，
+   随后 sync 拉取覆盖本地时 scope 就丢了。这里在本机记一份 id→scope 映射，
+   行上没有 scope 时按映射找回，保证短期计划不会"跳回"长期。 */
+var pScopeMap=(function(){try{return JSON.parse(store.get("rec.pscopeMap")||"{}")||{}}catch(e){return {}}})();
+function pScopeRemember(id,sc){
+  if(!id)return;
+  pScopeMap[id]=sc==="short"?"short":"long";
+  try{store.set("rec.pscopeMap",JSON.stringify(pScopeMap))}catch(e){}}
+function pScope(p){
+  if(!p)return "long";
+  if(p.scope==="short"||p.scope==="long")return p.scope;
+  return pScopeMap[p.id]==="short"?"short":"long";}
 function pitems(p){return jarr(p&&p.items);}
 function pkids(it){return (it&&Array.isArray(it.kids))?it.kids:[];}
 function planById(id){return D.plans.filter(function(x){return x.id===id})[0]||null;}
@@ -4246,7 +4257,7 @@ function vPlanOne(p){
   var h='<div class="plhero" style="--hc:'+c+'">'+
     '<div><b>'+esc(p.name)+'</b>'+
       '<div class="plbig">'+st.n+'<em>'+T("items")+'</em></div>'+
-      '<i>'+(p.note?esc(p.note):T("Long-term plan"))+'</i></div>'+
+      '<i>'+(p.note?esc(p.note):T(pScope(p)==="short"?"Short-term":"Long-term plan"))+'</i></div>'+
     '<span class="plic">'+hicon(p,42)+'</span></div>';
 
   if(!it.length)
@@ -4442,9 +4453,12 @@ function planSheet(rec){
     toast(T("Deleted")+" "+ed.name,function(){push("plans",snap);render();});};
   $("pv").onclick=function(){
     var v=$("pn").value.trim(); if(!v){$("pn").focus();return;}
+    var pid=ed?ed.id:uid();
+    var sc=ed?pScope(ed):planScope;      /* 新建 → 跟当前所在分区；编辑 → 保持原分区 */
+    pScopeRemember(pid,sc);
     push("plans",Object.assign({},ed||{},{
-      id:ed?ed.id:uid(), name:v, emoji:pick, color:col,
-      scope: ed?pScope(ed):planScope,
+      id:pid, name:v, emoji:pick, color:col,
+      scope: sc,
       note:$("pnote").value.trim()||null,
       items:ed?ed.items:"[]",
       sort:ed?ed.sort:Date.now(), archived:false,
