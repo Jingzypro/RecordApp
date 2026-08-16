@@ -200,6 +200,9 @@
     color:var(--ink);font-weight:600}
   .ci.evt.dn .citx,.ci.evt.dn .citm{color:var(--faint);text-decoration:line-through}
   .ci .tm{color:var(--sub);font-variant-numeric:tabular-nums;flex:none}
+  .ci .cin{flex:none;font-size:9px;line-height:1;padding:2.5px 4px;border-radius:4px;font-weight:800;
+    background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)}
+  .ci.dn .cin{opacity:.45}
   /* 可拖元素：浏览器不得从这里发起滚动，手势完全交给脚本 */
   /* 允许系统原生竖向滚动；拖拽在长按后才接管 */
   [data-drag]{touch-action:pan-y!important}
@@ -1210,9 +1213,16 @@
   .hcd b{font-size:16px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;
     letter-spacing:-.02em}
   .hcd i{font-size:9.5px;font-style:normal;line-height:1;opacity:.95;font-weight:600}
+  .hcd .pc{position:absolute;right:2px;bottom:2px;width:17px;height:17px;border-radius:7px;
+    display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;font-style:normal;
+    color:var(--sub);background:var(--line);font-weight:800;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .hcd .pc.on{color:#fff;background:var(--accent)}
+
   .hcd.on{background:color-mix(in srgb,var(--hc) 16%,transparent);color:var(--hc)}
   .hcd.td{border-color:var(--hc)}
-  .hcd.fu{opacity:.28;cursor:default}
+  .hcd.fu{cursor:default}
+  .hcd.fu b,.hcd.fu i{opacity:.28}          /* 只淡日期数字，铅笔保持可见可点 */
+  .hcd .pc{cursor:pointer}
   /* 订阅 / 记账用的月历：格子矮一点，配色走强调色 */
   .scal .hcd{aspect-ratio:1;border-radius:10px}
   .scal .hcd b{font-size:14px}
@@ -2119,15 +2129,28 @@ function todoDetailSheet(id){
   if(t.due_date)meta.push(esc(t.due_date)+(t.end_date?" → "+esc(t.end_date):""));
   if(t.due_time)meta.push(esc(t.due_time)+(t.end_time?"–"+esc(t.end_time):""));
   if(t.location)meta.push("◎ "+esc(t.location));
+  // 打勾状态：重复实例看 done_dates，普通记录看 done
+  var dn=t.done;
+  if(String(id).indexOf("@")>0)dn=jlist(t.done_dates).indexOf(String(id).split("@")[1])>=0;
   openSheet('<h2 style="word-break:break-word">'+esc(t.text)+'</h2>'+
     (meta.length?'<div class="note" style="margin:2px 0 0">'+meta.join(" · ")+'</div>':"")+
     '<label class="fl">'+T("Notes")+'</label>'+
     '<textarea class="inp" id="tnnote" maxlength="500" style="height:110px;resize:none;line-height:1.5" '+
       'placeholder="'+T("No notes")+'">'+(t.notes?esc(t.notes):"")+'</textarea>'+
     '<div class="row" style="margin-top:16px;gap:8px">'+
+      '<button class="btn g" id="tntg" style="flex:1">'+(dn?"↺ "+T("Mark undone"):"✓ "+T("Mark done"))+'</button>'+
+      '<button class="btn g" id="tned" style="flex:1">'+T("Edit")+'</button></div>'+
+    '<div class="row" style="margin-top:8px;gap:8px">'+
       '<button class="btn" id="tnv" style="flex:1">'+T("Save")+'</button>'+
-      '<button class="btn g" id="tnx" style="flex:1">'+T("Close")+'</button></div>');
+      '<button class="btn g" id="tnx" style="flex:1">'+T("Close")+'</button></div>'+
+    '<button class="btn g" id="tndel" style="width:100%;margin-top:10px;color:var(--danger)">'+T("Delete")+'</button>');
   $("tnx").onclick=closeSheet;
+  $("tntg").onclick=function(){closeSheet();
+    toggleTodo(String(id).indexOf("~")>0?sid:id);render();};
+  $("tned").onclick=function(){closeSheet();
+    var cur=D.todos.filter(function(x){return x.id===sid})[0];
+    if(cur)newTodoSheet(null,null,null,null,null,false,cur);};
+  $("tndel").onclick=function(){closeSheet();dropUndo("todos",sid,T("Deleted"));render();};
   $("tnv").onclick=function(){
     var cur=D.todos.filter(function(x){return x.id===sid})[0]; if(!cur){closeSheet();return;}
     var v=$("tnnote").value.trim();
@@ -2549,15 +2572,16 @@ function ciHTML(t){
     ((t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom))?"":"");
   var tail=(t.contTo||(t.end_date&&t.end_date>t.due_date&&!t.contFrom))?" ↧":"";
 
+  var nb=t.notes?'<span class="cin" title="Notes">≡</span>':"";   // 有备注 → 角标提示
   if(!t.due_time){                                  // 待办：胶囊 + 圆环标记
     return '<div class="ci todo'+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-tg="'+t.id+'">'+
       '<span class="cip"><span class="mk sm '+colorOf(t)+(t.done?" on":"")+'"></span>'+
-      '<span class="cipt">'+cont+esc(t.text)+tail+'</span></span></div>';}
+      '<span class="cipt">'+cont+esc(t.text)+tail+'</span>'+nb+'</span></div>';}
 
   return '<div class="ci evt'+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-tg="'+t.id+'">'+
     '<span class="cibar '+colorOf(t)+'"></span>'+
     '<span class="citm">'+esc(t.due_time)+'</span>'+
-    '<span class="citx">'+cont+esc(t.text)+tail+'</span></div>';}
+    '<span class="citx">'+cont+esc(t.text)+tail+'</span>'+nb+'</div>';}
 /* ---- 日视图：时间轴 ---- */
 var HH=60; // 每小时像素
 function t2m(s){if(!s)return null;var a=String(s).split(":");return (+a[0])*60+(+a[1]||0);}
@@ -2654,18 +2678,27 @@ function bindDayGrid(){
           if(m>=a&&m<b)r={t:t,a:a,b:b};});
         return r;}
 
-      /* ── 已有选中：只对它操作，新建被锁住 ── */
+      /* 取消选中：直接摘掉把手，不重渲染（重渲染会把当前列换掉，手势就断了） */
+      function unsel(){
+        selEv=null;
+        document.querySelectorAll(".evb.sel").forEach(function(b){
+          b.classList.remove("sel");
+          b.querySelectorAll(".hd").forEach(function(x){x.remove()});});}
+
+      /* ── 已有选中：按在它身上 → 对它操作；按到别处 → 取消选中并继续正常处理这次按压 ── */
       if(selEv){
         rec=D.todos.filter(function(t){return t.id===selEv})[0];
-        if(!rec||rec.due_date!==ds){ selEv=null; render(); return; }
-        s0=t2m(rec.due_time); e0=rec.end_time?t2m(rec.end_time):s0+60;
-        var tol=Math.min(12,Math.max(5,Math.floor((e0-s0)/3)));
-        if(Math.abs(startM-s0)<=tol)      mode="top";
-        else if(Math.abs(startM-e0)<=tol) mode="bot";
-        else if(startM>s0&&startM<e0)     mode="move";
-        else { selEv=null; render(); return; }      // 点到别处 → 取消选中
-        lock();
-      }else{
+        if(!rec||rec.due_date!==ds){ unsel(); rec=null; }
+        else{
+          s0=t2m(rec.due_time); e0=rec.end_time?t2m(rec.end_time):s0+60;
+          var tol=Math.min(12,Math.max(5,Math.floor((e0-s0)/3)));
+          if(Math.abs(startM-s0)<=tol)      mode="top";
+          else if(Math.abs(startM-e0)<=tol) mode="bot";
+          else if(startM>s0&&startM<e0)     mode="move";
+          else { unsel(); rec=null; }                 // 点到别处 → 只取消选中，手势不作废
+          if(rec)lock();}
+      }
+      if(!rec){
         /* ── 没有选中 ──
            鼠标：按下即生效（桌面上没人长按）
            手指：长按 280ms 再生效，避免和滚动打架 */
@@ -2703,12 +2736,20 @@ function bindDayGrid(){
         }}
 
       function up(e){
-        if(!mode){clean();return;}
+        if(!mode){
+          clean();
+          // 轻点在某条日程上（没长按成拖动、也没滑动）→ 打开详情：编辑 / 删除都在里面
+          if(!moved&&h0&&h0.t)todoDetailSheet(h0.t.id);
+          return;}
         var m=y2m(e.clientY), d=m-startM;
         if(mode==="create"){
           if(!moved){clean();render();return;}          // 只是点了一下，不建
           var a=Math.min(startM,m), b=Math.max(startM+SNAP,m);
           clean(); quickEvent(ds,m2hm(a),m2hm(b)); return;}
+        if(rec&&!moved){                              // 轻点（含选中态）→ 开详情
+          var rid=rec.id;
+          unsel(); clean(); render();
+          todoDetailSheet(rid); return;}
         if(rec&&moved){
           var ns,ne;
           if(mode==="move"){ var len=e0-s0; ns=Math.max(0,Math.min(1440-len,s0+d)); ne=ns+len; }
@@ -2743,7 +2784,8 @@ function dayCol(ds){
        ' style="top:'+(x.s/60*HH)+'px;height:'+Math.max(20,(x.e-x.s)/60*HH-2)+'px;'+
        'left:calc('+left+'% + 3px);width:calc('+w+'% - 6px)">'+
        (x.t.id===selEv?'<i class="hd t"></i><i class="hd b"></i>':"")+
-       '<b><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span></b>'+
+       '<b><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.t.text)+'</span>'+
+         (x.t.notes?'<span class="cin" title="Notes" style="margin-left:4px">≡</span>':"")+'</b>'+
        '<span>'+esc(x.t.due_time)+'–'+m2t(x.e)+
          (x.t.travel?'  ·  +'+esc(x.t.travel)+'m':"")+'</span>'+
        (x.t.location?'<span style="opacity:.75">◎ '+esc(x.t.location)+'</span>':"")+
@@ -2755,9 +2797,10 @@ function allDayChips(ds){
     if(t.ro)return '<span class="ev ro" data-mgo="'+(t.kind==="bday"?"bday":"cdown")+'"'+
       ' style="margin:0;display:inline-flex;align-items:center;gap:6px">'+
       '<span class="rotag '+(t.kind==="bday"?"bd":"cd")+'">'+(t.kind==="bday"?"Birthday":"Countdown")+'</span>'+esc(t.text)+'</span>';
-    return '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" data-drag="'+t.id+'"'+
+    return '<span class="ev '+colorOf(t)+(t.done?" dn":"")+'" data-drag="'+t.id+'" data-det="'+t.id+'"'+
       ' style="margin:0;display:inline-flex;align-items:center;gap:6px">'+
-      '<span class="mk sm hit'+(t.done?" on":"")+'" data-tg="'+t.id+'"></span>'+esc(t.text)+'</span>';}).join("");}
+      '<span class="mk sm hit'+(t.done?" on":"")+'" data-tg="'+t.id+'"></span>'+esc(t.text)+
+      (t.notes?'<span class="cin" title="Notes">≡</span>':"")+'</span>';}).join("");}
 
 function gDay(){
   var d0=new Date(cursor), d1=addDays(d0,1), ds0=fmt(d0), ds1=fmt(d1), ts=todayStr();
@@ -2977,6 +3020,11 @@ function bindYearCells(){
 /* ---- 日记 ---- */
 var MOODS=["😊","🙂","😐","😔","😤","🥱","🤩"];
 var diaryMode="write", diaryMon=new Date(), diaryPrev=false;
+var reportKind="day";    // Report 页当前展示哪一类：日报/周报/月报/年报
+var writeKind="d";       // 写页此刻在写什么："d" 日记，"w"/"m"/"y" 三报
+function saveWrite(v){
+  if(writeKind==="d")return saveDiary(v);
+  push("weekly_focus",{id:repId(writeKind,diaryDate),text:v,updated_at:new Date().toISOString()});}
 
 /* ---- 极简 Markdown 渲染（无外部依赖，离线可用）----
    先整体转义 HTML 再做替换，正文里写 <script> 也只会原样显示，不会执行。
@@ -3044,9 +3092,13 @@ function dCal(){
   for(var i=0;i<lead;i++)out+='<div class="hcz"></div>';
   for(var d=1;d<=last;d++){
     var ds=y+"-"+pad(m+1)+"-"+pad(d), e=diaryOn(ds), fu=(ds>ts);
+    var due=repDue(ds), pc="";
+    if(due.length){
+      var allw=due.every(function(k){return repHas(k,ds)});
+      pc='<span class="pc'+(allw?" on":"")+'" data-rgo="'+ds+'">✎</span>';}   // 三报日 → 铅笔角标；未来的也能点，支持提前写
     out+='<div class="hcd'+(e?" on":"")+(ds===ts?" td":"")+(fu?" fu":"")+'"'+
       (fu?"":' data-dgo="'+ds+'"')+'>'+
-      '<b>'+d+'</b>'+(e&&e.mood?'<i style="font-size:11px">'+esc(e.mood)+'</i>':"")+'</div>';}
+      '<b>'+d+'</b>'+(e&&e.mood?'<i style="font-size:11px">'+esc(e.mood)+'</i>':"")+pc+'</div>';}
   return '<div class="hcalw" style="--hc:var(--accent)">'+calHead()+'<div class="hcal">'+out+'</div></div>';}
 
 function dStat(){
@@ -3087,28 +3139,196 @@ function dStat(){
       '</div>';}
   if(allChars)h+='<div class="note" style="margin-top:10px">'+T("Written in total")+' '+allChars+' '+T("characters")+'</div>';
   return h;}
+/* ---- 周报 / 月报 / 年报 ---- */
+/* ---- 三报：周报（周日）/ 月报（月末）/ 年报（12-31），锚定在具体日期上 ---- */
+function repDue(ds){                 // 这一天该写哪些报告
+  var d=parse(ds), out=[];
+  if(d.getDay()===0)out.push("w");                       // 周日 → 周报
+  if(addDays(d,1).getDate()===1)out.push("m");           // 月末 → 月报
+  if(d.getMonth()===11&&d.getDate()===31)out.push("y");  // 12-31 → 年报
+  return out;}
+function repId(k,ds){return "rep:"+k+":"+ds;}
+function repHas(k,ds){return !!(getFocus(repId(k,ds))||"").trim();}
+function repLbl(k,ds){var d=parse(ds);
+  if(k==="w"){var s=addDays(d,-6);
+    return T("Weekly report")+" · "+(s.getMonth()+1)+"."+s.getDate()+" ~ "+(d.getMonth()+1)+"."+d.getDate();}
+  if(k==="m")return T("Monthly report")+" · "+monLabel(d);
+  return T("Yearly report")+" · "+d.getFullYear();}
+function repPh(k){
+  return k==="w"?T("How was your week?"):k==="m"?T("How was your month?"):T("How was your year?");}
+function repShort(k,ds){var d=parse(ds);
+  if(k==="w"){var st=addDays(d,-6);
+    return d.getFullYear()+" · "+(st.getMonth()+1)+"."+st.getDate()+" ~ "+(d.getMonth()+1)+"."+d.getDate();}
+  if(k==="m")return monLabel(d);
+  return String(d.getFullYear());}
+/* ---- 三报回收站：删除先改成 trash: 前缀留档，恢复=改回来，彻底删除才真正丢 ---- */
+function repTrashList(){
+  return D.weekly_focus.filter(function(x){return x.id.indexOf("trash:rep:")===0&&(x.text||"").trim()})
+    .sort(function(a,b){return b.id.localeCompare(a.id)});}
+function trashDiary(ds){
+  var row=D.diary.filter(function(x){return x.id===ds})[0]; if(!row)return;
+  drop("diary",ds);
+  push("weekly_focus",{id:"trash:rep:d:"+ds,
+    text:JSON.stringify({mood:row.mood||"",text:row.text||""}),
+    updated_at:new Date().toISOString()});
+  toast(T("Moved to trash"));}
+function trashPrev(k,txt){          // 回收站里的单行预览：日报要先解开 JSON
+  if(k!=="d")return txt;
+  try{var o=JSON.parse(txt);return (o.mood?o.mood+" ":"")+(o.text||"")}catch(e){return txt}}
+function trashSheet(){
+  var list=repTrashList();
+  var body=list.length?list.map(function(x){
+    var p=x.id.split(":"), k=p[2], ds=p[3];
+    var lbl=(k==="d"?T("Daily report")+" · "+ds
+            :(k==="w"?T("Weekly report"):k==="m"?T("Monthly report"):T("Yearly report"))+" · "+repShort(k,ds));
+    return '<div class="kv"><div style="min-width:0"><div class="kvn">'+lbl+'</div>'+
+      '<div class="kvs" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw">'+esc(trashPrev(k,x.text).slice(0,60))+'</div></div>'+
+      '<button class="pill" data-trs="'+esc(x.id)+'">'+T("Restore")+'</button>'+
+      '<button class="x" data-trx="'+esc(x.id)+'">×</button></div>';}).join("")
+   :'<div class="empty" style="padding:30px"><span class="e">🗑</span>'+T("Trash is empty")+'</div>';
+  openSheet('<h2>'+T("Trash")+'</h2>'+
+    '<div class="note" style="margin:2px 0 10px">'+T("Deleted reports stay here until you remove them")+'</div>'+
+    '<div class="card">'+body+'</div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn g" id="trX" style="flex:1">'+T("Close")+'</button></div>');
+  $("trX").onclick=closeSheet;
+  $("sheet").querySelectorAll("[data-trs]").forEach(function(el){el.onclick=function(){
+    var tid=el.dataset.trs, row=D.weekly_focus.filter(function(x){return x.id===tid})[0]; if(!row)return;
+    var p=tid.split(":"), k=p[2], ds=p[3];
+    if(k==="d"){                                       // 日报：还原回 diary 表
+      var ex=D.diary.filter(function(x){return x.id===ds})[0];
+      if(ex&&((ex.text||"").trim()||ex.mood)){toast(T("That period already has a report"));return;}
+      var o={mood:"",text:row.text}; try{o=JSON.parse(row.text)}catch(e){}
+      drop("weekly_focus",tid);
+      push("diary",{id:ds,date:ds,mood:o.mood||"",text:o.text||"",updated_at:new Date().toISOString()});
+    }else{
+      var oid=tid.slice(6);                            // 去掉 "trash:"
+      if((getFocus(oid)||"").trim()){toast(T("That period already has a report"));return;}
+      drop("weekly_focus",tid);
+      push("weekly_focus",{id:oid,text:row.text,updated_at:new Date().toISOString()});}
+    toast(T("Restored"));render();trashSheet();}});
+  $("sheet").querySelectorAll("[data-trx]").forEach(function(el){el.onclick=function(){
+    drop("weekly_focus",el.dataset.trx);saveLocal();
+    toast(T("Deleted permanently"));render();trashSheet();}});}
+
+/* ---- 导出：日报/周报/月报/年报 四个文件夹的 .md，打成一个 zip（store 方式，无压缩依赖） ---- */
+var CRC_T=null;
+function crc32(u8){
+  if(!CRC_T){CRC_T=[];for(var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);CRC_T[i]=c>>>0;}}
+  var c=0xFFFFFFFF;
+  for(var k=0;k<u8.length;k++)c=CRC_T[(c^u8[k])&0xFF]^(c>>>8);
+  return (c^0xFFFFFFFF)>>>0;}
+function zipBuild(files){
+  var enc=new TextEncoder(), parts=[], cd=[], off=0;
+  files.forEach(function(f){
+    var nm=enc.encode(f.name), dt=enc.encode(f.text||""), crc=crc32(dt);
+    var lh=new Uint8Array(30+nm.length), v=new DataView(lh.buffer);
+    v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x0800,true);   // bit11: UTF-8 文件名
+    v.setUint32(14,crc,true);v.setUint32(18,dt.length,true);v.setUint32(22,dt.length,true);
+    v.setUint16(26,nm.length,true);
+    lh.set(nm,30);
+    parts.push(lh,dt);
+    cd.push({nm:nm,crc:crc,sz:dt.length,off:off});
+    off+=lh.length+dt.length;});
+  var cdParts=[], cdSize=0;
+  cd.forEach(function(e){
+    var h=new Uint8Array(46+e.nm.length), v=new DataView(h.buffer);
+    v.setUint32(0,0x02014b50,true);v.setUint16(4,20,true);v.setUint16(6,20,true);v.setUint16(8,0x0800,true);
+    v.setUint32(16,e.crc,true);v.setUint32(20,e.sz,true);v.setUint32(24,e.sz,true);
+    v.setUint16(28,e.nm.length,true);v.setUint32(42,e.off,true);
+    h.set(e.nm,46);
+    cdParts.push(h);cdSize+=h.length;});
+  var eo=new Uint8Array(22), v2=new DataView(eo.buffer);
+  v2.setUint32(0,0x06054b50,true);v2.setUint16(8,cd.length,true);v2.setUint16(10,cd.length,true);
+  v2.setUint32(12,cdSize,true);v2.setUint32(16,off,true);
+  return new Blob(parts.concat(cdParts,[eo]),{type:"application/zip"});}
+function exportReportsMd(){
+  var files=[{name:"日报/"},{name:"周报/"},{name:"月报/"},{name:"年报/"}];   // 固定四个文件夹
+  D.diary.filter(function(x){return x.text}).forEach(function(x){
+    files.push({name:"日报/"+x.id+".md",
+      text:"# 日报 "+x.id+(x.mood?" "+x.mood:"")+"\n\n"+x.text+"\n"});});
+  [["w","周报"],["m","月报"],["y","年报"]].forEach(function(a){
+    var pref="rep:"+a[0]+":";
+    D.weekly_focus.filter(function(x){return x.id.indexOf(pref)===0&&(x.text||"").trim()})
+      .forEach(function(x){
+        var ds=x.id.slice(pref.length);
+        files.push({name:a[1]+"/"+ds+".md",
+          text:"# "+a[1]+" "+repShort(a[0],ds)+"\n\n"+x.text+"\n"});});});
+  if(files.length<=4){toast(T("Nothing to export"));return;}
+  var blob=zipBuild(files);
+  var a2=document.createElement("a");a2.href=URL.createObjectURL(blob);
+  a2.download="journal-export-"+todayStr()+".zip";a2.click();
+  setTimeout(function(){URL.revokeObjectURL(a2.href)},2000);
+  toast(T("Exported")+" · "+(files.length-4)+" md");}
+
+/* Report 页：日报 / 周报 / 月报 / 年报，各自收纳成列表 */
+function dReport(){
+  var kinds=[["day",T("Daily report")],["week",T("Weekly report")],["month",T("Monthly report")],["year",T("Yearly report")]];
+  var h='<div class="row" style="gap:6px;margin-bottom:12px">'+kinds.map(function(a){
+      return '<button class="pill'+(reportKind===a[0]?" ok":"")+'" data-rk="'+a[0]+'" style="flex:1;justify-content:center">'+a[1]+'</button>';}).join("")+'</div>';
+  var tn=repTrashList().length;
+  h+='<div class="row" style="gap:6px;margin-bottom:12px">'+
+     '<button class="pill" id="repExp" style="flex:1;justify-content:center">⇩ '+T("Export .md")+'</button>'+
+     '<button class="pill" id="repTrash" style="flex:1;justify-content:center">🗑 '+T("Trash")+(tn?" ("+tn+")":"")+'</button></div>';
+  var ttl=kinds.filter(function(a){return a[0]===reportKind})[0][1];
+  /* 日报 = 全部日记，收纳方式与 Past entries 一致 */
+  if(reportKind==="day"){
+    var ds2=D.diary.filter(function(x){return x.text}).sort(function(a,b){return b.id.localeCompare(a.id)});
+    if(!ds2.length)return h+'<div class="card"><div class="empty" style="padding:34px"><span class="e">✎</span>'+T("No reports yet")+'</div></div>';
+    return h+'<div class="sec">'+ttl+' ('+ds2.length+')</div><div class="card">'+ds2.map(function(p){
+      return '<div class="kv" data-dgo="'+p.id+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+esc(p.id)+' '+esc(p.mood||"")+'</div>'+
+      '<div class="kvs" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw">'+esc(p.text.slice(0,60))+'</div></div>'+
+      '<button class="x" data-del-diary="'+p.id+'">×</button></div>';}).join("")+'</div>';}
+  var k=(reportKind==="week"?"w":reportKind==="month"?"m":"y"), pref="rep:"+k+":";
+  var list=D.weekly_focus.filter(function(x){return x.id.indexOf(pref)===0&&(x.text||"").trim()})
+    .sort(function(a,b){return b.id.localeCompare(a.id)});
+  if(!list.length)
+    return h+'<div class="card"><div class="empty" style="padding:34px"><span class="e">✎</span>'+
+      T("No reports yet")+'<div class="muted" style="font-size:12px;margin-top:6px">'+T("Write them in Write on due days")+'</div></div></div>';
+  return h+'<div class="sec">'+ttl+' ('+list.length+')</div><div class="card">'+list.map(function(x){
+    var ds=x.id.slice(pref.length);
+    return '<div class="kv" data-ropen="'+k+'|'+esc(ds)+'" style="cursor:pointer"><div style="min-width:0"><div class="kvn">'+repShort(k,ds)+'</div>'+
+    '<div class="kvs" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw">'+esc(x.text.slice(0,60))+'</div></div>'+
+    '<button class="x" data-rdel="'+esc(x.id)+'">×</button></div>';}).join("")+'</div>';}
+
 function vDiary(){
   var seg='<div class="hseg"><div class="sw">'+
     '<button data-dm="write"'+(diaryMode==="write"?' class="on"':'')+'>'+T("Write")+'</button>'+
-    '<button data-dm="stat"'+(diaryMode==="stat"?' class="on"':'')+'>'+T("Stats")+'</button></div></div>';
+    '<button data-dm="stat"'+(diaryMode==="stat"?' class="on"':'')+'>'+T("Stats")+'</button>'+
+    '<button data-dm="report"'+(diaryMode==="report"?' class="on"':'')+'>'+T("Reports")+'</button></div></div>';
+  if(diaryMode==="report")return seg+dReport();
   if(diaryMode==="stat")
     return seg+'<div class="hmon"><button class="pill" data-dmn="-1">‹</button>'+
       '<b>'+monLabel(diaryMon)+'</b>'+
       '<button class="pill" data-dmn="1">›</button></div>'+dStat();
 
-  var cur=D.diary.filter(function(x){return x.id===diaryDate})[0]||{text:"",mood:""};
+  var due=repDue(diaryDate);
+  if(writeKind!=="d"&&due.indexOf(writeKind)<0)writeKind="d";   // 换到非三报日 → 回日记
+  var isRep=(writeKind!=="d"), rid=isRep?repId(writeKind,diaryDate):null;
+  var cur = isRep ? {text:getFocus(rid),mood:""}
+                  : (D.diary.filter(function(x){return x.id===diaryDate})[0]||{text:"",mood:""});
   var h=seg+'<div class="row" style="justify-content:space-between;margin-bottom:10px">'+
     '<button class="pill" data-dnav="-1">‹</button><input class="inp" id="dd" type="date" value="'+diaryDate+'" style="width:auto;padding:7px 10px">'+
     '<button class="pill" data-dnav="1">›</button></div>';
+  /* 三报日：同一个输入框，切换在写什么 */
+  if(due.length){
+    var tabs=[["d",T("Daily journal")]].concat(due.map(function(k){
+      return [k, k==="w"?T("Weekly report"):k==="m"?T("Monthly report"):T("Yearly report")];}));
+    h+='<div class="row" style="gap:6px;margin-bottom:10px">'+tabs.map(function(a){
+      return '<button class="pill'+(writeKind===a[0]?" ok":"")+'" data-wk="'+a[0]+'" style="flex:1;justify-content:center">'+
+        (a[0]!=="d"?"✎ ":"")+a[1]+'</button>';}).join("")+'</div>';}
   h+='<div class="card" style="padding:13px">'+
-     '<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:10px">'+MOODS.map(function(m){
-       return '<button class="pill'+(cur.mood===m?" ok":"")+'" data-mood="'+m+'" style="font-size:16px;padding:5px 9px">'+m+'</button>';}).join("")+
+     '<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:10px">'+
+     (isRep
+       ? '<b style="font-size:13.5px;padding:5px 0"><span style="color:var(--accent)">✎</span> '+repLbl(writeKind,diaryDate)+'</b>'
+       : MOODS.map(function(m){
+       return '<button class="pill'+(cur.mood===m?" ok":"")+'" data-mood="'+m+'" style="font-size:16px;padding:5px 9px">'+m+'</button>';}).join(""))+
      '<span style="flex:1"></span>'+
      '<button class="pill'+(diaryPrev?" ok":"")+'" id="dprev">'+(diaryPrev?T("Edit"):T("Preview"))+'</button></div>'+
      (diaryPrev
        ? '<div class="mdview">'+((cur.text||"").trim()?md(cur.text)
            :'<p style="color:var(--faint)">'+T("Nothing written yet")+'</p>')+'</div>'
-       : '<textarea class="inp" id="dtxt" style="min-height:46vh" placeholder="'+T("What happened today?")+'">'+esc(cur.text)+'</textarea>')+
+       : '<textarea class="inp" id="dtxt" style="min-height:46vh" placeholder="'+
+           (isRep?repPh(writeKind):T("What happened today?"))+'">'+esc(cur.text)+'</textarea>')+
      '<div class="muted" style="font-size:11.5px;margin-top:8px" id="dsave">'+
        (diaryPrev?"Markdown":"Auto-saved · Markdown")+'</div></div>';
   var past=D.diary.filter(function(x){return x.text}).sort(function(a,b){return b.id.localeCompare(a.id)}).slice(0,30);
@@ -3542,6 +3762,23 @@ var ZH={
   "Opened as a local file: the browser sends Origin null and Google refuses it. Put the page on https.":"当前是本地文件打开的，浏览器会把 Origin 报成 null，Google 会拒绝。把页面放到 https 上再试。",
   "Rates are only used for display totals. Each entry keeps the currency you typed.":"汇率只用于合计显示，每条记录本身仍保留你填的币种。",
   "One-off":"一次性","day":"天","days":"天",
+  /* 报告 & 总览 & 详情操作 */
+  "Reports":"报告","Weekly report":"周报","Monthly report":"月报","Yearly report":"年报",
+  "Total words":"总字数","Longest entry":"最长一篇","Mood distribution":"心情分布",
+  "Weekly summary":"本周总结","Monthly summary":"本月总结","Yearly summary":"年度总结",
+  "How was your week?":"这一周过得怎么样?写点什么留给以后的自己…",
+  "No reports yet":"还没有报告","Daily report":"日报","Daily journal":"日记",
+  "Export .md":"导出 .md","Trash":"回收站","Restore":"恢复","Trash is empty":"回收站是空的",
+  "Moved to trash":"已移入回收站","Restored":"已恢复","Deleted permanently":"已彻底删除",
+  "That period already has a report":"该时段已重新写过内容，先清空它才能恢复",
+  "Deleted reports stay here until you remove them":"删除的三报先留在这里，防止误删；「恢复」放回原处，× 才是彻底删除",
+  "Nothing to export":"还没有可导出的内容","Exported":"已导出","Write them in Write on due days":"周日 / 月末 / 年末,去「写」里补上第一篇吧",
+  "How was your month?":"这个月过得怎么样?回顾一下再出发…",
+  "How was your year?":"这一年过得怎么样?值得认真写一写…",
+  "No entries in this period":"这段时间还没有日记",
+  "Overview":"总览","Done today":"今日打卡","Week check-ins":"本周打卡",
+  "Best streak now":"最长连续","Total check-ins":"累计打卡","Active days":"打卡天数","Habit count":"习惯数",
+  "Mark done":"标记完成","Mark undone":"取消完成",
   "Write":"写","Stats":"统计","Days written":"写了几天","Current streak":"当前连续",
   "Longest streak":"最长连续","Words this month":"本月字数","All entries":"全部篇数",
   "Average length":"平均长度","Mood this month":"本月心情","Written in total":"累计写了",
@@ -3909,7 +4146,24 @@ function vHabit(){
   var hs=D.habits.filter(function(h){return !h.archived}).sort(function(a,b){return a.sort-b.sort});
   if(!hs.length)return '<div class="card"><div class="empty"><span class="e">🌱</span>'+T("No habits yet · tap + to create")+'</div></div>';
   var ts=todayStr();
-  return '<div class="hlist">'+hs.map(function(hb){
+  /* ---- 全部习惯总览 ---- */
+  var actIds={}; hs.forEach(function(h){actIds[h.id]=1});
+  var logsAll=D.habit_logs.filter(function(l){return actIds[l.habit_id]});
+  var doneToday=hs.filter(function(h){return logged(h.id,ts)}).length;
+  var ws0=startOfWeek(new Date()), wk0=fmt(ws0), wk1=fmt(addDays(ws0,6));
+  var wkN=logsAll.filter(function(l){return l.date>=wk0&&l.date<=wk1}).length;
+  var dset={}; logsAll.forEach(function(l){dset[l.date]=1});
+  var best=0; hs.forEach(function(h){var s2=streak(h.id); if(s2>best)best=s2;});
+  var ov='<div class="sec">'+T("Overview")+'</div>'+
+    '<div class="stg" style="grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">'+
+    '<div class="stc"><div class="k">'+T("Done today")+'</div><div class="v">'+doneToday+'<small>/'+hs.length+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Week check-ins")+'</div><div class="v">'+wkN+'<small>'+T("times")+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Best streak now")+'</div><div class="v">'+best+'<small>'+T("d")+'</small></div></div>'+
+    '<div class="stc"><div class="k">'+T("Total check-ins")+'</div><div class="v">'+logsAll.length+'</div></div>'+
+    '<div class="stc"><div class="k">'+T("Active days")+'</div><div class="v">'+Object.keys(dset).length+'</div></div>'+
+    '<div class="stc"><div class="k">'+T("Habit count")+'</div><div class="v">'+hs.length+'</div></div>'+
+    '</div>';
+  return ov+'<div class="hlist">'+hs.map(function(hb){
     var ls=logsOn(hb.id,ts), l=ls[ls.length-1], st=streak(hb.id), sm=logSummary(hb,l), c=hcol(hb);
     var mf=mainField(hb), tot=null;
     if(mf&&ls.length>1){tot=0;ls.forEach(function(x){var vv=fVal(mf,lvals(x)[mf.id]);if(vv!=null)tot+=vv;});}
@@ -5983,9 +6237,14 @@ function bind(){
     qb.onclick=go;
     qa.onkeydown=function(e){if(e.key==="Enter"&&!imeKey(e))go()};
   }
-  document.querySelectorAll("[data-tg]").forEach(function(el){el.onclick=function(){
+  document.querySelectorAll("[data-tg]").forEach(function(el){el.onclick=function(ev){
+    ev.stopPropagation();
     if(Date.now()-dragBlockClick<400)return;
     toggleTodo(el.dataset.tg);render()}});
+  document.querySelectorAll("[data-det]").forEach(function(el){el.onclick=function(){
+    if(Date.now()-dragBlockClick<400)return;
+    if(window.__noTap){window.__noTap=0;return;}
+    todoDetailSheet(el.dataset.det)}});
   document.querySelectorAll("[data-goday]").forEach(function(el){
     el.onclick=function(ev){ev.stopPropagation();
       cursor=parse(el.dataset.goday);
@@ -5996,7 +6255,9 @@ function bind(){
     var a=el.dataset.hl.split("|");quickLog(a[0],a[1]);}});
   document.querySelectorAll("[data-hlog]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
     var hb=habitById(el.dataset.hlog); if(hb)logSheet(hb,todayStr());}});
-  ["todos","habits","subscriptions","birthdays","diary","ledger","countdowns"].forEach(function(tb){
+  document.querySelectorAll("[data-del-diary]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    trashDiary(el.getAttribute("data-del-diary"));render()}});
+  ["todos","habits","subscriptions","birthdays","ledger","countdowns"].forEach(function(tb){
     document.querySelectorAll("[data-del-"+tb+"]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
       dropUndo(tb,el.getAttribute("data-del-"+tb),"Deleted");render()}});});
   var pbk=$("pBack"); if(pbk)pbk.onclick=function(){planOpen=null;window.scrollTo(0,0);render()};
@@ -6126,32 +6387,61 @@ function bind(){
   var dtxt=$("dtxt"),dd=$("dd");
   if(dtxt){var tm;
     dtxt.oninput=function(){clearTimeout(tm);var st=$("dsave");if(st)st.textContent="Typing…";
-      tm=setTimeout(function(){saveDiary(dtxt.value);var s2=$("dsave");if(s2)s2.textContent="Saved ✓"},700)};
+      tm=setTimeout(function(){saveWrite(dtxt.value);var s2=$("dsave");if(s2)s2.textContent="Saved ✓"},700)};
     /* 切走 / 收起键盘时立刻存一次，不然最后几个字会跟着那 700ms 一起丢 */
-    dtxt.onblur=function(){clearTimeout(tm);saveDiary(dtxt.value);
+    dtxt.onblur=function(){clearTimeout(tm);saveWrite(dtxt.value);
       var s3=$("dsave");if(s3)s3.textContent="Saved ✓";};}
-  if(dd)dd.onchange=function(){diaryDate=dd.value;render()};
+  if(dd)dd.onchange=function(){diaryDate=dd.value;writeKind="d";render()};
   var dpv=$("dprev");
   if(dpv)dpv.onclick=function(){
-    var t=$("dtxt"); if(t)saveDiary(t.value);   // 切预览前先把没存的文字落盘
+    var t=$("dtxt"); if(t)saveWrite(t.value);   // 切预览前先把没存的文字落盘
     diaryPrev=!diaryPrev;render();
     if(!diaryPrev)setTimeout(function(){var t2=$("dtxt");if(t2)t2.focus()},60);};
   document.querySelectorAll("[data-dm]").forEach(function(el){el.onclick=function(){
     diaryMode=el.dataset.dm;
     if(diaryMode==="stat")diaryMon=parse(diaryDate);
     window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-rk]").forEach(function(el){el.onclick=function(){
+    reportKind=el.dataset.rk;render()}});
+  document.querySelectorAll("[data-wk]").forEach(function(el){el.onclick=function(){
+    var t=$("dtxt"); if(t)saveWrite(t.value);          // 先按旧身份落盘再切
+    writeKind=el.dataset.wk;diaryPrev=false;render()}});
+  document.querySelectorAll("[data-rgo]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var ds=el.dataset.rgo, due=repDue(ds);
+    var k=due.filter(function(x){return !repHas(x,ds)})[0]||due[0]||"d";   // 优先跳到还没写的那份
+    diaryDate=ds;writeKind=k;diaryMode="write";diaryPrev=false;
+    window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-ropen]").forEach(function(el){el.onclick=function(){
+    var a=el.dataset.ropen.split("|");
+    diaryDate=a[1];writeKind=a[0];diaryMode="write";diaryPrev=false;
+    window.scrollTo(0,0);render();}});
+  document.querySelectorAll("[data-rdel]").forEach(function(el){el.onclick=function(ev){ev.stopPropagation();
+    var id=el.dataset.rdel, row=D.weekly_focus.filter(function(x){return x.id===id})[0]; if(!row)return;
+    drop("weekly_focus",id);
+    push("weekly_focus",{id:"trash:"+id,text:row.text,updated_at:new Date().toISOString()});
+    toast(T("Moved to trash"));render()}});
+  var rex=$("repExp");  if(rex)rex.onclick=exportReportsMd;
+  var rtr=$("repTrash");if(rtr)rtr.onclick=trashSheet;
+  /* 三报书写区：700ms 节流自动保存，失焦立即落盘 */
+  document.querySelectorAll(".rptx").forEach(function(rp){
+    var rtm, rid=rp.dataset.k;
+    var st2=function(txt){var s0=document.querySelector('[data-rps="'+rid+'"]');if(s0)s0.textContent=txt;};
+    var savR=function(){push("weekly_focus",{id:rid,text:rp.value,updated_at:new Date().toISOString()});
+      st2("Saved ✓ · Markdown");};
+    rp.oninput=function(){clearTimeout(rtm);st2("Typing…");rtm=setTimeout(savR,700)};
+    rp.onblur=function(){clearTimeout(rtm);savR()};});
   document.querySelectorAll("[data-dmn]").forEach(function(el){el.onclick=function(){
     diaryMon=new Date(diaryMon.getFullYear(),diaryMon.getMonth()+ +el.dataset.dmn,1);render()}});
   /* 统计里点某一天 → 跳到那天的日记 */
   document.querySelectorAll("[data-dgo]").forEach(function(el){el.onclick=function(){
-    diaryDate=el.dataset.dgo;diaryMode="write";window.scrollTo(0,0);render()}});
+    diaryDate=el.dataset.dgo;diaryMode="write";writeKind="d";window.scrollTo(0,0);render()}});
   document.querySelectorAll("[data-dnav]").forEach(function(el){el.onclick=function(){
     diaryDate=fmt(addDays(parse(diaryDate),+el.dataset.dnav));render()}});
   document.querySelectorAll("[data-mood]").forEach(function(el){el.onclick=function(){
     var c=D.diary.filter(function(x){return x.id===diaryDate})[0]||{text:""};
     push("diary",{id:diaryDate,date:diaryDate,mood:el.dataset.mood,text:c.text||"",updated_at:new Date().toISOString()});render()}});
   document.querySelectorAll("[data-diary]").forEach(function(el){el.onclick=function(){
-    diaryDate=el.dataset.diary;render()}});
+    diaryDate=el.dataset.diary;writeKind="d";render()}});
   var gd=$("gotoDiary");if(gd)gd.onclick=function(){tab="diary";diaryDate=todayStr();setTab();render()};
   var ah=$("addHb");if(ah)ah.onclick=tplSheet;
   var hbk=$("hBack");if(hbk)hbk.onclick=function(){habitOpen=null;window.scrollTo(0,0);render()};
@@ -6258,14 +6548,16 @@ function openSheet(html){$("sheet").classList.remove("form");$("sheet").innerHTM
 function closeSheet(){$("ov").classList.remove("show");$("sheet").classList.remove("form")}
 $("ov").onclick=function(e){if(e.target===$("ov"))closeSheet()};
 
-function newTodoSheet(ds,st,et,md,wk,lock){
+function newTodoSheet(ds,st,et,md,wk,lock,edit){
   var REP=[["","Never"],["daily","Daily"],["weekday","Weekdays"],["weekly","Weekly"],["monthly","Monthly"]];
   var TRV=[["","None"],["5","5 min"],["15","15 min"],["30","30 min"],["60","1 hour"]];
   var CK=Object.keys(COLORS);
-  var pick = CK[Math.floor(Math.random()*CK.length)];   // 颜色默认随机
-  var rep="", trv="";
+  var pick = edit ? (edit.color||"") : CK[Math.floor(Math.random()*CK.length)];   // 颜色默认随机
+  var rep=(edit&&edit.repeat)||"", trv=(edit&&edit.travel)||"";
+  if(edit){ds=edit.due_date||null; md=isEvent(edit)?"event":"todo";
+    if(edit.due_time){st=edit.due_time;et=edit.end_time||null;}}
   var mode = md || (ds ? "event" : "todo");
-  var allday = false;                                   // 全天默认关闭
+  var allday = edit ? (isEvent(edit)&&!edit.due_time) : false;   // 全天默认关闭
   // 未指定时间 → 预填「下一个整刻 ~ 一小时后」
   if(!st){var n0=new Date(), h0=n0.getHours(), m0=Math.ceil(n0.getMinutes()/15)*15;
     if(m0>=60){h0=(h0+1)%24;m0=0;}
@@ -6273,10 +6565,10 @@ function newTodoSheet(ds,st,et,md,wk,lock){
 
   openSheet('<div class="fsheet">'+
     '<div class="ahd"><button class="acir" id="nx">✕</button>'+
-      '<span class="t">New</span>'+
+      '<span class="t">'+(edit?T("Edit"):"New")+'</span>'+
       '<button class="acir ok" id="nv">✓</button></div>'+
 
-    ((ds&&!lock)?'<div class="aseg" id="nseg">':'<div class="aseg" id="nseg" style="display:none">')+
+    ((ds&&!lock&&!edit)?'<div class="aseg" id="nseg">':'<div class="aseg" id="nseg" style="display:none">')+
       '<button data-md="event"'+(mode==="event"?' class="on"':'')+'>Event</button>'+
       '<button data-md="todo"'+(mode==="todo"?' class="on"':'')+'>To-do</button></div>'+
 
@@ -6295,14 +6587,14 @@ function newTodoSheet(ds,st,et,md,wk,lock){
         '<input class="achip" id="nd2" type="date" value="'+(ds||todayStr())+'">'+
         '<input class="achip" id="nm2" type="time" value="'+(et||"")+'"'+(allday?" disabled":"")+'></span></div>'+
       '<div class="arow"><span class="ak">Travel time</span></div>'+
-      '<div class="aopts" id="ntrv">'+TRV.map(function(r,i2){
-        return '<button data-tv="'+r[0]+'"'+(i2===0?' class="on"':'')+'>'+r[1]+'</button>';}).join("")+'</div>'+
+      '<div class="aopts" id="ntrv">'+TRV.map(function(r){
+        return '<button data-tv="'+r[0]+'"'+(r[0]===trv?' class="on"':'')+'>'+r[1]+'</button>';}).join("")+'</div>'+
     '</div>'+
 
     '<div class="agrp" id="grep">'+
       '<div class="arow"><span class="ak">Repeat</span></div>'+
-      '<div class="aopts" id="nrep">'+REP.map(function(r,i2){
-        return '<button data-rp="'+r[0]+'"'+(i2===0?' class="on"':'')+'>'+r[1]+'</button>';}).join("")+'</div>'+
+      '<div class="aopts" id="nrep">'+REP.map(function(r){
+        return '<button data-rp="'+r[0]+'"'+(r[0]===rep?' class="on"':'')+'>'+r[1]+'</button>';}).join("")+'</div>'+
     '</div>'+
 
     '<div class="agrp">'+
@@ -6318,6 +6610,11 @@ function newTodoSheet(ds,st,et,md,wk,lock){
     '</div>');
 
   $("sheet").classList.add("form");
+  if(edit){
+    $("nt").value=edit.text||"";
+    $("nloc").value=edit.location||"";
+    $("nnote").value=edit.notes||"";
+    if(edit.end_date)$("nd2").value=edit.end_date;}
   setTimeout(function(){$("nt").focus()},80);
   $("nx").onclick=function(){$("sheet").classList.remove("form");closeSheet();};
 
@@ -6370,10 +6667,12 @@ function newTodoSheet(ds,st,et,md,wk,lock){
     // To-do 也保留打开时那一天：从周一点 + 建的待办就留在周一，
     // 只有从 ToDo 收集箱（没带日期）建的才真正无日期
     var dv = ev ? ($("nd").value||null) : (ds||null);
-    push("todos",{id:uid(),text:v,done:false,sort:Date.now(),
+    var keep = edit ? {done_dates:edit.done_dates||null, skip_dates:edit.skip_dates||null} : {};
+    push("todos",Object.assign(keep,{id:edit?edit.id:uid(),text:v,
+      done:edit?!!edit.done:false, sort:edit?edit.sort:Date.now(),
       ev: ev?1:null,                    // 显式标记：全天 Event 没有时间字段，靠这个和 To-do 区分
       due_date:dv,
-      week: (!dv&&wk)?wk:null,          // 无日期待办归属某一周；有日期就不需要
+      week: (!dv&&(wk||(edit&&edit.week)))||null,   // 无日期待办归属某一周；有日期就不需要
       end_date: (ev&&$("nd2").value&&dv&&$("nd2").value>dv)?$("nd2").value:null,
       due_time: (ev&&!allday&&$("nm").value)||null,
       end_time: (ev&&!allday&&$("nm2").value)||null,
@@ -6381,7 +6680,7 @@ function newTodoSheet(ds,st,et,md,wk,lock){
       location: (ev&&$("nloc").value.trim())||null,
       notes: $("nnote").value.trim()||null,
       travel: (ev&&trv)||null,
-      updated_at:new Date().toISOString()});
+      updated_at:new Date().toISOString()}));
     $("sheet").classList.remove("form");
     closeSheet();render();}
   $("nv").onclick=save;
